@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="de0c8d56-9af4-4d94-9572-41f7e04ae52f" name="Default" comment="" />
+    <list default="true" id="de0c8d56-9af4-4d94-9572-41f7e04ae52f" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/younify/framework.py" afterPath="$PROJECT_DIR$/younify/framework.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/younify/test/framework_test.py" afterPath="$PROJECT_DIR$/younify/test/framework_test.py" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -14,14 +18,33 @@
       <file leaf-file-name="framework_test.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/younify/test/framework_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="16" column="0" lean-forward="true" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
-              <folding />
+            <state relative-caret-position="153">
+              <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+              <folding>
+                <element signature="e#13#42#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="framework.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/younify/framework.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="391">
+              <caret line="23" column="33" lean-forward="true" selection-start-line="23" selection-start-column="33" selection-end-line="23" selection-end-column="33" />
+              <folding>
+                <element signature="e#13#25#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>assertEquals</find>
+    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -31,15 +54,16 @@
       <list>
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/younify/framework.py" />
         <option value="$PROJECT_DIR$/younify/__init__.py" />
         <option value="$PROJECT_DIR$/younify/test/__init__.py" />
+        <option value="$PROJECT_DIR$/younify/framework.py" />
+        <option value="$PROJECT_DIR$/younify/test/framework_test.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
+    <option name="x" value="450" />
+    <option name="y" value="-19" />
     <option name="width" value="974" />
     <option name="height" value="1029" />
   </component>
@@ -160,13 +184,34 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Unittests_in_framework_test_py - 2019.01.29 at 14h 55m 01s.xml">
-      <configuration name="Unittests in framework_test.py" configurationId="tests" />
-    </history-entry>
-    <history-entry file="Unittests_in_framework_test_py_(1) - 2019.01.29 at 14h 57m 01s.xml">
+    <history-entry file="Unittests_in_framework_test_py_(1) - 2019.01.29 at 16h 33m 52s.xml">
       <configuration name="Unittests in framework_test.py (1)" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_framework_test_py_(1) - 2019.01.29 at 16h 25m 45s.xml">
+    <history-entry file="Unittests_in_framework_test_py_(1) - 2019.01.29 at 16h 34m 24s.xml">
+      <configuration name="Unittests in framework_test.py (1)" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_in_framework_test_py_(1) - 2019.01.29 at 16h 38m 53s.xml">
+      <configuration name="Unittests in framework_test.py (1)" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_in_framework_test_py_(1) - 2019.01.29 at 19h 08m 31s.xml">
+      <configuration name="Unittests in framework_test.py (1)" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_in_framework_test_py_(1) - 2019.01.29 at 19h 09m 12s.xml">
+      <configuration name="Unittests in framework_test.py (1)" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_in_framework_test_py_(1) - 2019.01.29 at 19h 10m 13s.xml">
+      <configuration name="Unittests in framework_test.py (1)" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_in_framework_test_py_(1) - 2019.01.29 at 19h 11m 05s.xml">
+      <configuration name="Unittests in framework_test.py (1)" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_in_framework_test_py_(1) - 2019.01.29 at 19h 11m 47s.xml">
+      <configuration name="Unittests in framework_test.py (1)" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_in_framework_test_py_(1) - 2019.01.29 at 19h 12m 26s.xml">
+      <configuration name="Unittests in framework_test.py (1)" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_in_framework_test_py_(1) - 2019.01.29 at 19h 13m 23s.xml">
       <configuration name="Unittests in framework_test.py (1)" configurationId="tests" />
     </history-entry>
   </component>
@@ -206,7 +251,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="272">
           <caret line="17" column="26" lean-forward="false" selection-start-line="17" selection-start-column="26" selection-end-line="17" selection-end-column="26" />
-          <folding />
+          <folding>
+            <element signature="e#13#42#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -247,14 +294,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/younify/framework.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1309">
-          <caret line="101" column="0" lean-forward="true" selection-start-line="101" selection-start-column="0" selection-end-line="101" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/younify/test/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -271,11 +310,23 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/younify/framework.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="23" column="33" lean-forward="true" selection-start-line="23" selection-start-column="33" selection-end-line="23" selection-end-column="33" />
+          <folding>
+            <element signature="e#13#25#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/younify/test/framework_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="16" column="0" lean-forward="true" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="153">
+          <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <folding>
+            <element signature="e#13#42#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

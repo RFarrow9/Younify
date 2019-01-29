@@ -5,7 +5,7 @@ import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QFile, QTextStream
 from threading import Thread
-from frontend import Ui_MainWindow
+#from younify import frontend
 
 # Need to pick a style (camelcase?) and stick with it
 # Testing to be in seperate module
@@ -16,7 +16,7 @@ fetch_threads = 4
 enclosure_queue = queue.Queue()
 temp_processing = "temp\\temp-processed.tmp"
 temp_working = "temp\\temp-working.tmp"
-bookmarks = "working\\Bookmarks.html"
+bookmarks = "working\\bookmarks.html"
 
 class mywindow(QtWidgets.QMainWindow):
     def __init__(self):
