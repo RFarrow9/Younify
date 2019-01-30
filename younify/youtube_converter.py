@@ -29,7 +29,7 @@ def get_audio(url, artist, title):
         'format': 'bestaudio/best',  # choice of quality
         'extractaudio': True,  # only keep the audio
         'noplaylist': True,  # only download single song, not playlist
-        'logger': MyLogger(),
+        #'logger': MyLogger(),
         'progress_hooks': [my_hook],
         'outtmpl': '%(title)s.%(ext)s'
     }
@@ -41,7 +41,7 @@ def get_audio(url, artist, title):
 
 def Convert(filename):
     downloaded_file_path = temp_dir + "\\" + filename
-    if filename[0:-4] == "webm":
+    if filename[-4:] == "webm":
         processed_file_path = temp_dir + "\\" + filename[0:-5] + ".mp3"
     else:
         processed_file_path = temp_dir + "\\" + filename[0:-4] + ".mp3"
@@ -54,6 +54,8 @@ def Convert(filename):
     try:
         os.rename(processed_file_path, final_file_path)
     except Exception as e:
+        os.remove(downloaded_file_path)
+        os.remove(processed_file_path)
         raise e
     try:
         os.remove(downloaded_file_path)
@@ -62,13 +64,13 @@ def Convert(filename):
 
 def main():
 
-    #get_audio(['https://www.youtube.com/watch?v=RPxvTd_jCPQ'], "Young Scrolls", "Sheogorath - Zoom")
-    with open("C:\\Users\\robfa\\Desktop\\bookmarks.html", "r") as file:
-        for line in file:
-            try:
-                get_audio([line], '', '')
-            except:
-                pass
+    get_audio(['https://www.youtube.com/watch?v=RPxvTd_jCPQ'], "Young Scrolls", "Sheogorath - Zoom")
+    #ith open("C:\\Users\\robfa\\Desktop\\bookmarks.html", "r") as file:
+    #    for line in file:
+    #        try:
+    #            get_audio([line], '', '')
+    #        except:
+    #            pass
            ##get_audio(['https://www.youtube.com/watch?v=CsvhTfv-_Sw'], 'Dmitry Glushkov', 'Gimme Gimme Gimme')
 
 

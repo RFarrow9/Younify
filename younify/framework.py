@@ -15,8 +15,8 @@ from younify import youtube_converter
 
 fetch_threads = 4
 enclosure_queue = queue.Queue()
-temp_processing = "temp\\temp-processed.tmp"
-temp_working = "temp\\temp-working.tmp"
+temp_processing = "C:\\Users\\robfa\\PycharmProjects\\Younify\\younify\\temp\\temp-processed.tmp"
+temp_working = "C:\\Users\\robfa\\PycharmProjects\\Younify\\younify\\temp\\temp-working.tmp"
 bookmarks = "working\\bookmarks.html"
 bookmarks1 = "C:\\Users\\robfa\\Desktop\\bookmarks.html"
 
@@ -40,8 +40,18 @@ def Main():
     processed = ProcessedURLs()
     working = WorkingURLs()
     failed = FailedURLs()
+    #print("count in working = " + str(working.CountURLs()))
     working.PushfiletoWorking(bookmarks1)
-    ProcessURLs(working, processed, failed)
+    while working.CountURLs() > 0:
+        try:
+            ProcessURLs(working, processed, failed)
+            #print("processing...")
+        except:
+            processed.UpdateTemp()
+            working.UpdateTemp()
+        finally:
+            processed.UpdateTemp()
+            working.UpdateTemp()
 
 
 class ProcessingArray:
@@ -82,7 +92,7 @@ class ProcessedURLs(ProcessingArray):
                 self.AddURL(line[:-1])
             file.close()
         except:
-            pass
+            print("file not found")
 
     def UpdateTemp(self):
         file = open(temp_processing, "w+")
@@ -92,14 +102,14 @@ class ProcessedURLs(ProcessingArray):
 class WorkingURLs(ProcessingArray):
     def __init__(self):
         ProcessingArray.__init__(self)
-        self.URLs = []
+        #self.URLs = []
         try:
             file = open(temp_working, "r")
             for line in file:
                 self.AddURL(line[:-1])
             file.close()
         except:
-            pass
+            print("file not found")
 
     def UpdateTemp(self):
         file = open(temp_working, "w+")
@@ -195,7 +205,8 @@ def ProcessURL(i, q, working, processed, failed):
             youtube_converter.get_audio(["https://www.youtube.com/watch?v=" + URL], "", "")
             processed.AddURL(URL)
         except:
-            failed.AddURL(URL, 'pass through error here')
+            #failed.AddURL(URL, 'pass through error here')
+            print("error unknown")
         finally:
             working.RemoveURL(URL)
             q.task_done()
@@ -206,7 +217,7 @@ def ProcessURLs(working, processed, failed):
         worker = Thread(target=ProcessURL, args=(i, enclosure_queue, working, processed, failed))
         worker.setDaemon(True)
         worker.start()
-    while working.CountURLs() > 0:
+    if working.CountURLs() > 0:
         for URL in working.RetrieveURLs():
             enclosure_queue.put(URL)
     enclosure_queue.join()
