@@ -1,11 +1,12 @@
 #import time
 import queue
-import sys
-#import breeze_resources
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import QFile, QTextStream
+# import sys
+# import breeze_resources
+# from PyQt5 import QtWidgets
+# from PyQt5.QtCore import QFile, QTextStream
 from threading import Thread
-#from younify import frontend
+
+# from younify import frontend
 from younify import youtube_converter
 
 # Need to pick a style (camelcase?) and stick with it
@@ -20,32 +21,14 @@ temp_working = "C:\\Users\\robfa\\PycharmProjects\\Younify\\younify\\temp\\temp-
 bookmarks = "working\\bookmarks.html"
 bookmarks1 = "C:\\Users\\robfa\\Desktop\\bookmarks.html"
 
-class mywindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super(mywindow, self).__init__()
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
-
-def RunMain():
-    app = QtWidgets.QApplication([])
-    file = QFile("resources\\dark.qss")
-    file.open(QFile.ReadOnly | QFile.Text)
-    stream = QTextStream(file)
-    app.setStyleSheet(stream.readAll())
-    application = mywindow()
-    application.show()
-    sys.exit(app.exec())
-
 def Main():
     processed = ProcessedURLs()
     working = WorkingURLs()
     failed = FailedURLs()
-    #print("count in working = " + str(working.CountURLs()))
     working.PushfiletoWorking(bookmarks1)
     while working.CountURLs() > 0:
         try:
             ProcessURLs(working, processed, failed)
-            #print("processing...")
         except:
             processed.UpdateTemp()
             working.UpdateTemp()
@@ -149,6 +132,11 @@ class FailedURLs():
     def PrintSample(self):
         print(self.URLs[0: 5])
 
+
+#
+#    Functions defined below
+#
+
 def linecount(filename):
   count = 0
   for line in open (filename):
@@ -182,7 +170,6 @@ def FindURL(string):
         FindURL(string[index+43:])
     return count, array
 
-#Defines worker
 def ProcessURL(i, q, working, processed, failed):
     while True:
         URL = q.get()
@@ -197,7 +184,6 @@ def ProcessURL(i, q, working, processed, failed):
             working.RemoveURL(URL)
             q.task_done()
 
-#
 def ProcessURLs(working, processed, failed):
     for i in range(fetch_threads):
         worker = Thread(target=ProcessURL, args=(i, enclosure_queue, working, processed, failed))
