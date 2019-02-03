@@ -182,20 +182,6 @@ def FindURL(string):
         FindURL(string[index+43:])
     return count, array
 
-def ProcessURL__old(URL): #THIS FUNCTION AINT USED NO MORE
-    try:
-        #RunMattsCodeHere("https://www.youtube.com/watch?v=" + URL)
-        ProcessedURLs.AddURL(URL)
-    except:
-        FailedURLs.AddURL(URL, 'pass through error here')
-    finally:
-        WorkingURLs.RemoveURL(URL)
-
-def ProcessURLs_OLD(): #NEITHER THIS BAD BOY
-    while working.CountURLs() > 0:
-        for URL in working.RetrieveURLs():
-            ProcessURL(URL)
-
 #Defines worker
 def ProcessURL(i, q, working, processed, failed):
     while True:
