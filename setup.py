@@ -12,7 +12,7 @@ setup(
     description='Useful towel-related stuff.',
     long_description=open('README.txt').read(),
     install_requires=[
-        "Django >= 1.1.1",
-        "caldav == 0.1.4",
+        #"Django >= 1.1.1",
+        #"caldav == 0.1.4",
     ],
 )

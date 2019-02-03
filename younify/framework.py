@@ -5,7 +5,8 @@ import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QFile, QTextStream
 from threading import Thread
-from frontend import Ui_MainWindow
+#from younify import frontend
+from younify import youtube_converter
 
 # Need to pick a style (camelcase?) and stick with it
 # Testing to be in seperate module
@@ -14,9 +15,10 @@ from frontend import Ui_MainWindow
 
 fetch_threads = 4
 enclosure_queue = queue.Queue()
-temp_processing = "temp\\temp-processed.tmp"
-temp_working = "temp\\temp-working.tmp"
-bookmarks = "working\\Bookmarks.html"
+temp_processing = "C:\\Users\\robfa\\PycharmProjects\\Younify\\younify\\temp\\temp-processed.tmp"
+temp_working = "C:\\Users\\robfa\\PycharmProjects\\Younify\\younify\\temp\\temp-working.tmp"
+bookmarks = "working\\bookmarks.html"
+bookmarks1 = "C:\\Users\\robfa\\Desktop\\bookmarks.html"
 
 class mywindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -33,6 +35,24 @@ def RunMain():
     application = mywindow()
     application.show()
     sys.exit(app.exec())
+
+def Main():
+    processed = ProcessedURLs()
+    working = WorkingURLs()
+    failed = FailedURLs()
+    #print("count in working = " + str(working.CountURLs()))
+    working.PushfiletoWorking(bookmarks1)
+    while working.CountURLs() > 0:
+        try:
+            ProcessURLs(working, processed, failed)
+            #print("processing...")
+        except:
+            processed.UpdateTemp()
+            working.UpdateTemp()
+        finally:
+            processed.UpdateTemp()
+            working.UpdateTemp()
+
 
 class ProcessingArray:
     def __new__(cls, *args, **kwargs):
@@ -72,7 +92,7 @@ class ProcessedURLs(ProcessingArray):
                 self.AddURL(line[:-1])
             file.close()
         except:
-            pass
+            print("file not found")
 
     def UpdateTemp(self):
         file = open(temp_processing, "w+")
@@ -82,13 +102,14 @@ class ProcessedURLs(ProcessingArray):
 class WorkingURLs(ProcessingArray):
     def __init__(self):
         ProcessingArray.__init__(self)
+        #self.URLs = []
         try:
             file = open(temp_working, "r")
             for line in file:
                 self.AddURL(line[:-1])
             file.close()
         except:
-            pass
+            print("file not found")
 
     def UpdateTemp(self):
         file = open(temp_working, "w+")
@@ -99,20 +120,6 @@ class WorkingURLs(ProcessingArray):
         array = FindURLsInFile(filename)
         for URL in array:
             self.AddURL(URL)
-
-    def ProcessURLs_OLD(self):
-        while self.CountURLs() > 0:
-            for URL in self.RetrieveURLs():
-                ProcessURL(URL)
-
-    def ProcessURL__old(self, URL): #THIS FUNCTION AINT USED NO MORE
-        try:
-            #RunMattsCodeHere("https://www.youtube.com/watch?v=" + URL)
-            ProcessedURLs.AddURL(URL)
-        except:
-            FailedURLs.AddURL(URL, "ERROR PLACEHOLDER")
-        finally:
-            self.RemoveURL(URL)
 
 class FailedURLs():
     def __init__(self):
@@ -185,118 +192,37 @@ def ProcessURL__old(URL): #THIS FUNCTION AINT USED NO MORE
         WorkingURLs.RemoveURL(URL)
 
 def ProcessURLs_OLD(): #NEITHER THIS BAD BOY
-    while WorkingURLs.CountURLs() > 0:
-        for URL in WorkingURLs.RetrieveURLs():
+    while working.CountURLs() > 0:
+        for URL in working.RetrieveURLs():
             ProcessURL(URL)
 
 #Defines worker
-def ProcessURL(i, q):
+def ProcessURL(i, q, working, processed, failed):
     while True:
         URL = q.get()
         try:
             #RunMattsCodeHere("https://www.youtube.com/watch?v=" + URL)
-            ProcessedURLs.AddURL(URL)
+            youtube_converter.get_audio(["https://www.youtube.com/watch?v=" + URL], "", "")
+            processed.AddURL(URL)
         except:
-            FailedURLs.AddURL(URL, 'pass through error here')
+            #failed.AddURL(URL, 'pass through error here')
+            print("error unknown")
         finally:
-            WorkingURLs.RemoveURL(URL)
+            working.RemoveURL(URL)
             q.task_done()
 
 #
-def ProcessURLs():
+def ProcessURLs(working, processed, failed):
     for i in range(fetch_threads):
-        worker = Thread(target=ProcessURL, args=(i, enclosure_queue,))
+        worker = Thread(target=ProcessURL, args=(i, enclosure_queue, working, processed, failed))
         worker.setDaemon(True)
         worker.start()
-    while WorkingURLs.CountURLs() > 0:
-        for URL in WorkingURLs.RetrieveURLs():
+    if working.CountURLs() > 0:
+        for URL in working.RetrieveURLs():
             enclosure_queue.put(URL)
     enclosure_queue.join()
 
 if __name__ == '__main__':
-
-    WorkingURLs = WorkingURLs()
-    ProcessedURLs = ProcessedURLs()
-    FailedURLs = FailedURLs()
-    print("")
-    print("======= UNIT TESTING =======")
-    WorkingURLs.TruncateURLs()
-    FailedURLs.TruncateURLs()
-    ProcessedURLs.TruncateURLs()
-    if ProcessedURLs.CountURLs() == WorkingURLs.CountURLs() == FailedURLs.CountURLs() == 0:
-        print("TESTING LIST TRUNCATION:             PASS")
-    else:
-        print("TESTING LIST TRUNCATION:             FAIL")
-    list = FindURLsInFile(bookmarks)
-    PushfiletoWorking(bookmarks)
-    if len(list) == WorkingURLs.CountURLs() == 1495:
-        print("TESTING FILE RETRIEVAL:              PASS")
-    else:
-        print("TESTING FILE RETRIEVAL:              FAIL")
-        print("     URLS IN FILE: " + str(len(list)))
-        print("     URLS IN LIST: " + str(WorkingURLs.CountURLs()))
-    ProcessURL__old("YSkIJTIE45c")
-    ProcessURL__old("B2KAipyP8mc")
-    FailedURLs.AddURL("B2KAipyP8mc", 'test')
-    FailedURLs.AddURL("B2KgipyP8mc", '2nd error')
-    FailedURLs.AddURL("B2KAipyP8mc", '3rd error')
-    if ProcessedURLs.CountURLs() == 2 and FailedURLs.CountURLs() == 2 and WorkingURLs.CountURLs() == 1493:
-        print("TESTING URL PROCESSING:              PASS")
-    else:
-        print("TESTING URL PROCESSING:              FAIL")
-        print("     WORKING URLS:    " + str(WorkingURLs.CountURLs()))
-        print("     FAILED URLS:     " + str(FailedURLs.CountURLs()))
-        print("     PROCESSED URLS:  " + str(ProcessedURLs.CountURLs()))
-    WorkingURLs.UpdateTemp()
-    ProcessedURLs.UpdateTemp()
-    if linecount(temp_processing) == 2 and linecount(temp_working) == 1493:
-        print("TESTING TEMP FILE GENERATION:        PASS")
-    else:
-        print("TESTING TEMP FILE GENERATION:        FAIL")
-        print("     WORKING TEMP FILE:   " + str(linecount(temp_working)))
-        print("     PROCESSED TEMP FILE: " + str(linecount(temp_processing)))
-    WorkingURLs.UpdateTemp()
-    ProcessedURLs.UpdateTemp()
-    if linecount(temp_processing) == 2 and linecount(temp_working) == 1493:
-        print("TESTING 2ND FILE GENERATION:         PASS")
-    else:
-        print("TESTING 2ND FILE GENERATION:         FAIL")
-        print("     WORKING TEMP FILE:   " + str(linecount(temp_working)))
-        print("     PROCESSED TEMP FILE: " + str(linecount(temp_processing)))
-    WorkingURLs.RemoveURL("WQzZk69P69E")
-    if WorkingURLs.CountURLs() == 1492:
-        print("TESTING URL REMOVAL:                 PASS")
-    else:
-        print("TESTING URL REMOVAL:                 FAIL")
-        print("     WORKING URLS:    " + str(WorkingURLs.CountURLs()))
-    WorkingURLs.TruncateURLs()
-    FailedURLs.TruncateURLs()
-    ProcessedURLs.TruncateURLs()
-    WorkingURLs.__init__()
-    ProcessedURLs.__init__()
-    if ProcessedURLs.CountURLs() == 2 and WorkingURLs.CountURLs() == 1493 and FailedURLs.CountURLs() == 0:
-        print("TESTING TEMP FILE RETRIEVAL:         PASS")
-    else:
-        print("TESTING TEMP FILE RETRIEVAL:         FAIL")
-        print("     WORKING URLS:    " + str(WorkingURLs.CountURLs()))
-        print("     PROCESSED URLS:  " + str(ProcessedURLs.CountURLs()))
-    ProcessURLs()
-    if ProcessedURLs.CountURLs() == 1495 and WorkingURLs.CountURLs() == 0 and FailedURLs.CountURLs() == 0:
-        print("TESTING MULTITHREADING QUEUE:        PASS")
-    else:
-        print("TESTING MULTITHREADING QUEUE:        FAIL")
-        print("     WORKING URLS:    " + str(WorkingURLs.CountURLs()))
-        print("     PROCESSED URLS:  " + str(ProcessedURLs.CountURLs()))
-        print("     FAILED URLS:     " + str(FailedURLs.CountURLs()))
-    print("======= /UNIT TESTING =======")
-    print("")
-    print("======== GUI TESTING ========")
-    RunMain()
+    Main()
 
 
-    #Cleaning up
-    WorkingURLs.TruncateURLs()
-    FailedURLs.TruncateURLs()
-    ProcessedURLs.TruncateURLs()
-    WorkingURLs.UpdateTemp()
-    ProcessedURLs.UpdateTemp()

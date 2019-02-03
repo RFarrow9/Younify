@@ -6,6 +6,7 @@ import unittest
 # Testing to be in seperate module
 # Array + gui should be split into seperate modules
 # Single module to hang everything together (main?)
+#testing successful commit
 
 fetch_threads = 4
 #enclosure_queue = queue.Queue()
@@ -64,31 +65,31 @@ class TestFrameworkMethods(unittest.TestCase):
         WorkingCount = self.WorkingURLs.CountURLs()
         self.WorkingURLs.ProcessURL__old("YSkIJTIE45c") #dOESNT WORK YET
         self.WorkingURLs.ProcessURL__old("B2KAipyP8mc")
-        self.AssertTrue(self.WorkingURLs.CountURLs() + 2, WorkingCount)
-        self.assertTrue()
+        self.assertTrue(self.WorkingURLs.CountURLs() + 2, WorkingCount)
+        #self.assertTrue()
 
     def test_fails(self):
         self.setUp_empty()
-        self.AssertEqual(self.FailedURLs.CountURLs(), 0)
-        FailedURLs.AddURL("B2KAipyP8mc", 'test')
-        FailedURLs.AddURL("B2KgipyP8mc", '2nd error')
-        FailedURLs.AddURL("B2KAipyP8mc", '3rd error')
-        self.AssertEqual(self.FailedURLs.CountURLs(), 0)
+        self.assertEqual(self.FailedURLs.CountURLs(), 0)
+        self.FailedURLs.AddURL("B2KAipyP8mc", 'test')
+        self.FailedURLs.AddURL("B2KgipyP8mc", '2nd error')
+        self.FailedURLs.AddURL("B2KAipyP8mc", '3rd error')
+        self.assertEqual(self.FailedURLs.CountURLs(), 2)-
         self.tearDown()
 
     def test_updatetemp(self):
         self.setUp_empty()
         self.WorkingURLs.PushfiletoWorking(bookmarks)
         WorkingCount = self.WorkingURLs.CountURLS()
-        self.AssertTrue(WorkingCount > 1200)
+        self.assertTrue(WorkingCount > 1200)
         self.WorkingURLs.UpdateTemp()
-        self.AssertEquals(WorkingCount, linecount(temp_working))
+        self.assertEqual(WorkingCount, linecount(temp_working))
         self.WorkingURLs.ProcessURL__old("YSkIJTIE45c") #dOESNT WORK YET
         self.WorkingURLs.ProcessURL__old("B2KAipyP8mc")
-        self.AssertEquals(WorkingCount - 2, linecount(bookmarks))
-        self.AssertEquals(self.ProcessedURLs.CountURLs(), 2)
+        self.assertEqual(WorkingCount - 2, linecount(bookmarks))
+        self.assertEqual(self.ProcessedURLs.CountURLs(), 2)
         self.ProcessedURLs.UpdateTemp()
-        self.AsssertEquals(linecount(temp_processing), 2)
+        self.asssertEquals(linecount(temp_processing), 2)
 
     def test_retrievetemp(self):
         self.setUp_empty()
@@ -97,7 +98,7 @@ class TestFrameworkMethods(unittest.TestCase):
         temp_working_linecount = linecount(temp_working)
         self.assertTrue(temp_working_linecount > 1200)
         self.WorkingURLs.__init__()
-        self.assertEquals(temp_working_linecount, self.WorkingURls.CountURLs())
+        self.assertEqual(temp_working_linecount, self.WorkingURls.CountURLs())
 
     def test_retrievemultiples(self):
         self.setUp_empty()
