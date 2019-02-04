@@ -6,7 +6,7 @@ import json
 
 with open('config.json') as f:
     config = json.load(f)
-    
+
 
 class Url:
     def __init__(self, url, artist=None, title=None):
@@ -25,6 +25,8 @@ class Url:
         }
         os.chdir(temp_dir)
         with youtube_dl.YoutubeDL(options) as ydl:
+            info_dict = ydl.extract_info(url[0], download=False)
+            self.id = info_dict.get("id", None)
             ydl.download(url)
         os.chdir(root_dir)
 
@@ -46,8 +48,7 @@ class Url:
 
         downloaded_file_path = temp_dir + "\\" + filename
 
-        filename_no_extension, file_extension = os.path.splitext(filename)
-        processed_file_path = temp_dir + "\\" + filename_no_extension + ".mp3"
+        processed_file_path = temp_dir + "\\" + self.id + ".mp3"
 
         result = subprocess.run(
             ["C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe", "-y", "-i", downloaded_file_path, "-acodec", "libmp3lame",
@@ -57,7 +58,9 @@ class Url:
         if result.stderr:
             print(result.stderr)
 
-        final_file_path = spotify_dir + "\\" + filename[0:-5] + ".mp3"
+        filename = os.path.splitext(filename)[0]
+
+        final_file_path = spotify_dir + "\\" + filename + ".mp3"
 
         if self.artist is not None or self.title is not None:
             self.edit_tags(processed_file_path)
