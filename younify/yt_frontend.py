@@ -34,8 +34,10 @@ class StartWindow(QWidget):
 
         button = QPushButton("Do the thing... YOU SON OF A BITCH")
         self.layout.addWidget(button)
-        
-        button.clicked.connect(lambda: youtube_converter.get_audio([self.url_field.text()], self.artist_field.text(), self.title_field.text()))
+
+        button.clicked.connect(lambda: youtube_converter.Url([self.url_field.text()], 
+                                                             self.artist_field.text(),
+                                                             self.title_field.text()))
 
         self.setLayout(self.layout)
 
