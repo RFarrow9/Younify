@@ -16,27 +16,26 @@ class MainWindow(QMainWindow):
 
 class StartWindow(QWidget):
     def __init__(self):
-       #super(SessionConfig, self).__init__()
-        QWidget.__init__(self)
+        super(StartWindow, self).__init__()
         self.setGeometry(100, 100, 400, 200)
         self.layout = QVBoxLayout()
 
         self.layout.addWidget(QLabel("Enter the URL you Son of a Bitch:"))
-        self.server_field = QLineEdit("")
+        self.url_field = QLineEdit("")
         self.layout.addWidget(self.url_field)
 
         self.layout.addWidget(QLabel("Enter the artist you Son of a Bitch"))
-        self.password_field = QLineEdit("")
+        self.artist_field = QLineEdit("")
         self.layout.addWidget(self.artist_field)
 
         self.layout.addWidget(QLabel("Enter the song title you... nah you're alright"))
-        self.username_field = QLineEdit("")
+        self.title_field = QLineEdit("")
         self.layout.addWidget(self.title_field)
 
         button = QPushButton("Do the thing... YOU SON OF A BITCH")
         self.layout.addWidget(button)
-        button.clicked.connect()
-        button.clicked.connect(lambda: youtube_converter.get_audio(self.url_field.text, self.artist_field.text, self.title_field.text))
+        
+        button.clicked.connect(lambda: youtube_converter.get_audio([self.url_field.text()], self.artist_field.text(), self.title_field.text()))
 
         self.setLayout(self.layout)
 
