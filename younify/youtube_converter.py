@@ -6,48 +6,67 @@ import json
 
 with open('config.json') as f:
     config = json.load(f)
+    
 
+class Url:
+    def __init__(self, url, artist=None, title=None):
+        self.artist = artist
+        self.title = title
 
-def get_audio(url, artist, title):
-    root_dir = config["youtube_converter"]["root_dir"]
-    temp_dir = root_dir + "\\Temp"
-    spotify_dir = config["youtube_converter"]["spotify_dir"]
-    options = {
-        'format': 'bestaudio/best',  # choice of quality
-        'extractaudio': True,  # only keep the audio
-        'noplaylist': True,  # only download single song, not playlist
-    }
+        root_dir = config["youtube_converter"]["root_dir"]
+        temp_dir = root_dir + "\\Temp"
 
-    temp_contents = os.listdir(temp_dir)
+        options = {
+            'format': 'bestaudio/best',  # choice of quality
+            'extractaudio': True,  # only keep the audio
+            'noplaylist': True,  # only download single song, not playlist
+            'progress_hooks': [self.hook],
+            'outtmpl': '%(title)s.%(ext)s'
+        }
+        os.chdir(temp_dir)
+        with youtube_dl.YoutubeDL(options) as ydl:
+            ydl.download(url)
+        os.chdir(root_dir)
 
-    os.chdir(temp_dir)
-    with youtube_dl.YoutubeDL(options) as ydl:
-        ydl.download(url)
-    os.chdir(root_dir)
+    def hook(self, d):
+        if d['status'] == 'finished':
+            self.convert(d['filename'])
 
-    new_temp_contents = os.listdir(temp_dir)
-
-    for x in temp_contents:
-        if x in new_temp_contents:
-            new_temp_contents.remove(x)
-
-    for x in new_temp_contents:
-        file_name, file_extension = os.path.splitext(x)
-        downloaded_file_path = temp_dir + "\\" + x
-        processed_file_path = temp_dir + "\\" + artist + "-" + title + ".mp3"
-        subprocess.run(["cmd.bat", downloaded_file_path, processed_file_path])
-
-        final_file_path = spotify_dir + "\\" + file_name + ".mp3"
-
-        tag_file = eyed3.load(processed_file_path)
-        tag_file.tag.artist = artist
-        tag_file.tag.title = title
-        tag_file.tag.album = title
+    def edit_tags(self, file_path):
+        tag_file = eyed3.load(file_path)
+        tag_file.tag.artist = self.artist
+        tag_file.tag.title = self.title
+        tag_file.tag.album = self.title
         tag_file.tag.save()
+
+    def convert(self, filename):
+        root_dir = config["youtube_converter"]["root_dir"]
+        temp_dir = root_dir + "\\Temp"
+        spotify_dir = config["youtube_converter"]["spotify_dir"]
+
+        downloaded_file_path = temp_dir + "\\" + filename
+
+        filename_no_extension, file_extension = os.path.splitext(filename)
+        processed_file_path = temp_dir + "\\" + filename_no_extension + ".mp3"
+
+        result = subprocess.run(
+            ["C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe", "-y", "-i", downloaded_file_path, "-acodec", "libmp3lame",
+             "-ab",
+             "128k", processed_file_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        if result.stderr:
+            print(result.stderr)
+
+        final_file_path = spotify_dir + "\\" + filename[0:-5] + ".mp3"
+
+        if self.artist is not None or self.title is not None:
+            self.edit_tags(processed_file_path)
 
         try:
             os.rename(processed_file_path, final_file_path)
         except Exception as e:
+            os.remove(downloaded_file_path)
+            os.remove(processed_file_path)
             raise e
 
         try:
@@ -57,8 +76,7 @@ def get_audio(url, artist, title):
 
 
 def main():
-    print("There's no main function.")
-    get_audio(["https://www.youtube.com/watch?v=xdOykEJSXIg"], "Anthony Hamilton", "Freedom")
+    Url(['https://www.youtube.com/watch?v=RPxvTd_jCPQ'], "Young Scrolls", "Sheogorath - Zoom")
 
 
 if __name__ == "__main__":
