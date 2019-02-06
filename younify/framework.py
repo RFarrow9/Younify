@@ -18,17 +18,17 @@ fetch_threads = 4
 enclosure_queue = queue.Queue()
 temp_processing = "C:\\Users\\robfa\\PycharmProjects\\Younify\\younify\\temp\\temp-processed.tmp"
 temp_working = "C:\\Users\\robfa\\PycharmProjects\\Younify\\younify\\temp\\temp-working.tmp"
-bookmarks = "working\\bookmarks.html"
+bookmarks = "C:\\Users\\robfa\\PycharmProjects\\Younify\\younify\\test\\working\\bookmarks.html"
 bookmarks1 = "C:\\Users\\robfa\\Desktop\\bookmarks.html"
 
 def main():
     processed = ProcessedURLs()
     working = WorkingURLs()
     failed = FailedURLs()
-    working.push_file_to_working(bookmarks1)
+    working.push_url_to_queue("GdzrrWA8e7A")
     while working.count_urls() > 0:
         try:
-            process_urls(working, processed, failed)
+            working.process_urls(processed, failed)
         except:
             processed.update_temp()
             working.update_temp()
@@ -81,6 +81,7 @@ class ProcessedURLs(ProcessingArray):
         file = open(temp_processing, "w+")
         for URL in self.urls:
             file.write(URL[-11:] + "\r")
+        file.close()
 
 class WorkingURLs(ProcessingArray):
     def __init__(self):
@@ -97,6 +98,7 @@ class WorkingURLs(ProcessingArray):
         file = open(temp_working, "w+")
         for URL in self.urls:
             file.write(URL[-11:] + "\r")
+        file.close()
 
     def push_file_to_working(self, filename):
         array = find_urls_in_file(filename)
@@ -104,14 +106,45 @@ class WorkingURLs(ProcessingArray):
             self.add_url(url)
 
     def push_url_to_queue(self, url):
-        if url not in self.retrieve_urls():
-            enclosure_queue.put(url)
+        self.add_url(url)
+        enclosure_queue.put(url)
 
     def push_urls_to_queue(self):
         if self.count_urls() > 0:
             for url in self.retrieve_urls():
                 enclosure_queue.put(url)
 
+    def __process_url(self, i, q, processed):
+        while True:
+            url = q.get()
+            try:
+                #RunMattsCodeHere("https://www.youtube.com/watch?v=" + URL)
+                youtube_converter.get_audio(["https://www.youtube.com/watch?v=" + url], "", "")
+                processed.add_url(url)
+            except:
+                #failed.AddURL(URL, 'pass through error here')
+                print("error unknown")
+            finally:
+                self.remove_url(url)
+                q.task_done()
+
+    def process_urls(self, processed, failed):
+        for i in range(fetch_threads):
+            worker = Thread(target=self.__process_url, args=(i, enclosure_queue, processed))
+            worker.setDaemon(True)
+            worker.start()
+            enclosure_queue.join()
+
+    def process_url(self, url, processed):
+        try:
+            # RunMattsCodeHere("https://www.youtube.com/watch?v=" + URL)
+            youtube_converter.get_audio(["https://www.youtube.com/watch?v=" + url], "", "")
+            processed.add_url(url)
+        except:
+            # failed.AddURL(URL, 'pass through error here')
+            print("error unknown")
+        finally:
+            self.remove_url(url)
 
 class FailedURLs:
     def __init__(self):
@@ -146,25 +179,30 @@ class FailedURLs:
 #
 
 def linecount(filename):
-  count = 0
-  for line in open (filename):
-    count += 1
-  return count
+    count = 0
+    file = open(filename)
+    for line in file:
+        count += 1
+    file.close()
+    return count
 
 def find_urls_in_file(filename):
     count, urls = 0, []
+    file = open(filename, encoding='utf8')
     try:
-        for line in open(filename, encoding = 'utf8'):
-            list = find_url(line)
-            count += list[0]
-            if list[0] > 0:
-                for url in list[1]:
+        for line in file:
+            urllist = find_url(line)
+            count += urllist[0]
+            if urllist[0] > 0:
+                for url in urllist[1]:
                     if url not in urls:
                         urls.append(url)
     except IOError:
         print("file not found")
     except:
         print("There was a generic error")
+    finally:
+        file.close()
     return urls
 
 def find_url(string):
@@ -176,27 +214,6 @@ def find_url(string):
         array.append(url)
         find_url(string[index+43:])
     return count, array
-
-def process_url(i, q, working, processed, failed):
-    while True:
-        URL = q.get()
-        try:
-            #RunMattsCodeHere("https://www.youtube.com/watch?v=" + URL)
-            youtube_converter.get_audio(["https://www.youtube.com/watch?v=" + URL], "", "")
-            processed.AddURL(URL)
-        except:
-            #failed.AddURL(URL, 'pass through error here')
-            print("error unknown")
-        finally:
-            working.RemoveURL(URL)
-            q.task_done()
-
-def process_urls(working, processed, failed):
-    for i in range(fetch_threads):
-        worker = Thread(target=process_url, args=(i, enclosure_queue, working, processed, failed))
-        worker.setDaemon(True)
-        worker.start()
-        enclosure_queue.join()
 
 if __name__ == '__main__':
     main()

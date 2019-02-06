@@ -2,13 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="de0c8d56-9af4-4d94-9572-41f7e04ae52f" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/younify/classification.py" afterPath="$PROJECT_DIR$/younify/classification.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/younify/framework.py" afterPath="$PROJECT_DIR$/younify/framework.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/younify/spotify.py" afterPath="$PROJECT_DIR$/younify/spotify.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/younify/temp/temp-processed.tmp" afterPath="$PROJECT_DIR$/younify/temp/temp-processed.tmp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/younify/temp/temp-working.tmp" afterPath="$PROJECT_DIR$/younify/temp/temp-working.tmp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/younify/framework.py" afterPath="$PROJECT_DIR$/younify/framework.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/younify/test/framework_test.py" afterPath="$PROJECT_DIR$/younify/test/framework_test.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/younify/youtube_converter.py" afterPath="$PROJECT_DIR$/younify/youtube_converter.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -22,7 +20,7 @@
       <file leaf-file-name="spotify.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/younify/spotify.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="866">
+            <state relative-caret-position="1224">
               <caret line="73" column="14" lean-forward="true" selection-start-line="73" selection-start-column="14" selection-end-line="73" selection-end-column="14" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
@@ -46,8 +44,8 @@
       <file leaf-file-name="framework_test.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/younify/test/framework_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="391">
-              <caret line="65" column="47" lean-forward="false" selection-start-line="65" selection-start-column="47" selection-end-line="65" selection-end-column="47" />
+            <state relative-caret-position="1020">
+              <caret line="90" column="57" lean-forward="false" selection-start-line="90" selection-start-column="57" selection-end-line="90" selection-end-column="57" />
               <folding>
                 <element signature="e#13#42#0" expanded="true" />
               </folding>
@@ -58,8 +56,8 @@
       <file leaf-file-name="framework.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/younify/framework.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="170" column="0" lean-forward="false" selection-start-line="170" selection-start-column="0" selection-end-line="170" selection-end-column="0" />
+            <state relative-caret-position="403">
+              <caret line="120" column="53" lean-forward="false" selection-start-line="120" selection-start-column="53" selection-end-line="120" selection-end-column="53" />
               <folding />
             </state>
           </provider>
@@ -68,8 +66,8 @@
       <file leaf-file-name="classification.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/younify/classification.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="12" column="51" lean-forward="false" selection-start-line="12" selection-start-column="51" selection-end-line="12" selection-end-column="51" />
+            <state relative-caret-position="153">
+              <caret line="9" column="40" lean-forward="true" selection-start-line="9" selection-start-column="40" selection-end-line="9" selection-end-column="40" />
               <folding />
             </state>
           </provider>
@@ -78,8 +76,8 @@
       <file leaf-file-name="youtube_converter.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/younify/youtube_converter.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="935">
-              <caret line="55" column="0" lean-forward="false" selection-start-line="55" selection-start-column="0" selection-end-line="55" selection-end-column="0" />
+            <state relative-caret-position="340">
+              <caret line="20" column="22" lean-forward="true" selection-start-line="20" selection-start-column="22" selection-end-line="20" selection-end-column="22" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
               </folding>
@@ -105,7 +103,14 @@
       <find>ProcessURLs_OLD</find>
       <find>RunMain</find>
       <find>bookmarks</find>
+      <find>UpdateTemp</find>
+      <find>utf</find>
+      <find>working\\Bookmarks.html</find>
+      <find>open</find>
     </findStrings>
+    <replaceStrings>
+      <replace>update_temp</replace>
+    </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -202,7 +207,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python tests.Unittests in framework_test.py">
+  <component name="RunManager" selected="Python.framework">
     <configuration name="Unittests in framework_test.py" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -291,8 +296,8 @@
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python tests.Unittests in framework_test.py" />
-        <item index="1" class="java.lang.String" itemvalue="Python.framework" />
+        <item index="0" class="java.lang.String" itemvalue="Python.framework" />
+        <item index="1" class="java.lang.String" itemvalue="Python tests.Unittests in framework_test.py" />
         <item index="2" class="java.lang.String" itemvalue="Python tests.Unittests in spotify_test.py" />
         <item index="3" class="java.lang.String" itemvalue="Python.scratch_2" />
         <item index="4" class="java.lang.String" itemvalue="Python.youtube_converter" />
@@ -316,35 +321,35 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Unittests_in_framework_test_py - 2019.02.06 at 19h 04m 54s.xml">
+    <history-entry file="Unittests_in_framework_test_py - 2019.02.06 at 20h 15m 19s.xml">
       <configuration name="Unittests in framework_test.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_framework_test_py - 2019.02.06 at 19h 05m 38s.xml">
+    <history-entry file="Unittests_in_framework_test_py - 2019.02.06 at 20h 17m 39s.xml">
       <configuration name="Unittests in framework_test.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_framework_test_py - 2019.02.06 at 19h 08m 03s.xml">
+    <history-entry file="Unittests_in_framework_test_py - 2019.02.06 at 20h 17m 55s.xml">
       <configuration name="Unittests in framework_test.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_framework_test_py - 2019.02.06 at 19h 13m 05s.xml">
+    <history-entry file="Unittests_in_framework_test_py - 2019.02.06 at 20h 18m 40s.xml">
       <configuration name="Unittests in framework_test.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_framework_test_py_(1) - 2019.01.29 at 19h 13m 23s.xml">
-      <configuration name="Unittests in framework_test.py (1)" configurationId="tests" />
+    <history-entry file="Unittests_in_framework_test_py - 2019.02.06 at 20h 19m 46s.xml">
+      <configuration name="Unittests in framework_test.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_spotify_test_py - 2019.02.06 at 19h 01m 35s.xml">
-      <configuration name="Unittests in spotify_test.py" configurationId="tests" />
+    <history-entry file="Unittests_in_framework_test_py - 2019.02.06 at 20h 24m 20s.xml">
+      <configuration name="Unittests in framework_test.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_spotify_test_py - 2019.02.06 at 19h 02m 18s.xml">
-      <configuration name="Unittests in spotify_test.py" configurationId="tests" />
+    <history-entry file="Unittests_in_framework_test_py - 2019.02.06 at 20h 28m 05s.xml">
+      <configuration name="Unittests in framework_test.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_spotify_test_py - 2019.02.06 at 19h 02m 46s.xml">
-      <configuration name="Unittests in spotify_test.py" configurationId="tests" />
+    <history-entry file="Unittests_in_framework_test_py - 2019.02.06 at 20h 29m 18s.xml">
+      <configuration name="Unittests in framework_test.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_spotify_test_py - 2019.02.06 at 19h 03m 33s.xml">
-      <configuration name="Unittests in spotify_test.py" configurationId="tests" />
+    <history-entry file="Unittests_in_framework_test_py - 2019.02.06 at 20h 30m 45s.xml">
+      <configuration name="Unittests in framework_test.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_spotify_test_py - 2019.02.06 at 19h 04m 04s.xml">
-      <configuration name="Unittests in spotify_test.py" configurationId="tests" />
+    <history-entry file="Unittests_in_framework_test_py - 2019.02.06 at 20h 31m 46s.xml">
+      <configuration name="Unittests in framework_test.py" configurationId="tests" />
     </history-entry>
   </component>
   <component name="ToolWindowManager">
@@ -521,21 +526,39 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/younify/youtube_converter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="20" column="22" lean-forward="true" selection-start-line="20" selection-start-column="22" selection-end-line="20" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#17#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/younify/classification.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="12" column="51" lean-forward="false" selection-start-line="12" selection-start-column="51" selection-end-line="12" selection-end-column="51" />
+        <state relative-caret-position="153">
+          <caret line="9" column="40" lean-forward="true" selection-start-line="9" selection-start-column="40" selection-end-line="9" selection-end-column="40" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/younify/youtube_converter.py">
+    <entry file="file://$PROJECT_DIR$/younify/spotify.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="935">
-          <caret line="55" column="0" lean-forward="false" selection-start-line="55" selection-start-column="0" selection-end-line="55" selection-end-column="0" />
+        <state relative-caret-position="1224">
+          <caret line="73" column="14" lean-forward="true" selection-start-line="73" selection-start-column="14" selection-end-line="73" selection-end-column="14" />
           <folding>
-            <element signature="e#0#17#0" expanded="true" />
+            <element signature="e#0#14#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python37-32/Lib/threading.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2342">
+          <caret line="876" column="53" lean-forward="true" selection-start-line="876" selection-start-column="53" selection-end-line="876" selection-end-column="53" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -551,28 +574,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/younify/test/framework_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="65" column="47" lean-forward="false" selection-start-line="65" selection-start-column="47" selection-end-line="65" selection-end-column="47" />
+        <state relative-caret-position="1020">
+          <caret line="90" column="57" lean-forward="false" selection-start-line="90" selection-start-column="57" selection-end-line="90" selection-end-column="57" />
           <folding>
             <element signature="e#13#42#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/younify/spotify.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="866">
-          <caret line="73" column="14" lean-forward="true" selection-start-line="73" selection-start-column="14" selection-end-line="73" selection-end-column="14" />
-          <folding>
-            <element signature="e#0#14#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/younify/framework.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="170" column="0" lean-forward="false" selection-start-line="170" selection-start-column="0" selection-end-line="170" selection-end-column="0" />
+        <state relative-caret-position="403">
+          <caret line="120" column="53" lean-forward="false" selection-start-line="120" selection-start-column="53" selection-end-line="120" selection-end-column="53" />
           <folding />
         </state>
       </provider>
