@@ -1,3 +1,5 @@
+#Can we write a neural network that takes in a youtube url and outputs with some confidence whether it is a song, if it is a song, the artist and song name?
+
 import numpy as np
 
 X = np.array([ [0,0,1],[0,1,1],[1,0,1],[1,1,1] ])

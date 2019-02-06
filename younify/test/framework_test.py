@@ -12,7 +12,7 @@ fetch_threads = 4
 #enclosure_queue = queue.Queue()
 temp_processing = "temp\\temp-processed.tmp"
 temp_working = "temp\\temp-working.tmp"
-bookmarks = "test\\working\\Bookmarks.html"
+bookmarks = "working\\Bookmarks.html"
 
 class TestFrameworkMethods(unittest.TestCase):
 
@@ -63,6 +63,7 @@ class TestFrameworkMethods(unittest.TestCase):
     def test_processing(self):
         self.setUp_empty()
         WorkingCount = self.WorkingURLs.CountURLs()
+        self.framework.ProcessURL("YSkIJTIE45c")
         self.WorkingURLs.ProcessURL__old("YSkIJTIE45c") #dOESNT WORK YET
         self.WorkingURLs.ProcessURL__old("B2KAipyP8mc")
         self.assertTrue(self.WorkingURLs.CountURLs() + 2, WorkingCount)
@@ -74,13 +75,13 @@ class TestFrameworkMethods(unittest.TestCase):
         self.FailedURLs.AddURL("B2KAipyP8mc", 'test')
         self.FailedURLs.AddURL("B2KgipyP8mc", '2nd error')
         self.FailedURLs.AddURL("B2KAipyP8mc", '3rd error')
-        self.assertEqual(self.FailedURLs.CountURLs(), 2)-
+        self.assertEqual(self.FailedURLs.CountURLs(), 2)
         self.tearDown()
 
     def test_updatetemp(self):
         self.setUp_empty()
         self.WorkingURLs.PushfiletoWorking(bookmarks)
-        WorkingCount = self.WorkingURLs.CountURLS()
+        WorkingCount = self.WorkingURLs.CountURLs()
         self.assertTrue(WorkingCount > 1200)
         self.WorkingURLs.UpdateTemp()
         self.assertEqual(WorkingCount, linecount(temp_working))
@@ -89,7 +90,7 @@ class TestFrameworkMethods(unittest.TestCase):
         self.assertEqual(WorkingCount - 2, linecount(bookmarks))
         self.assertEqual(self.ProcessedURLs.CountURLs(), 2)
         self.ProcessedURLs.UpdateTemp()
-        self.asssertEquals(linecount(temp_processing), 2)
+        self.asssertEqual(linecount(temp_processing), 2)
 
     def test_retrievetemp(self):
         self.setUp_empty()
@@ -110,90 +111,3 @@ class TestFrameworkMethods(unittest.TestCase):
 if __name__ == '__main__':
     unittest.main()
 
-
-#    WorkingURLs = WorkingURLs()
-#    ProcessedURLs = ProcessedURLs()
-#    FailedURLs = FailedURLs()
-
-#    print("")
-#    print("======= UNIT TESTING =======")
-#    WorkingURLs.TruncateURLs()
-#    FailedURLs.TruncateURLs()
-#    ProcessedURLs.TruncateURLs()
-#    if ProcessedURLs.CountURLs() == WorkingURLs.CountURLs() == FailedURLs.CountURLs() == 0:
-#        print("TESTING LIST TRUNCATION:             PASS")
-#    else:
-#        print("TESTING LIST TRUNCATION:             FAIL")
-#    list = FindURLsInFile(bookmarks)
-#    PushfiletoWorking(bookmarks)
-#    if len(list) == WorkingURLs.CountURLs() == 1495:
-#        print("TESTING FILE RETRIEVAL:              PASS")
-#    else:
-#        print("TESTING FILE RETRIEVAL:              FAIL")
-#        print("     URLS IN FILE: " + str(len(list)))
-#        print("     URLS IN LIST: " + str(WorkingURLs.CountURLs()))
-#    ProcessURL__old("YSkIJTIE45c")
-#    ProcessURL__old("B2KAipyP8mc")
-#    FailedURLs.AddURL("B2KAipyP8mc", 'test')
-#    FailedURLs.AddURL("B2KgipyP8mc", '2nd error')
-#    FailedURLs.AddURL("B2KAipyP8mc", '3rd error')
-#    if ProcessedURLs.CountURLs() == 2 and FailedURLs.CountURLs() == 2 and WorkingURLs.CountURLs() == 1493:
-#        print("TESTING URL PROCESSING:              PASS")
-#    else:
-#        print("TESTING URL PROCESSING:              FAIL")
-#        print("     WORKING URLS:    " + str(WorkingURLs.CountURLs()))
-#        print("     FAILED URLS:     " + str(FailedURLs.CountURLs()))
-#        print("     PROCESSED URLS:  " + str(ProcessedURLs.CountURLs()))
-#    WorkingURLs.UpdateTemp()
-#    ProcessedURLs.UpdateTemp()
-#    if linecount(temp_processing) == 2 and linecount(temp_working) == 1493:
-#        print("TESTING TEMP FILE GENERATION:        PASS")
-##    else:
-#        print("TESTING TEMP FILE GENERATION:        FAIL")
-#        print("     WORKING TEMP FILE:   " + str(linecount(temp_working)))
-#        print("     PROCESSED TEMP FILE: " + str(linecount(temp_processing)))
-#    WorkingURLs.UpdateTemp()
-#    ProcessedURLs.UpdateTemp()
-    if linecount(temp_processing) == 2 and linecount(temp_working) == 1493:
-        print("TESTING 2ND FILE GENERATION:         PASS")
-    else:
-        print("TESTING 2ND FILE GENERATION:         FAIL")
-        print("     WORKING TEMP FILE:   " + str(linecount(temp_working)))
-        print("     PROCESSED TEMP FILE: " + str(linecount(temp_processing)))
-    WorkingURLs.RemoveURL("WQzZk69P69E")
-    if WorkingURLs.CountURLs() == 1492:
-        print("TESTING URL REMOVAL:                 PASS")
-    else:
-        print("TESTING URL REMOVAL:                 FAIL")
-        print("     WORKING URLS:    " + str(WorkingURLs.CountURLs()))
-    WorkingURLs.TruncateURLs()
-    FailedURLs.TruncateURLs()
-    ProcessedURLs.TruncateURLs()
-    WorkingURLs.__init__()
-    ProcessedURLs.__init__()
-    if ProcessedURLs.CountURLs() == 2 and WorkingURLs.CountURLs() == 1493 and FailedURLs.CountURLs() == 0:
-        print("TESTING TEMP FILE RETRIEVAL:         PASS")
-    else:
-        print("TESTING TEMP FILE RETRIEVAL:         FAIL")
-        print("     WORKING URLS:    " + str(WorkingURLs.CountURLs()))
-        print("     PROCESSED URLS:  " + str(ProcessedURLs.CountURLs()))
-    ProcessURLs()
-    if ProcessedURLs.CountURLs() == 1495 and WorkingURLs.CountURLs() == 0 and FailedURLs.CountURLs() == 0:
-        print("TESTING MULTITHREADING QUEUE:        PASS")
-    else:
-        print("TESTING MULTITHREADING QUEUE:        FAIL")
-        print("     WORKING URLS:    " + str(WorkingURLs.CountURLs()))
-        print("     PROCESSED URLS:  " + str(ProcessedURLs.CountURLs()))
-        print("     FAILED URLS:     " + str(FailedURLs.CountURLs()))
-    print("======= /UNIT TESTING =======")
-    print("")
-    print("======== GUI TESTING ========")
-    RunMain()
-
-
-    #Cleaning up
-    WorkingURLs.TruncateURLs()
-    FailedURLs.TruncateURLs()
-    ProcessedURLs.TruncateURLs()
-    WorkingURLs.UpdateTemp()
-    ProcessedURLs.UpdateTemp()

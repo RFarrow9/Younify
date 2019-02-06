@@ -3,8 +3,9 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import numpy as np
 import re
 
-client_credentials_manager = SpotifyClientCredentials(client_id='', client_secret='')
-sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+def setup():
+    client_credentials_manager = SpotifyClientCredentials(client_id='', client_secret='')
+    sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
 #with open('config.json') as f:
     #config = json.load(f)
@@ -23,13 +24,13 @@ def levenshtein(seq1, seq2):
     size_x = len(seq1) + 1
     size_y = len(seq2) + 1
     matrix = np.zeros ((size_x, size_y))
-    for x in xrange(size_x):
+    for x in range(size_x):
         matrix [x, 0] = x
-    for y in xrange(size_y):
+    for y in range(size_y):
         matrix [0, y] = y
 
-    for x in xrange(1, size_x):
-        for y in xrange(1, size_y):
+    for x in range(1, size_x):
+        for y in range(1, size_y):
             if seq1[x-1] == seq2[y-1]:
                 matrix [x,y] = min(
                     matrix[x-1, y] + 1,
@@ -70,13 +71,10 @@ def cleantitle(title):
     title = re.sub("\[lyrics\]", "", title, flag)
     return title
 
+def testing():
+    search = cleantitle('James Bay \'Hear Your Heart\'')
+    print(search)
 
-search = cleantitle('James Bay \'Hear Your Heart\'')
-print(search)
+    results = sp.search(q=search, limit=1)
+    print(results)
 
-results = sp.search(q=search, limit=1)
-print(results)
-#print(results['name'])
-#print(results['tracks'])
-#for i, t in enumerate(results['tracks']['items']):
-    #print(' ', i, t['name'])
