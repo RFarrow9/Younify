@@ -10,9 +10,9 @@ import unittest
 
 fetch_threads = 4
 #enclosure_queue = queue.Queue()
-temp_processing = "temp\\temp-processed.tmp"
-temp_working = "temp\\temp-working.tmp"
-bookmarks = "test\\working\\Bookmarks.html"
+temp_processing = "..\\temp\\temp-processed.tmp"
+temp_working = "..\\temp\\temp-working.tmp"
+bookmarks = "C:\\Users\\robfa\\PycharmProjects\\Younify\\younify\\test\\working\\bookmarks.html"
 
 class TestFrameworkMethods(unittest.TestCase):
 
@@ -20,9 +20,9 @@ class TestFrameworkMethods(unittest.TestCase):
         self.WorkingURLs = framework.WorkingURLs()
         self.FailedURLs = framework.FailedURLs()
         self.ProcessedURLs = framework.ProcessedURLs()
-        self.WorkingURLs.TruncateURLs()
-        self.ProcessedURLs.TruncateURLs()
-        self.FailedURLs.TruncateURLs()
+        self.WorkingURLs.truncate_urls()
+        self.ProcessedURLs.truncate_urls()
+        self.FailedURLs.truncate_urls()
 
     def setUp_populated(self):
         self.WorkingURLs = framework.WorkingURLs()
@@ -30,170 +30,87 @@ class TestFrameworkMethods(unittest.TestCase):
         self.ProcessedURLs = framework.ProcessedURLs()
 
     def tearDown(self):
-        self.WorkingURLs.TruncateURLs()
-        self.FailedURLs.TruncateURLs()
-        self.ProcessedURLs.TruncateURLs()
+        self.WorkingURLs.truncate_urls()
+        self.FailedURLs.truncate_urls()
+        self.ProcessedURLs.truncate_urls()
 
     def test_instantiated(self):
         self.setUp_populated()
-        self.assertTrue(self.WorkingURLs.CountURLs() > 1200)
-        self.assertTrue(self.ProcessedURLs.CountURLs() >= 2)
-        self.assertEqual(self.FailedURLs.CountURLs(), 0)
+        self.assertTrue(self.WorkingURLs.count_urls() > 1200)
+        self.assertTrue(self.ProcessedURLs.count_urls() >= 2)
+        self.assertEqual(self.FailedURLs.count_urls(), 0)
         self.tearDown()
 
     def test_truncate(self):
         self.setUp_populated()
-        self.WorkingURLs.TruncateURLs()
-        self.ProcessedURLs.TruncateURLs()
-        self.FailedURLs.TruncateURLs()
-        self.assertEqual(self.WorkingURLs.CountURLs(), 0)
-        self.assertEqual(self.ProcessedURLs.CountURLs(), 0)
-        self.assertEqual(self.FailedURLs.CountURLs(), 0)
+        self.WorkingURLs.truncate_urls()
+        self.ProcessedURLs.truncate_urls()
+        self.FailedURLs.truncate_urls()
+        self.assertEqual(self.WorkingURLs.count_urls(), 0)
+        self.assertEqual(self.ProcessedURLs.count_urls(), 0)
+        self.assertEqual(self.FailedURLs.count_urls(), 0)
         self.tearDown()
 
     def test_fileparse(self):
         self.setUp_empty()
-        list = framework.FindURLsInFile(bookmarks)
-        self.WorkingURLs.PushfiletoWorking(bookmarks)
-        self.assertTrue(len(list) > 1200, len(list))
-        self.assertTrue(self.WorkingURLs.CountURLs() > 1200, self.WorkingURLs.CountURLs())
-        self.assertEqual(self.WorkingURLs.CountURLs(), len(list))
+        urllist = framework.find_urls_in_file(bookmarks)
+        self.WorkingURLs.push_file_to_working(bookmarks)
+        self.assertTrue(len(urllist) > 1200, len(urllist))
+        self.assertTrue(self.WorkingURLs.count_urls() > 1200, self.WorkingURLs.count_urls())
+        self.assertEqual(self.WorkingURLs.count_urls(), len(urllist))
         self.tearDown()
 
     def test_processing(self):
         self.setUp_empty()
-        WorkingCount = self.WorkingURLs.CountURLs()
-        self.WorkingURLs.ProcessURL__old("YSkIJTIE45c") #dOESNT WORK YET
-        self.WorkingURLs.ProcessURL__old("B2KAipyP8mc")
-        self.assertTrue(self.WorkingURLs.CountURLs() + 2, WorkingCount)
-        #self.assertTrue()
+        working_count = self.WorkingURLs.count_urls()
+        self.assertTrue(working_count == 0)
+        self.WorkingURLs.push_url_to_queue("YSkIJTIE45c")
+        self.WorkingURLs.push_url_to_queue("B2KAipyP8mc")
+        self.assertEqual(2, self.WorkingURLs.count_urls())
+        self.WorkingURLs.process_urls(self.ProcessedURLs, self.FailedURLs)
+        self.assertEqual(0, working_count)
 
     def test_fails(self):
         self.setUp_empty()
-        self.assertEqual(self.FailedURLs.CountURLs(), 0)
-        self.FailedURLs.AddURL("B2KAipyP8mc", 'test')
-        self.FailedURLs.AddURL("B2KgipyP8mc", '2nd error')
-        self.FailedURLs.AddURL("B2KAipyP8mc", '3rd error')
-        self.assertEqual(self.FailedURLs.CountURLs(), 2)-
+        self.assertEqual(self.FailedURLs.count_urls(), 0)
+        self.FailedURLs.add_url("B2KAipyP8mc", 'test')
+        self.FailedURLs.add_url("B2KgipyP8mc", '2nd error')
+        self.FailedURLs.add_url("B2KAipyP8mc", '3rd error')
+        self.assertEqual(self.FailedURLs.count_urls(), 2)
         self.tearDown()
 
     def test_updatetemp(self):
         self.setUp_empty()
-        self.WorkingURLs.PushfiletoWorking(bookmarks)
-        WorkingCount = self.WorkingURLs.CountURLS()
-        self.assertTrue(WorkingCount > 1200)
-        self.WorkingURLs.UpdateTemp()
-        self.assertEqual(WorkingCount, linecount(temp_working))
-        self.WorkingURLs.ProcessURL__old("YSkIJTIE45c") #dOESNT WORK YET
-        self.WorkingURLs.ProcessURL__old("B2KAipyP8mc")
-        self.assertEqual(WorkingCount - 2, linecount(bookmarks))
-        self.assertEqual(self.ProcessedURLs.CountURLs(), 2)
-        self.ProcessedURLs.UpdateTemp()
-        self.asssertEquals(linecount(temp_processing), 2)
+        self.WorkingURLs.push_file_to_working(bookmarks)
+        working_count = self.WorkingURLs.count_urls()
+        self.assertTrue(working_count > 1200)
+        self.WorkingURLs.update_temp()
+        self.assertEqual(working_count, framework.linecount(temp_working))
+        self.WorkingURLs.add_url("YSkIJTIE45c")
+        self.WorkingURLs.add_url("B2KAipyP8mc")
+        self.WorkingURLs.process_url("YSkIJTIE45c", self.ProcessedURLs)
+        self.WorkingURLs.process_url("B2KAipyP8mc", self.ProcessedURLs)
+        self.assertEqual(working_count - 2, framework.linecount(bookmarks))
+        self.assertEqual(self.ProcessedURLs.count_urls(), 2)
+        self.ProcessedURLs.update_temp()
+        self.assertEqual(framework.linecount(temp_processing), 2)
 
     def test_retrievetemp(self):
         self.setUp_empty()
-        self.WorkingURLs.PushfiletoWorking(bookmarks)
-        self.WorkingURLs.UpdateTemp()
-        temp_working_linecount = linecount(temp_working)
+        self.WorkingURLs.push_file_to_working(bookmarks)
+        self.WorkingURLs.update_temp()
+        temp_working_linecount = framework.linecount(temp_working)
         self.assertTrue(temp_working_linecount > 1200)
         self.WorkingURLs.__init__()
-        self.assertEqual(temp_working_linecount, self.WorkingURls.CountURLs())
+        self.assertEqual(temp_working_linecount, self.WorkingURLs.count_urls())
 
     def test_retrievemultiples(self):
         self.setUp_empty()
-        self.WorkingURLs.PushfiletoWorking(bookmarks)
-        self.WorkingURLs.UpdateTemp()
-        temp_working_linecount = linecount(temp_working)
+        self.WorkingURLs.push_file_to_working(bookmarks)
+        self.WorkingURLs.update_temp()
+        temp_working_linecount = framework.linecount(temp_working)
 
 
 if __name__ == '__main__':
     unittest.main()
 
-
-#    WorkingURLs = WorkingURLs()
-#    ProcessedURLs = ProcessedURLs()
-#    FailedURLs = FailedURLs()
-
-#    print("")
-#    print("======= UNIT TESTING =======")
-#    WorkingURLs.TruncateURLs()
-#    FailedURLs.TruncateURLs()
-#    ProcessedURLs.TruncateURLs()
-#    if ProcessedURLs.CountURLs() == WorkingURLs.CountURLs() == FailedURLs.CountURLs() == 0:
-#        print("TESTING LIST TRUNCATION:             PASS")
-#    else:
-#        print("TESTING LIST TRUNCATION:             FAIL")
-#    list = FindURLsInFile(bookmarks)
-#    PushfiletoWorking(bookmarks)
-#    if len(list) == WorkingURLs.CountURLs() == 1495:
-#        print("TESTING FILE RETRIEVAL:              PASS")
-#    else:
-#        print("TESTING FILE RETRIEVAL:              FAIL")
-#        print("     URLS IN FILE: " + str(len(list)))
-#        print("     URLS IN LIST: " + str(WorkingURLs.CountURLs()))
-#    ProcessURL__old("YSkIJTIE45c")
-#    ProcessURL__old("B2KAipyP8mc")
-#    FailedURLs.AddURL("B2KAipyP8mc", 'test')
-#    FailedURLs.AddURL("B2KgipyP8mc", '2nd error')
-#    FailedURLs.AddURL("B2KAipyP8mc", '3rd error')
-#    if ProcessedURLs.CountURLs() == 2 and FailedURLs.CountURLs() == 2 and WorkingURLs.CountURLs() == 1493:
-#        print("TESTING URL PROCESSING:              PASS")
-#    else:
-#        print("TESTING URL PROCESSING:              FAIL")
-#        print("     WORKING URLS:    " + str(WorkingURLs.CountURLs()))
-#        print("     FAILED URLS:     " + str(FailedURLs.CountURLs()))
-#        print("     PROCESSED URLS:  " + str(ProcessedURLs.CountURLs()))
-#    WorkingURLs.UpdateTemp()
-#    ProcessedURLs.UpdateTemp()
-#    if linecount(temp_processing) == 2 and linecount(temp_working) == 1493:
-#        print("TESTING TEMP FILE GENERATION:        PASS")
-##    else:
-#        print("TESTING TEMP FILE GENERATION:        FAIL")
-#        print("     WORKING TEMP FILE:   " + str(linecount(temp_working)))
-#        print("     PROCESSED TEMP FILE: " + str(linecount(temp_processing)))
-#    WorkingURLs.UpdateTemp()
-#    ProcessedURLs.UpdateTemp()
-    if linecount(temp_processing) == 2 and linecount(temp_working) == 1493:
-        print("TESTING 2ND FILE GENERATION:         PASS")
-    else:
-        print("TESTING 2ND FILE GENERATION:         FAIL")
-        print("     WORKING TEMP FILE:   " + str(linecount(temp_working)))
-        print("     PROCESSED TEMP FILE: " + str(linecount(temp_processing)))
-    WorkingURLs.RemoveURL("WQzZk69P69E")
-    if WorkingURLs.CountURLs() == 1492:
-        print("TESTING URL REMOVAL:                 PASS")
-    else:
-        print("TESTING URL REMOVAL:                 FAIL")
-        print("     WORKING URLS:    " + str(WorkingURLs.CountURLs()))
-    WorkingURLs.TruncateURLs()
-    FailedURLs.TruncateURLs()
-    ProcessedURLs.TruncateURLs()
-    WorkingURLs.__init__()
-    ProcessedURLs.__init__()
-    if ProcessedURLs.CountURLs() == 2 and WorkingURLs.CountURLs() == 1493 and FailedURLs.CountURLs() == 0:
-        print("TESTING TEMP FILE RETRIEVAL:         PASS")
-    else:
-        print("TESTING TEMP FILE RETRIEVAL:         FAIL")
-        print("     WORKING URLS:    " + str(WorkingURLs.CountURLs()))
-        print("     PROCESSED URLS:  " + str(ProcessedURLs.CountURLs()))
-    ProcessURLs()
-    if ProcessedURLs.CountURLs() == 1495 and WorkingURLs.CountURLs() == 0 and FailedURLs.CountURLs() == 0:
-        print("TESTING MULTITHREADING QUEUE:        PASS")
-    else:
-        print("TESTING MULTITHREADING QUEUE:        FAIL")
-        print("     WORKING URLS:    " + str(WorkingURLs.CountURLs()))
-        print("     PROCESSED URLS:  " + str(ProcessedURLs.CountURLs()))
-        print("     FAILED URLS:     " + str(FailedURLs.CountURLs()))
-    print("======= /UNIT TESTING =======")
-    print("")
-    print("======== GUI TESTING ========")
-    RunMain()
-
-
-    #Cleaning up
-    WorkingURLs.TruncateURLs()
-    FailedURLs.TruncateURLs()
-    ProcessedURLs.TruncateURLs()
-    WorkingURLs.UpdateTemp()
-    ProcessedURLs.UpdateTemp()
