@@ -20,7 +20,7 @@ The code is currently split into the following modules:
 
 * scratch - scratch pad for redundant code/testing code
 
-* Spotify - interacts with spotify api surprisingly
+* spotify - interacts with spotify api surprisingly
 
 * youtube_converter - downloads and handles conversion of videos
 
