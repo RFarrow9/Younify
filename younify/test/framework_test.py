@@ -2,14 +2,7 @@
 from younify import framework
 import unittest
 
-# Need to pick a style (camelcase?) and stick with it
-# Testing to be in seperate module
-# Array + gui should be split into seperate modules
-# Single module to hang everything together (main?)
-#testing successful commit
-
 fetch_threads = 4
-#enclosure_queue = queue.Queue()
 temp_processing = "..\\temp\\temp-processed.tmp"
 temp_working = "..\\temp\\temp-working.tmp"
 bookmarks = "C:\\Users\\robfa\\PycharmProjects\\Younify\\younify\\test\\working\\bookmarks.html"

@@ -1,9 +1,4 @@
-#import time
 import queue
-# import sys
-# import breeze_resources
-# from PyQt5 import QtWidgets
-# from PyQt5.QtCore import QFile, QTextStream
 from threading import Thread
 
 # from younify import frontend
@@ -35,7 +30,6 @@ def main():
         finally:
             processed.update_temp()
             working.update_temp()
-
 
 class ProcessingArray:
     def __new__(cls, *args, **kwargs):
@@ -217,5 +211,3 @@ def find_url(string):
 
 if __name__ == '__main__':
     main()
-
-

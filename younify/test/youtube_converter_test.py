@@ -8,5 +8,8 @@ class TestConverterMethods(unittest.TestCase):
         #s#elf.assertTrue(youtube_converter.levenshtein("twat", "twat") == 0)
         print("this is a placeholder")
 
+    def test_convert(self):
+        print("this is a placeholder")
+        
 if __name__ == '__main__':
     unittest.main()

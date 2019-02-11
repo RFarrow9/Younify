@@ -78,3 +78,8 @@ def testing():
     results = sp.search(q=search, limit=1)
     print(results)
 
+def consecutive_groups(string="this is a test string"):
+    input = tuple(string.split())
+    for size in range(1, len(input)+1):
+        for index in range(len(input)+1-size):
+            yield input[index:index+size]
