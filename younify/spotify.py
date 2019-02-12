@@ -5,28 +5,37 @@ import re
 import sys
 
 def setup():
-    client_credentials_manager = SpotifyClientCredentials(client_id='97b857abe01d430198420da9cd0dbded', client_secret='3968d7d689964331bb220c236e0c74d3')
+    client_credentials_manager = SpotifyClientCredentials(client_id='', client_secret='')
     sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
     return sp
 #with open('config.json') as f:
     #config = json.load(f)
 
-def request():
-    sp = setup()
-    if len(sys.argv) > 1:
-        name = ' '.join(sys.argv[1:])
-    else:
-        name = 'Radiohead'
 
-    results = sp.search(q='artist:' + name, type='artist')
-    print(results)
-    items = results['artists']['items']
-    if len(items) > 0:
-        artist = items[0]
-        print(artist['name'], artist['images'][0]['url'])
+#first run the whole string against artist + song
+#if success then use that metadata
+#if fail, then run the searches seperately and stitch back together
+#DO NOT order by popularity/pick by
+#use the levenshtein distance against the potentials to rank
+
+def request(name):
+    sp = setup()
+    cleaned = clean(name)
+    #print(cleaned)
+    gen = consecutive_groups(cleaned)
+    for i in gen:
+        potential = " ".join(i)
+        results = sp.search(q='artist:' + potential, type='artist')
+        items = results['artists']['items']
+        if len(items) > 0:
+            artist = items[0]
+            print(artist['name'], artist['images'][0]['url'])
+            print(levenshtein(artist['name'], name))
+
+
 
 def main():
-    request()
+    request("Gowe - Jazz City Poets")
 
 def levenshtein(seq1, seq2):
     size_x = len(seq1) + 1
@@ -51,17 +60,34 @@ def levenshtein(seq1, seq2):
                     matrix[x-1,y-1] + 1,
                     matrix[x,y-1] + 1
                 )
-    print (matrix)
+    #print (matrix)
     return (matrix[size_x - 1, size_y - 1])
 
 def cleantitle(title):
     flag = re.IGNORECASE
-
-    title = re.sub("[()]", "", title, flag).sub("[\[\]]", title, flag)
-    title = re.sub("original audio", title, flag).sub("hq", title, flag)
-    title = re.sub("official", title, flag).sub("video", title, flag)
-    title = re.sub("music", title, flag).sub("lyrics", title, flag)
+    title = re.sub("[()]", "", title, flag)
+    title = re.sub(r"[\[\]]", title, flag)
+    title = re.sub("original audio", title, flag)
+    title = re.sub("hq", title, flag)
+    title = re.sub("official", title, flag)
+    title = re.sub("video", title, flag)
+    title = re.sub("music", title, flag)
+    title = re.sub("lyrics", title, flag)
+    title = re.sub("[-]", title, flag)
     return title
+
+
+def clean(string):
+    substitutions = {"original audio": ""
+                     ,"- ": ""
+                     ,"hq": ""
+                     ,"official": ""
+                     ,"video":""
+                     ,"music":""
+                     ,"lyrics":""}
+    substrings = sorted(substitutions, key=len, reverse=True)
+    regex = re.compile('|'.join(map(re.escape, substrings)))
+    return regex.sub(lambda match: substitutions[match.group(0)], string)
 
 def testing():
     search = cleantitle('James Bay \'Hear Your Heart\'')
@@ -75,6 +101,7 @@ def consecutive_groups(string="this is a test string"):
     for size in range(1, len(input)+1):
         for index in range(len(input)+1-size):
             yield input[index:index+size]
+
 
 if __name__ == '__main__':
     main()
