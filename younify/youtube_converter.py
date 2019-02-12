@@ -85,5 +85,4 @@ def main():
     get_audio(["https://www.youtube.com/watch?v=xdOykEJSXIg"], "Anthony Hamilton", "Freedom")
 
 if __name__ == "__main__":
-    #print("nothing to do here")
     main()

@@ -2,23 +2,31 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import numpy as np
 import re
+import sys
 
 def setup():
-    client_credentials_manager = SpotifyClientCredentials(client_id='', client_secret='')
+    client_credentials_manager = SpotifyClientCredentials(client_id='97b857abe01d430198420da9cd0dbded', client_secret='3968d7d689964331bb220c236e0c74d3')
     sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-
+    return sp
 #with open('config.json') as f:
     #config = json.load(f)
 
-#playlists = sp.user_playlists('robbo1992')
-#while playlists:
-#    for i, playlist in enumerate(playlists['items']):
-#        print("%4d %s %s" % (i + 1 + playlists['offset'], playlist['uri'],  playlist['name']))
-#    if playlists['next']:
-#        playlists = sp.next(playlists)
-#   else:
-#        playlists = None
+def request():
+    sp = setup()
+    if len(sys.argv) > 1:
+        name = ' '.join(sys.argv[1:])
+    else:
+        name = 'Radiohead'
 
+    results = sp.search(q='artist:' + name, type='artist')
+    print(results)
+    items = results['artists']['items']
+    if len(items) > 0:
+        artist = items[0]
+        print(artist['name'], artist['images'][0]['url'])
+
+def main():
+    request()
 
 def levenshtein(seq1, seq2):
     size_x = len(seq1) + 1
@@ -49,8 +57,6 @@ def levenshtein(seq1, seq2):
 def cleantitle(title):
     flag = re.IGNORECASE
 
-#Could I use a basic neural network here?
-
     title = re.sub("[()]", "", title, flag).sub("[\[\]]", title, flag)
     title = re.sub("original audio", title, flag).sub("hq", title, flag)
     title = re.sub("official", title, flag).sub("video", title, flag)
@@ -69,3 +75,6 @@ def consecutive_groups(string="this is a test string"):
     for size in range(1, len(input)+1):
         for index in range(len(input)+1-size):
             yield input[index:index+size]
+
+if __name__ == '__main__':
+    main()
