@@ -2,15 +2,15 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import numpy as np
 import re
-import sys
 
 def setup():
     client_credentials_manager = SpotifyClientCredentials(client_id='', client_secret='')
     sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-    return sp
+
 #with open('config.json') as f:
     #config = json.load(f)
 
+<<<<<<< HEAD
 
 #first run the whole string against artist + song
 #if success then use that metadata
@@ -36,6 +36,17 @@ def request(name):
 
 def main():
     request("Gowe - Jazz City Poets")
+=======
+#playlists = sp.user_playlists('robbo1992')
+#while playlists:
+#    for i, playlist in enumerate(playlists['items']):
+#        print("%4d %s %s" % (i + 1 + playlists['offset'], playlist['uri'],  playlist['name']))
+#    if playlists['next']:
+#        playlists = sp.next(playlists)
+#   else:
+#        playlists = None
+
+>>>>>>> parent of c33b858... first spotify commit
 
 def levenshtein(seq1, seq2):
     size_x = len(seq1) + 1
@@ -65,6 +76,7 @@ def levenshtein(seq1, seq2):
 
 def cleantitle(title):
     flag = re.IGNORECASE
+<<<<<<< HEAD
     title = re.sub("[()]", "", title, flag)
     title = re.sub(r"[\[\]]", title, flag)
     title = re.sub("original audio", title, flag)
@@ -74,6 +86,15 @@ def cleantitle(title):
     title = re.sub("music", title, flag)
     title = re.sub("lyrics", title, flag)
     title = re.sub("[-]", title, flag)
+=======
+
+#Could I use a basic neural network here?
+
+    title = re.sub("[()]", "", title, flag).sub("[\[\]]", title, flag)
+    title = re.sub("original audio", title, flag).sub("hq", title, flag)
+    title = re.sub("official", title, flag).sub("video", title, flag)
+    title = re.sub("music", title, flag).sub("lyrics", title, flag)
+>>>>>>> parent of c33b858... first spotify commit
     return title
 
 
@@ -101,7 +122,10 @@ def consecutive_groups(string="this is a test string"):
     for size in range(1, len(input)+1):
         for index in range(len(input)+1-size):
             yield input[index:index+size]
+<<<<<<< HEAD
 
 
 if __name__ == '__main__':
     main()
+=======
+>>>>>>> parent of c33b858... first spotify commit
