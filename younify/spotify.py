@@ -51,24 +51,10 @@ def cleantitle(title):
 
 #Could I use a basic neural network here?
 
-    title = re.sub("(original audio)", "", title, flag)
-    title = re.sub("\[original audio\]", "", title, flag)
-    title = re.sub("(original video)", "", title, flag)
-    title = re.sub("\[original video\]", "", title, flag)
-    title = re.sub("(original music)", "", title, flag)
-    title = re.sub("\[original music\]", "", title, flag)
-    title = re.sub("(official music video)", "", title, flag)
-    title = re.sub("\[official music video\]", "", title, flag)
-    title = re.sub("(hq)", "", title, flag)
-    title = re.sub("\[hq\]", "", title, flag)
-    title = re.sub("(full)", "", title, flag)
-    title = re.sub("\[full\]", "", title, flag)
-    title = re.sub("(audio)", "", title, flag)
-    title = re.sub("\[audio\]", "", title, flag)
-    title = re.sub("(video)", "", title, flag)
-    title = re.sub("\[video\]", "", title, flag)
-    title = re.sub("(lyrics)", "", title, flag)
-    title = re.sub("\[lyrics\]", "", title, flag)
+    title = re.sub("[()]", "", title, flag).sub("[\[\]]", title, flag)
+    title = re.sub("original audio", title, flag).sub("hq", title, flag)
+    title = re.sub("official", title, flag).sub("video", title, flag)
+    title = re.sub("music", title, flag).sub("lyrics", title, flag)
     return title
 
 def testing():
@@ -78,3 +64,8 @@ def testing():
     results = sp.search(q=search, limit=1)
     print(results)
 
+def consecutive_groups(string="this is a test string"):
+    input = tuple(string.split())
+    for size in range(1, len(input)+1):
+        for index in range(len(input)+1-size):
+            yield input[index:index+size]

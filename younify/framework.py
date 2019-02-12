@@ -1,9 +1,4 @@
-#import time
 import queue
-# import sys
-# import breeze_resources
-# from PyQt5 import QtWidgets
-# from PyQt5.QtCore import QFile, QTextStream
 from threading import Thread
 
 # from younify import frontend
@@ -35,7 +30,6 @@ def main():
         finally:
             processed.update_temp()
             working.update_temp()
-
 
 class ProcessingArray:
     def __new__(cls, *args, **kwargs):
@@ -137,7 +131,7 @@ class WorkingURLs(ProcessingArray):
 
     def process_url(self, url, processed):
         try:
-            # RunMattsCodeHere("https://www.youtube.com/watch?v=" + URL)
+            #RunMattsCodeHere("https://www.youtube.com/watch?v=" + URL)
             youtube_converter.get_audio(["https://www.youtube.com/watch?v=" + url], "", "")
             processed.add_url(url)
         except:
@@ -217,5 +211,3 @@ def find_url(string):
 
 if __name__ == '__main__':
     main()
-
-
