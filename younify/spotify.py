@@ -5,7 +5,7 @@ import re
 import sys
 
 def setup():
-    client_credentials_manager = SpotifyClientCredentials(client_id='97b857abe01d430198420da9cd0dbded', client_secret='3968d7d689964331bb220c236e0c74d3')
+    client_credentials_manager = SpotifyClientCredentials(client_id='', client_secret='')
     sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
     return sp
 #with open('config.json') as f:
