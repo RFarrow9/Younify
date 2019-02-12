@@ -1,48 +1,27 @@
-===========
 Younify
 ===========
 
-#Write this doc
+This is a tool currently being developed to integrate youtube and spotify. If your work blocks spotify but allows youtube, or you have disparate libaries of 'bookmarks', and you want those songs in spotify - this is the tool for you (you know, when its done).
 
+The eventual end being a simple button that can integrate in a browser of your choice, that when clicked will go grab the track from the youtube video tab you're on and find it in spotify if it exists, and if it doesn't, it'll grab the file, download, convert, and put it in your local files for you for use in spotify or media player of your choice.
 
-It might be worth adding the <path>/Younify directory to the PYTHONPATH user variable at this point in development for this to work properly.
+This is currently pre-alpha, and will be difficult to use without some significant environment modifications, and understanding of how this terrible code is organised.
 
-Towel Stuff provides such and such and so and so. You might find
-it most useful for tasks involving <x> and also <y>. Typical usage
-often looks like this::
-
-    #!/usr/bin/env python
-
-    from towelstuff import location
-    from towelstuff import utils
-
-    if utils.has_towel():
-        print "Your towel is located:", location.where_is_my_towel()
-
-(Note the double-colon and 4-space indent formatting above.)
-
-Paragraphs are separated by blank lines. *Italics*, **bold**,
-and ``monospace`` look like this.
-
-
-A Section
+Modules
 =========
 
-Lists look like this:
+The code is currently split into the following modules:
 
-* First
+* classification - this will handle classification of youtube videos, as well as artist and song assignment
 
-* Second. Can be multiple lines
-  but must be indented properly.
+* framework - holds arrays for processing and handles temp file updates, and multithreading for youtube_converter
 
-A Sub-Section
--------------
+* frontend - no longer being used
 
-Numbered lists look like you'd expect:
+* scratch - scratch pad for redundant code/testing code
 
-1. hi there
+* spotify - interacts with spotify api surprisingly
 
-2. must be going
+* youtube_converter - downloads and handles conversion of videos
 
-Urls are http://like.this and links can be
-written `like this <http://www.example.com/foo/bar>`_.
+* yt_frontend - code in progress for GUI
