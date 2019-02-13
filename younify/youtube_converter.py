@@ -4,22 +4,19 @@ import os
 import eyed3
 import json
 
-
-with open('config.json') as f:
+with open('c:\\config\\config.json') as f:
     config = json.load(f)
 
-root_dir = "C:\\Users\\robfa\\Documents\\Python\\Youtube Thing"
-temp_dir = root_dir + "\\Temp"
-spotify_dir = "C:\\Users\\robfa\\Music\\From YouTube"
+#root_dir = config["youtube_converter"]["root_dir"]
+#temp_dir = root_dir + "\\Temp"
+#spotify_dir = config["youtube_converter"]["spotify_dir"]
 
 class Url:
-    def __init__(self, url, artist=None, title=None):
+    def __init__(self, url, artist=None, title=None): #should the download be tied to init?
         self.artist = artist
         self.title = title
-
         root_dir = config["youtube_converter"]["root_dir"]
         temp_dir = root_dir + "\\Temp"
-
         options = {
             'format': 'bestaudio/best',  # choice of quality
             'extractaudio': True,  # only keep the audio
@@ -27,12 +24,12 @@ class Url:
             'progress_hooks': [self.hook],
             'outtmpl': '%(title)s.%(ext)s'
         }
-        os.chdir(temp_dir)
+        os.chdir(temp_dir) #is this neccessary?
         with youtube_dl.YoutubeDL(options) as ydl:
             info_dict = ydl.extract_info(url[0], download=False)
             self.id = info_dict.get("id", None)
             ydl.download(url)
-        os.chdir(root_dir)
+        os.chdir(root_dir) #and this?
 
     def hook(self, d):
         if d['status'] == 'finished':
@@ -77,8 +74,9 @@ def convert(self, filename):
 
 
 def main():
-    Url(['https://www.youtube.com/watch?v=RPxvTd_jCPQ'], "Young Scrolls", "Sheogorath - Zoom")
-    get_audio(["https://www.youtube.com/watch?v=xdOykEJSXIg"], "Anthony Hamilton", "Freedom")
+    #Url(['https://www.youtube.com/watch?v=RPxvTd_jCPQ'], "Young Scrolls", "Sheogorath - Zoom")
+    #get_audio(["https://www.youtube.com/watch?v=xdOykEJSXIg"], "Anthony Hamilton", "Freedom")
+    print(root_dir)
 
 if __name__ == "__main__":
     #print("nothing to do here")
