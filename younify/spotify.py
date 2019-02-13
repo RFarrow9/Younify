@@ -3,8 +3,11 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import numpy as np
 import re
 
+with open('c:\\config\\config.json') as f:
+    config = json.load(f)
+
 def setup():
-    client_credentials_manager = SpotifyClientCredentials(client_id='', client_secret='')
+    client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
     sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
 #with open('config.json') as f:
