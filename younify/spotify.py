@@ -2,6 +2,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import numpy as np
 import re
+import json
 
 with open('c:\\config\\config.json') as f:
     config = json.load(f)
@@ -9,9 +10,7 @@ with open('c:\\config\\config.json') as f:
 def setup():
     client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
     sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-
-#with open('config.json') as f:
-    #config = json.load(f)
+    return sp
 
 #first run the whole string against artist + song
 #if success then use that metadata
@@ -20,30 +19,33 @@ def setup():
 #use the levenshtein distance against the potentials to rank
 
 def request(name):
+    name = name.lower()
     sp = setup()
     cleaned = clean(name)
-    #print(cleaned)
     gen = consecutive_groups(cleaned)
+    sp_artist = ""
+    yt_artist = ""
+    min = 100
     for i in gen:
         potential = " ".join(i)
         results = sp.search(q='artist:' + potential, type='artist')
         items = results['artists']['items']
         if len(items) > 0:
             artist = items[0]
-            print(artist['name'], artist['images'][0]['url'])
-            print(levenshtein(artist['name'], name))
+            for sub in name.split(" - "):
+                if min > levenshtein(artist['name'], sub):
+                    sp_artist = artist['name']
+                    yt_artist = sub
+                    min = levenshtein(artist['name'], sub)
+    if min < 4:
+        print("spotify artist: ", sp_artist)
+        print("youtube artist: ", yt_artist)
+        print("match confidence (0 is better): ", min)
+    else:
+        print("no confident match found")
 
 def main():
-    request("Gowe - Jazz City Poets")
-
-#playlists = sp.user_playlists('robbo1992')
-#while playlists:
-#    for i, playlist in enumerate(playlists['items']):
-#        print("%4d %s %s" % (i + 1 + playlists['offset'], playlist['uri'],  playlist['name']))
-#    if playlists['next']:
-#        playlists = sp.next(playlists)
-#   else:
-#        playlists = None
+    request(r"PENGUIN CAFE ORCHESTRA - DIRT")
 
 def levenshtein(seq1, seq2):
     size_x = len(seq1) + 1
@@ -88,7 +90,7 @@ def cleantitle(title):
     title = re.sub("original audio", title, flag).sub("hq", title, flag)
     title = re.sub("official", title, flag).sub("video", title, flag)
     title = re.sub("music", title, flag).sub("lyrics", title, flag)
-    return title
+    return title.lower()
 
 
 def clean(string):

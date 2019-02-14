@@ -7,7 +7,7 @@ import json
 with open('c:\\config\\config.json') as f:
     config = json.load(f)
 
-#root_dir = config["youtube_converter"]["root_dir"]
+root_dir = config["youtube_converter"]["root_dir"]
 #temp_dir = root_dir + "\\Temp"
 #spotify_dir = config["youtube_converter"]["spotify_dir"]
 
