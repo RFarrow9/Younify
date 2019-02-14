@@ -32,7 +32,7 @@ def request(name):
         items = results['artists']['items']
         if len(items) > 0:
             artist = items[0]
-            for sub in name.split(" - "):
+            for sub in name.split("-"):
                 if min > levenshtein(artist['name'], sub):
                     sp_artist = artist['name']
                     yt_artist = sub
@@ -45,7 +45,7 @@ def request(name):
         print("no confident match found")
 
 def main():
-    request(r"PENGUIN CAFE ORCHESTRA - DIRT")
+    request(r"Moderat -- Nr. 22 ( Official HD)")
 
 def levenshtein(seq1, seq2):
     size_x = len(seq1) + 1
@@ -55,7 +55,6 @@ def levenshtein(seq1, seq2):
         matrix [x, 0] = x
     for y in range(size_y):
         matrix [0, y] = y
-
     for x in range(1, size_x):
         for y in range(1, size_y):
             if seq1[x-1] == seq2[y-1]:
