@@ -33,19 +33,52 @@ def request(name):
         if len(items) > 0:
             artist = items[0]
             for sub in name.split("-"):
-                if min > levenshtein(artist['name'], sub):
-                    sp_artist = artist['name']
-                    yt_artist = sub
-                    min = levenshtein(artist['name'], sub)
+                sp_artist = artist['name'].lower()
+                sp_uri = artist['uri']
+                yt_artist = sub.rstrip().lower()
+                if min > levenshtein(sp_artist, yt_artist):
+                    sp_artist_min = sp_artist
+                    yt_artist_min = yt_artist
+                    sp_uri_min = sp_uri
+                    min = levenshtein(sp_artist, yt_artist)
     if min < 4:
-        print("spotify artist: ", sp_artist)
-        print("youtube artist: ", yt_artist)
+        print("spotify artist: ", sp_artist_min)
+        print("youtube artist: ", yt_artist_min)
         print("match confidence (0 is better): ", min)
     else:
         print("no confident match found")
+    return sp_artist_min, sp_uri_min
+
+def all_songs(artist_uri):
+    sp = setup()
+    songs = []
+    albums = all_albums(artist_uri)
+    for album in albums:
+        results = sp.album_tracks(album['uri'])
+        for item in results:
+            songs.extend(item['name'])
+
+    for song in songs:
+        print(song)
+
+    return songs
+
+def all_albums(uri):
+     sp = setup()
+     results = sp.artist_albums(uri, album_type='album')
+     albums = results['items']
+     while results['next']:
+        results = sp.next(results)
+        albums.extend(results['items'])
+
+     return albums
 
 def main():
-    request(r"Moderat -- Nr. 22 ( Official HD)")
+    artist, uri = request(r"Moderat -- Nr. 22 ( Official HD)")
+    albums = all_albums(uri)
+    songs = all_songs(uri)
+
+    #print(results)
 
 def levenshtein(seq1, seq2):
     size_x = len(seq1) + 1
