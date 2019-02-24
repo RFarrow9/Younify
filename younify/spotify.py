@@ -2,6 +2,8 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import numpy as np
 import re
+import operator
+import itertools
 import json
 
 with open('c:\\config\\config.json') as f:
@@ -18,7 +20,7 @@ def setup():
 #DO NOT order by popularity/pick by
 #use the levenshtein distance against the potentials to rank
 
-def request(name):
+def artist_second_pass(name="Sufjan Stevens, Fourth Of July (Official Audio)"):
     name = name.lower()
     sp = setup()
     cleaned = clean(name)
@@ -26,28 +28,55 @@ def request(name):
     sp_artist = ""
     yt_artist = ""
     min = 100
+    cutoff = 8
     for i in gen:
         potential = " ".join(i)
         results = sp.search(q='artist:' + potential, type='artist')
         items = results['artists']['items']
         if len(items) > 0:
             artist = items[0]
-            for sub in name.split("-"):
-                sp_artist = artist['name'].lower()
-                sp_uri = artist['uri']
-                yt_artist = sub.rstrip().lower()
-                if min > levenshtein(sp_artist, yt_artist):
-                    sp_artist_min = sp_artist
-                    yt_artist_min = yt_artist
-                    sp_uri_min = sp_uri
-                    min = levenshtein(sp_artist, yt_artist)
-    if min < 4:
-        print("spotify artist: ", sp_artist_min)
-        print("youtube artist: ", yt_artist_min)
-        print("match confidence (0 is better): ", min)
-    else:
+            while min > cutoff:
+                for splitter in ["-", ",", " by "]:
+                    for sub in name.split(splitter):
+                        sp_artist = artist['name'].lower()
+                        sp_uri = artist['uri']
+                        yt_artist = sub.rstrip().lower()
+                        if min > levenshtein(sp_artist, yt_artist):
+                            sp_artist_min = sp_artist
+                            yt_artist_min = yt_artist
+                            sp_uri_min = sp_uri
+                            min = levenshtein(sp_artist, yt_artist)
+    #if min < cutoff:
+        #print("spotify artist: ", sp_artist_min)
+        #print("youtube artist: ", yt_artist_min)
+        #print("match confidence (0 is better): ", min)
+    if min >= cutoff:
         print("no confident match found")
     return sp_artist_min, sp_uri_min
+
+def song_second_pass(name="Sufjan Stevens, Fourth Of July (Official Audio)"):
+    sp_artist, sp_uri = artist_second_pass(name)
+    sp = setup()
+    artist_removed = name.lower().replace(sp_artist, "")
+    cleaned = clean(artist_removed)
+    song_potentials = []
+    gen = consecutive_groups(cleaned)
+    min = 100
+    cutoff = 8
+    for i in gen:
+        potential = " ".join(i)
+        results = sp.search(q="artist:" + sp_artist + " track: " + potential, type="track", limit=1)
+        if results['tracks']['total'] >= 1:
+            for items in results['tracks']['items']:
+                song_potentials.append(items['name'])
+    #print(most_common(song_potentials))
+    #if min > cutoff:
+    #    print("no confident match found")
+    #    sp_song = None
+    #else:
+    sp_song = most_common(song_potentials)
+    return sp_song
+
 
 def all_songs(artist_uri):
     sp = setup()
@@ -73,21 +102,6 @@ def all_albums(uri):
 
      return albums
 
-def main():
-    #artist, uri = request(r"Moderat -- Nr. 22 ( Official HD)")
-    artist, song, success = artist_song_first_pass(r"A Quiet Place — How to Ruin Fear in 7 Seconds | Film Perfection")
-    #albums = all_albums(uri)
-    #songs = all_songs(uri)
-    if success:
-        print(artist)
-        print(song)
-    else:
-        print("values not found")
-
-
-
-    #print(results)
-
 def artist_song_first_pass(string):
     cleanstring = clean(string)
     success = True
@@ -102,7 +116,6 @@ def artist_song_first_pass(string):
     else:
         artist, song, success = None, None, False
     return artist, song, success
-
 
 def levenshtein(seq1, seq2):
     size_x = len(seq1) + 1
@@ -130,23 +143,20 @@ def levenshtein(seq1, seq2):
     return (matrix[size_x - 1, size_y - 1])
 
 def clean(string):
-    substitutions = {"original audio": ""
-                     ,"( Official HD)": ""
+    substitutions = {"original audio":""
                      ,"hq": ""
                      ,"official": ""
                      ,"video":""
                      ,"music":""
+                     , ", ":" "
+                     , ",": " "
+                     , "(official audio)": ""
+                     , "( Official hd)": ""
+                     , "(Official video)": ""
                      ,"lyrics":""}
     substrings = sorted(substitutions, key=len, reverse=True)
     regex = re.compile('|'.join(map(re.escape, substrings)))
     return regex.sub(lambda match: substitutions[match.group(0)], string)
-
-def testing():
-    search = cleantitle('James Bay \'Hear Your Heart\'')
-    print(search)
-
-    results = sp.search(q=search, limit=1)
-    print(results)
 
 def consecutive_groups(string="this is a test string"):
     input = tuple(string.split())
@@ -154,18 +164,39 @@ def consecutive_groups(string="this is a test string"):
         for index in range(len(input)+1-size):
             yield input[index:index+size]
 
-def first_pass(string):
-    #do method
-    #run against unfiltered information first
+def most_common(L):
+  SL = sorted((x, i) for i, x in enumerate(L))
+  groups = itertools.groupby(SL, key=operator.itemgetter(0))
+  def _auxfun(g):
+    item, iterable = g
+    count = 0
+    min_index = len(L)
+    for _, where in iterable:
+      count += 1
+      min_index = min(min_index, where)
+    return count, -min_index
+  return max(groups, key=_auxfun)[0]
+
+def main():
     sp = setup()
-    #q = string.init(format:"artist:%@ track:%@", artistName, trackName)
-    #sp.search(q, type="track", limit=5)
-    results = sp.query
-
-def second_pass():
-    #do more expensive method
-    print("tyest")
-
+    name = r"Sufjan Stevens, Fourth Of July (Official Audio)"
+    artist, song, success = artist_song_first_pass(name)
+    if success:
+        q = "artist:" + artist + " track:" + song
+        results = sp.search(q, type="track", limit=1)
+        if results['tracks']['total'] >= 1:
+            for items in results['tracks']['items']:
+                song_id = items['uri']
+            print(song_id)
+        else:
+            print("song not found in spotify")
+    else:
+        print("First pass failure, moving onto second pass")
+    if not success:
+        artist, uri = artist_second_pass(name)
+        song = song_second_pass(name)
+        print("artist: " + artist)
+        print("song: " + song)
 
 if __name__ == '__main__':
     main()
