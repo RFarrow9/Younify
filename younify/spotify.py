@@ -74,11 +74,35 @@ def all_albums(uri):
      return albums
 
 def main():
-    artist, uri = request(r"Moderat -- Nr. 22 ( Official HD)")
-    albums = all_albums(uri)
-    songs = all_songs(uri)
+    #artist, uri = request(r"Moderat -- Nr. 22 ( Official HD)")
+    artist, song, success = artist_song_first_pass(r"A Quiet Place — How to Ruin Fear in 7 Seconds | Film Perfection")
+    #albums = all_albums(uri)
+    #songs = all_songs(uri)
+    if success:
+        print(artist)
+        print(song)
+    else:
+        print("values not found")
+
+
 
     #print(results)
+
+def artist_song_first_pass(string):
+    cleanstring = clean(string)
+    success = True
+    if ' -- ' in cleanstring:
+        artist, song = cleanstring.split(" -- ")
+    elif ' - ' in cleanstring:
+        artist, song = cleanstring.split(' - ')
+    elif ' — ' in cleanstring:
+        artist, song = cleanstring.split(' — ')
+    elif 'by' in cleanstring:
+        artist, song = cleanstring.split(' by ')
+    else:
+        artist, song, success = None, None, False
+    return artist, song, success
+
 
 def levenshtein(seq1, seq2):
     size_x = len(seq1) + 1
@@ -105,29 +129,9 @@ def levenshtein(seq1, seq2):
     #print (matrix)
     return (matrix[size_x - 1, size_y - 1])
 
-def cleantitle(title):
-    flag = re.IGNORECASE
-    title = re.sub("[()]", "", title, flag)
-    title = re.sub(r"[\[\]]", title, flag)
-    title = re.sub("original audio", title, flag)
-    title = re.sub("hq", title, flag)
-    title = re.sub("official", title, flag)
-    title = re.sub("video", title, flag)
-    title = re.sub("music", title, flag)
-    title = re.sub("lyrics", title, flag)
-    title = re.sub("[-]", title, flag)
-#Could I use a basic neural network here?
-
-    title = re.sub("[()]", "", title, flag).sub("[\[\]]", title, flag)
-    title = re.sub("original audio", title, flag).sub("hq", title, flag)
-    title = re.sub("official", title, flag).sub("video", title, flag)
-    title = re.sub("music", title, flag).sub("lyrics", title, flag)
-    return title.lower()
-
-
 def clean(string):
     substitutions = {"original audio": ""
-                     ,"- ": ""
+                     ,"( Official HD)": ""
                      ,"hq": ""
                      ,"official": ""
                      ,"video":""
@@ -149,6 +153,18 @@ def consecutive_groups(string="this is a test string"):
     for size in range(1, len(input)+1):
         for index in range(len(input)+1-size):
             yield input[index:index+size]
+
+def first_pass(string):
+    #do method
+    #run against unfiltered information first
+    sp = setup()
+    #q = string.init(format:"artist:%@ track:%@", artistName, trackName)
+    #sp.search(q, type="track", limit=5)
+    results = sp.query
+
+def second_pass():
+    #do more expensive method
+    print("tyest")
 
 
 if __name__ == '__main__':
