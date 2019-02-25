@@ -9,83 +9,116 @@ import json
 with open('c:\\config\\config.json') as f:
     config = json.load(f)
 
-def setup():
-    client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
-    sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-    return sp
+class SpotifyProcessing():
+    def __init__(self, name):
+        self.name = name
+        self.artist = None
+        self.artist_uri = None
+        self.song = None
+        self.song_uri = None
+        self.sp = None
+        self.success = True
+        self.setup()
+        self.name = self.name.lower()
+        self.name = clean(self.name)
 
-def artist_song_first_pass(name):
-    artist, artist_uri, song, song_uri, success = None, None, None, None, True
-    if ' -- ' in name:
-        artist, song = name.split(" -- ")
-    elif ' - ' in name:
-        artist, song = name.split(' - ')
-    elif ' — ' in name:
-        artist, song = name.split(' — ')
-    elif 'by' in name:
-        artist, song = name.split(' by ')
-    else:
-        artist, artist_uri, song, song_uri, success = None ,None, None, None, False
-    if success:
-        sp = setup()
-        results = sp.search(q='artist: ' + artist + 'track: ' + song, type='track', limit=1)
-        if results['tracks']['total'] >= 1:
-            for items in results['tracks']['items']:
-                song = items['name']
-                song_uri = items['uri']
-                for artist in items['artists'][0]:
-                    artist = artist['name']
-                    artist_uri = artist['uri']
+    def setup(self):
+        client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
+        self.sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+
+    def artist_song_first_pass(self):
+        if ' -- ' in self.name:
+            self.artist, self.song = self.name.split(" -- ")
+        elif ' - ' in self.name:
+            self.artist, self.song = self.name.split(' - ')
+        elif ' — ' in self.name:
+            self.artist, self.song = self.name.split(' — ')
+        elif 'by' in self.name:
+            self.artist, self.song = self.name.split(' by ')
         else:
-            success = False
-    return  artist, artist_uri, song, song_uri, success
-
-def artist_second_pass(name):
-    name = name.lower()
-    sp = setup()
-    cleaned = clean(name)
-    gen = consecutive_groups(cleaned)
-    _min, cutoff, success = 100, 8, True
-    sp_artist_min, sp_artist_uri_min = None, None
-    for i in gen:
-        potential = " ".join(i)
-        results = sp.search(q='artist:' + potential, type='artist')
-        items = results['artists']['items']
-        if len(items) > 0:
-            artist = items[0]
-            if _min > cutoff:
-                for splitter in ["-", ",", " by "]:
-                    for sub in name.split(splitter):
-                        sp_artist = artist['name'].lower()
-                        sp_uri = artist['uri']
-                        yt_artist = sub.rstrip().lower()
-                        if _min > levenshtein(sp_artist, yt_artist):
-                            sp_artist_min = sp_artist
-                            sp_artist_uri_min = sp_uri
-                            _min = levenshtein(sp_artist, yt_artist)
-    if _min >= cutoff:
-        success = False
-    return sp_artist_min, sp_artist_uri_min, success
-
-def artist_song_second_pass(name):
-    sp_artist, sp_artist_uri, success = artist_second_pass(name)
-    sp_song, sp_song_uri = None, None
-    if success:
-        sp = setup()
-        cleaned = name.lower().replace(sp_artist, "")
-        song_potentials = []
-        gen = consecutive_groups(cleaned)
-        for i in gen:
-            potential = " ".join(i)
-            results = sp.search(q="artist:" + sp_artist + " track: " + potential, type="track", limit=1)
+            self.success = False
+        if self.success:
+            results = self.sp.search(q='artist: ' + self.artist + 'track: ' + self.song, type='track', limit=1)
             if results['tracks']['total'] >= 1:
                 for items in results['tracks']['items']:
-                    song_potentials.append([items['name'], items['uri']])
-        sp_song, sp_song_uri = most_common(song_potentials)
-        success = True
-        #handle cases where every 'song' appears just once - levenshtein back to original string (minus the artist)
-    return sp_artist, sp_artist_uri, sp_song, sp_song_uri, success
+                    self.song = items['name']
+                    self.song_uri = items['uri']
+                    for artist in items['artists'][0]:
+                        self.artist = artist['name']
+                        self.artist_uri = artist['uri']
+            else:
+                self.success = False
 
+    def artist_second_pass(self):
+        gen = consecutive_groups(self.name)
+        _min, cutoff = 100, 8
+        sp_artist_min, sp_artist_uri_min = None, None
+        for i in gen:
+            potential = " ".join(i)
+            results = self.sp.search(q='artist:' + potential, type='artist')
+            items = results['artists']['items']
+            if len(items) > 0:
+                artist = items[0]
+                if _min > cutoff:
+                    for splitter in ["-", ",", " by "]:
+                        for sub in self.name.split(splitter):
+                            sp_artist = artist['name'].lower()
+                            sp_uri = artist['uri']
+                            yt_artist = sub.rstrip().lower()
+                            if _min > levenshtein(sp_artist, yt_artist):
+                                sp_artist_min = sp_artist
+                                sp_artist_uri_min = sp_uri
+                                _min = levenshtein(sp_artist, yt_artist)
+        if _min >= cutoff:
+            self.success = False
+        else:
+            self.artist = sp_artist_min
+            self.artist_uri = sp_artist_uri_min
+
+    def artist_song_second_pass(self):
+        if self.artist is not None:
+            cleaned = self.name.lower().replace(self.artist, "")
+            song_potentials = []
+            gen = consecutive_groups(cleaned)
+            for i in gen:
+                potential = " ".join(i)
+                results = self.sp.search(q="artist:" + self.artist + " track: " + potential, type="track", limit=1)
+                if results['tracks']['total'] >= 1:
+                    for items in results['tracks']['items']:
+                        song_potentials.append([items['name'], items['uri']])
+            self.song, self.song_uri = most_common(song_potentials)
+            self.success = True
+            # handle cases where every 'song' appears just once - levenshtein back to original string (minus the artist)
+
+    def all_songs(self):
+        songs = []
+        albums = self.all_albums()
+        for album in albums:
+            results = self.sp.album_tracks(album['uri'])
+            for item in results:
+                songs.extend(item['name'])
+        for song in songs:
+            print(song)
+        return songs
+
+    def all_albums(self):
+        results = self.sp.artist_albums(self.artist_uri, album_type='album')
+        albums = results['items']
+        while results['next']:
+            results = self.sp.next(results)
+            albums.extend(results['items'])
+        return albums
+
+    def process(self):
+        self.artist_song_first_pass()
+        if not self.success:
+            self.artist_song_second_pass()
+        if not self.success:
+            print("song not found in spotify")
+            # push to playlists here?
+            # push_to_playlist(playlistname)
+            print("should commence manual download here")
+            
 def levenshtein(seq1, seq2):
     size_x = len(seq1) + 1
     size_y = len(seq2) + 1
@@ -144,39 +177,10 @@ def most_common(_list):
     return count, -min_index
   return max(groups, key=_auxfun)[0]
 
-def all_songs(artist_uri):
-    sp = setup()
-    songs = []
-    albums = all_albums(artist_uri)
-    for album in albums:
-        results = sp.album_tracks(album['uri'])
-        for item in results:
-            songs.extend(item['name'])
-    for song in songs:
-        print(song)
-    return songs
+def main():
+    var =+ 1
+    print(var)
 
-def all_albums(uri):
-     sp = setup()
-     results = sp.artist_albums(uri, album_type='album')
-     albums = results['items']
-     while results['next']:
-        results = sp.next(results)
-        albums.extend(results['items'])
-     return albums
-
-def process(name):
-    sp = setup()
-    name = clean(name)
-    artist, artist_uri, song, song_uri, success = artist_song_first_pass(name)
-    if not success:
-        artist, artist_uri, song, song_uri, success = artist_song_second_pass(name)
-    if not success:
-        print("song not found in spotify")
-        #push to playlists here?
-        #push_to_playlist(playlistname)
-        print("should commence manual download here")
-    return success
 
 if __name__ == '__main__':
     main()

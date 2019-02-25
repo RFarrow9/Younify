@@ -9,8 +9,6 @@ with open('c:\\config\\config.json') as f:
     config = json.load(f)
 
 root_dir = config["youtube_converter"]["root_dir"]
-#temp_dir = root_dir + "\\Temp"
-#spotify_dir = config["youtube_converter"]["spotify_dir"]
 
 class Url:
     def __init__(self, url, artist=None, title=None): #should the download be tied to init?
@@ -29,7 +27,11 @@ class Url:
         with youtube_dl.YoutubeDL(options) as ydl:
             info_dict = ydl.extract_info(url[0], download=False)
             self.id = info_dict.get("id", None)
-            ydl.download(url)
+            self.name = info_dict.get("name") #untested
+            current = spotify.SpotifyProcessing(self.name)
+            success = current.process()
+            if not success:
+                ydl.download(url)
         os.chdir(root_dir) #and this?
 
     def hook(self, d):
@@ -43,37 +45,37 @@ class Url:
         tag_file.tag.album = self.title
         tag_file.tag.save()
 
-def convert(self, filename):
-        root_dir = config["youtube_converter"]["root_dir"]
-        temp_dir = root_dir + "\\Temp"
-        spotify_dir = config["youtube_converter"]["spotify_dir"]
-        downloaded_file_path = temp_dir + "\\" + filename
-        if filename[-4:] == "webm":
-            processed_file_path = temp_dir + "\\" + filename[0:-5] + ".mp3"
-        else:
-            processed_file_path = temp_dir + "\\" + filename[0:-4] + ".mp3"
-        result = subprocess.run(
-            ["C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe", "-y", "-i", downloaded_file_path, "-acodec", "libmp3lame",
-             "-ab",
-             "128k", processed_file_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        if result.stderr:
-            print(result.stderr)
-        filename = os.path.splitext(filename)[0]
-        final_file_path = spotify_dir + "\\" + filename + ".mp3"
-        if self.artist is not None or self.title is not None:
-            self.edit_tags(processed_file_path)
-        try:
-            os.rename(processed_file_path, final_file_path)
-        except Exception as e:
-            os.remove(downloaded_file_path)
-            os.remove(processed_file_path)
-            raise e
-        try:
-            os.remove(downloaded_file_path)
-        except Exception as e:
-            raise e
+    def convert(self, filename):
+            root_dir = config["youtube_converter"]["root_dir"]
+            temp_dir = root_dir + "\\Temp"
+            spotify_dir = config["youtube_converter"]["spotify_dir"]
+            downloaded_file_path = temp_dir + "\\" + filename
+            if filename[-4:] == "webm":
+                processed_file_path = temp_dir + "\\" + filename[0:-5] + ".mp3"
+            else:
+                processed_file_path = temp_dir + "\\" + filename[0:-4] + ".mp3"
+            result = subprocess.run(
+                ["C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe", "-y", "-i", downloaded_file_path, "-acodec", "libmp3lame",
+                 "-ab",
+                 "128k", processed_file_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if result.stderr:
+                print(result.stderr)
+            filename = os.path.splitext(filename)[0]
+            final_file_path = spotify_dir + "\\" + filename + ".mp3"
+            if self.artist is not None or self.title is not None:
+                self.edit_tags(processed_file_path)
+            try:
+                os.rename(processed_file_path, final_file_path)
+            except Exception as e:
+                os.remove(downloaded_file_path)
+                os.remove(processed_file_path)
+                raise e
+            try:
+                os.remove(downloaded_file_path)
+            except Exception as e:
+                raise e
 
-def match_to_spotify(self):
+    def match_to_spotify(self):
 
 
 
