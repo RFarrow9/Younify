@@ -15,7 +15,7 @@ def setup():
     return sp
 
 def artist_song_first_pass(name):
-    success = True
+    artist, artist_uri, song, song_uri, success = None, None, None, None, True
     if ' -- ' in name:
         artist, song = name.split(" -- ")
     elif ' - ' in name:
@@ -25,16 +25,28 @@ def artist_song_first_pass(name):
     elif 'by' in name:
         artist, song = name.split(' by ')
     else:
-        artist, song, success = None, None, False
-    #return artist, song, success
-    return success, artist, song
+        artist, artist_uri, song, song_uri, success = None ,None, None, None, False
+    if success:
+        sp = setup()
+        results = sp.search(q='artist: ' + artist + 'track: ' + song, type='track', limit=1)
+        if results['tracks']['total'] >= 1:
+            for items in results['tracks']['items']:
+                song = items['name']
+                song_uri = items['uri']
+                for artist in items['artists'][0]:
+                    artist = artist['name']
+                    artist_uri = artist['uri']
+        else:
+            success = False
+    return  artist, artist_uri, song, song_uri, success
 
 def artist_second_pass(name):
     name = name.lower()
     sp = setup()
     cleaned = clean(name)
     gen = consecutive_groups(cleaned)
-    _min, cutoff = 100, 8
+    _min, cutoff, success = 100, 8, True
+    sp_artist_min, sp_artist_uri_min = None, None
     for i in gen:
         potential = " ".join(i)
         results = sp.search(q='artist:' + potential, type='artist')
@@ -49,34 +61,30 @@ def artist_second_pass(name):
                         yt_artist = sub.rstrip().lower()
                         if _min > levenshtein(sp_artist, yt_artist):
                             sp_artist_min = sp_artist
-                            sp_uri_min = sp_uri
+                            sp_artist_uri_min = sp_uri
                             _min = levenshtein(sp_artist, yt_artist)
-    if min >= cutoff:
-        print("no confident match found")
-    return sp_artist_min, sp_uri_min
+    if _min >= cutoff:
+        success = False
+    return sp_artist_min, sp_artist_uri_min, success
 
-def song_second_pass(name="Sufjan Stevens, Fourth Of July (Official Audio)"):
-    sp_artist, sp_uri = artist_second_pass(name)
-    sp = setup()
-    artist_removed = name.lower().replace(sp_artist, "")
-    cleaned = clean(artist_removed)
-    song_potentials = []
-    gen = consecutive_groups(cleaned)
-    min = 100
-    cutoff = 8
-    for i in gen:
-        potential = " ".join(i)
-        results = sp.search(q="artist:" + sp_artist + " track: " + potential, type="track", limit=1)
-        if results['tracks']['total'] >= 1:
-            for items in results['tracks']['items']:
-                song_potentials.append(items['name'])
-    #print(most_common(song_potentials))
-    #if min > cutoff:
-    #    print("no confident match found")
-    #    sp_song = None
-    #else:
-    sp_song = most_common(song_potentials)
-    return sp_song
+def artist_song_second_pass(name):
+    sp_artist, sp_artist_uri, success = artist_second_pass(name)
+    sp_song, sp_song_uri = None, None
+    if success:
+        sp = setup()
+        cleaned = name.lower().replace(sp_artist, "")
+        song_potentials = []
+        gen = consecutive_groups(cleaned)
+        for i in gen:
+            potential = " ".join(i)
+            results = sp.search(q="artist:" + sp_artist + " track: " + potential, type="track", limit=1)
+            if results['tracks']['total'] >= 1:
+                for items in results['tracks']['items']:
+                    song_potentials.append([items['name'], items['uri']])
+        sp_song, sp_song_uri = most_common(song_potentials)
+        success = True
+        #handle cases where every 'song' appears just once - levenshtein back to original string (minus the artist)
+    return sp_artist, sp_artist_uri, sp_song, sp_song_uri, success
 
 def levenshtein(seq1, seq2):
     size_x = len(seq1) + 1
@@ -92,16 +100,13 @@ def levenshtein(seq1, seq2):
                 matrix [x,y] = min(
                     matrix[x-1, y] + 1,
                     matrix[x-1, y-1],
-                    matrix[x, y-1] + 1
-                )
+                    matrix[x, y-1] + 1)
             else:
                 matrix [x,y] = min(
                     matrix[x-1,y] + 1,
                     matrix[x-1,y-1] + 1,
-                    matrix[x,y-1] + 1
-                )
-    #print (matrix)
-    return (matrix[size_x - 1, size_y - 1])
+                    matrix[x,y-1] + 1)
+    return matrix[size_x - 1, size_y - 1]
 
 def clean(string):
     substitutions = {"original audio":""
@@ -117,6 +122,7 @@ def clean(string):
                      ,"lyrics":""}
     substrings = sorted(substitutions, key=len, reverse=True)
     regex = re.compile('|'.join(map(re.escape, substrings)))
+    #bit of code that removes everything in brackets?
     return regex.sub(lambda match: substitutions[match.group(0)], string)
 
 def consecutive_groups(string="this is a test string"):
@@ -131,7 +137,7 @@ def most_common(_list):
   def _auxfun(g):
     item, iterable = g
     count = 0
-    min_index = len(L)
+    min_index = len(_list)
     for _, where in iterable:
       count += 1
       min_index = min(min_index, where)
@@ -146,10 +152,8 @@ def all_songs(artist_uri):
         results = sp.album_tracks(album['uri'])
         for item in results:
             songs.extend(item['name'])
-
     for song in songs:
         print(song)
-
     return songs
 
 def all_albums(uri):
@@ -159,32 +163,20 @@ def all_albums(uri):
      while results['next']:
         results = sp.next(results)
         albums.extend(results['items'])
-
      return albums
 
 def process(name):
     sp = setup()
     name = clean(name)
-
-
-    artist, song, success = artist_song_first_pass(name)
-    song_found = False
-    if success:
-        q = "artist:" + artist + " track:" + song
-        results = sp.search(q, type="track", limit=1)
-        if results['tracks']['total'] >= 1:
-            for items in results['tracks']['items']:
-                song_id = items['uri']
-            song_found = True
-        else:
-            song_found = False
-    #else:
-    #    print("First pass failure, moving onto second pass")
+    artist, artist_uri, song, song_uri, success = artist_song_first_pass(name)
     if not success:
-        artist, uri = artist_second_pass(name)
-        song = song_second_pass(name)
-        print("artist: " + artist)
-        print("song: " + song)
+        artist, artist_uri, song, song_uri, success = artist_song_second_pass(name)
+    if not success:
+        print("song not found in spotify")
+        #push to playlists here?
+        #push_to_playlist(playlistname)
+        print("should commence manual download here")
+    return success
 
 if __name__ == '__main__':
     main()
