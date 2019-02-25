@@ -1,5 +1,6 @@
 import subprocess
 import youtube_dl
+from younify import spotify
 import os
 import eyed3
 import json
@@ -71,6 +72,14 @@ def convert(self, filename):
             os.remove(downloaded_file_path)
         except Exception as e:
             raise e
+
+def match_to_spotify(self):
+
+
+
+
+
+    return song_uri
 
 
 def main():

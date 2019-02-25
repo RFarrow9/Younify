@@ -14,42 +14,43 @@ def setup():
     sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
     return sp
 
-#first run the whole string against artist + song
-#if success then use that metadata
-#if fail, then run the searches seperately and stitch back together
-#DO NOT order by popularity/pick by
-#use the levenshtein distance against the potentials to rank
+def artist_song_first_pass(name):
+    success = True
+    if ' -- ' in name:
+        artist, song = name.split(" -- ")
+    elif ' - ' in name:
+        artist, song = name.split(' - ')
+    elif ' — ' in name:
+        artist, song = name.split(' — ')
+    elif 'by' in name:
+        artist, song = name.split(' by ')
+    else:
+        artist, song, success = None, None, False
+    #return artist, song, success
+    return success, artist, song
 
-def artist_second_pass(name="Sufjan Stevens, Fourth Of July (Official Audio)"):
+def artist_second_pass(name):
     name = name.lower()
     sp = setup()
     cleaned = clean(name)
     gen = consecutive_groups(cleaned)
-    sp_artist = ""
-    yt_artist = ""
-    min = 100
-    cutoff = 8
+    _min, cutoff = 100, 8
     for i in gen:
         potential = " ".join(i)
         results = sp.search(q='artist:' + potential, type='artist')
         items = results['artists']['items']
         if len(items) > 0:
             artist = items[0]
-            while min > cutoff:
+            if _min > cutoff:
                 for splitter in ["-", ",", " by "]:
                     for sub in name.split(splitter):
                         sp_artist = artist['name'].lower()
                         sp_uri = artist['uri']
                         yt_artist = sub.rstrip().lower()
-                        if min > levenshtein(sp_artist, yt_artist):
+                        if _min > levenshtein(sp_artist, yt_artist):
                             sp_artist_min = sp_artist
-                            yt_artist_min = yt_artist
                             sp_uri_min = sp_uri
-                            min = levenshtein(sp_artist, yt_artist)
-    #if min < cutoff:
-        #print("spotify artist: ", sp_artist_min)
-        #print("youtube artist: ", yt_artist_min)
-        #print("match confidence (0 is better): ", min)
+                            _min = levenshtein(sp_artist, yt_artist)
     if min >= cutoff:
         print("no confident match found")
     return sp_artist_min, sp_uri_min
@@ -76,46 +77,6 @@ def song_second_pass(name="Sufjan Stevens, Fourth Of July (Official Audio)"):
     #else:
     sp_song = most_common(song_potentials)
     return sp_song
-
-
-def all_songs(artist_uri):
-    sp = setup()
-    songs = []
-    albums = all_albums(artist_uri)
-    for album in albums:
-        results = sp.album_tracks(album['uri'])
-        for item in results:
-            songs.extend(item['name'])
-
-    for song in songs:
-        print(song)
-
-    return songs
-
-def all_albums(uri):
-     sp = setup()
-     results = sp.artist_albums(uri, album_type='album')
-     albums = results['items']
-     while results['next']:
-        results = sp.next(results)
-        albums.extend(results['items'])
-
-     return albums
-
-def artist_song_first_pass(string):
-    cleanstring = clean(string)
-    success = True
-    if ' -- ' in cleanstring:
-        artist, song = cleanstring.split(" -- ")
-    elif ' - ' in cleanstring:
-        artist, song = cleanstring.split(' - ')
-    elif ' — ' in cleanstring:
-        artist, song = cleanstring.split(' — ')
-    elif 'by' in cleanstring:
-        artist, song = cleanstring.split(' by ')
-    else:
-        artist, song, success = None, None, False
-    return artist, song, success
 
 def levenshtein(seq1, seq2):
     size_x = len(seq1) + 1
@@ -164,8 +125,8 @@ def consecutive_groups(string="this is a test string"):
         for index in range(len(input)+1-size):
             yield input[index:index+size]
 
-def most_common(L):
-  SL = sorted((x, i) for i, x in enumerate(L))
+def most_common(_list):
+  SL = sorted((x, i) for i, x in enumerate(_list))
   groups = itertools.groupby(SL, key=operator.itemgetter(0))
   def _auxfun(g):
     item, iterable = g
@@ -177,21 +138,48 @@ def most_common(L):
     return count, -min_index
   return max(groups, key=_auxfun)[0]
 
-def main():
+def all_songs(artist_uri):
     sp = setup()
-    name = r"Sufjan Stevens, Fourth Of July (Official Audio)"
+    songs = []
+    albums = all_albums(artist_uri)
+    for album in albums:
+        results = sp.album_tracks(album['uri'])
+        for item in results:
+            songs.extend(item['name'])
+
+    for song in songs:
+        print(song)
+
+    return songs
+
+def all_albums(uri):
+     sp = setup()
+     results = sp.artist_albums(uri, album_type='album')
+     albums = results['items']
+     while results['next']:
+        results = sp.next(results)
+        albums.extend(results['items'])
+
+     return albums
+
+def process(name):
+    sp = setup()
+    name = clean(name)
+
+
     artist, song, success = artist_song_first_pass(name)
+    song_found = False
     if success:
         q = "artist:" + artist + " track:" + song
         results = sp.search(q, type="track", limit=1)
         if results['tracks']['total'] >= 1:
             for items in results['tracks']['items']:
                 song_id = items['uri']
-            print(song_id)
+            song_found = True
         else:
-            print("song not found in spotify")
-    else:
-        print("First pass failure, moving onto second pass")
+            song_found = False
+    #else:
+    #    print("First pass failure, moving onto second pass")
     if not success:
         artist, uri = artist_second_pass(name)
         song = song_second_pass(name)
