@@ -118,7 +118,7 @@ class SpotifyProcessing():
             # push to playlists here?
             # push_to_playlist(playlistname)
             print("should commence manual download here")
-            
+
 def levenshtein(seq1, seq2):
     size_x = len(seq1) + 1
     size_y = len(seq2) + 1
@@ -149,13 +149,13 @@ def clean(string):
                      ,"music":""
                      , ", ":" "
                      , ",": " "
-                     , "(official audio)": ""
-                     , "( Official hd)": ""
-                     , "(Official video)": ""
+                     #, "(official audio)": ""
+                     #, "( Official hd)": ""
+                     #, "(Official video)": ""
                      ,"lyrics":""}
     substrings = sorted(substitutions, key=len, reverse=True)
     regex = re.compile('|'.join(map(re.escape, substrings)))
-    #bit of code that removes everything in brackets?
+    string = re.sub("[\(\[].*?[\)\]]", "", string)
     return regex.sub(lambda match: substitutions[match.group(0)], string)
 
 def consecutive_groups(string="this is a test string"):
