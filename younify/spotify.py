@@ -149,9 +149,6 @@ def clean(string):
                      ,"music":""
                      , ", ":" "
                      , ",": " "
-                     #, "(official audio)": ""
-                     #, "( Official hd)": ""
-                     #, "(Official video)": ""
                      ,"lyrics":""}
     substrings = sorted(substitutions, key=len, reverse=True)
     regex = re.compile('|'.join(map(re.escape, substrings)))
