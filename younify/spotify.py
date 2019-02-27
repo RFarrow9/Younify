@@ -118,7 +118,7 @@ class SpotifyProcessing():
             # push to playlists here?
             # push_to_playlist(playlistname)
             print("should commence manual download here")
-            
+
 def levenshtein(seq1, seq2):
     size_x = len(seq1) + 1
     size_y = len(seq2) + 1
