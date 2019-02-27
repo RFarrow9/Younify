@@ -149,13 +149,10 @@ def clean(string):
                      ,"music":""
                      , ", ":" "
                      , ",": " "
-                     , "(official audio)": ""
-                     , "( Official hd)": ""
-                     , "(Official video)": ""
                      ,"lyrics":""}
     substrings = sorted(substitutions, key=len, reverse=True)
     regex = re.compile('|'.join(map(re.escape, substrings)))
-    #bit of code that removes everything in brackets?
+    string = re.sub("[\(\[].*?[\)\]]", "", string)
     return regex.sub(lambda match: substitutions[match.group(0)], string)
 
 def consecutive_groups(string="this is a test string"):
