@@ -14,25 +14,26 @@ class Url:
     def __init__(self, url, artist=None, title=None): #should the download be tied to init?
         self.artist = artist
         self.title = title
-        root_dir = config["youtube_converter"]["root_dir"]
-        temp_dir = root_dir + "\\Temp"
-        options = {
+        self.url = url
+        self.options = {
             'format': 'bestaudio/best',  # choice of quality
             'extractaudio': True,  # only keep the audio
             'noplaylist': True,  # only download single song, not playlist
             'progress_hooks': [self.hook],
             'outtmpl': '%(title)s.%(ext)s'
         }
-        os.chdir(temp_dir) #is this neccessary?
-        with youtube_dl.YoutubeDL(options) as ydl:
-            info_dict = ydl.extract_info(url[0], download=False)
+        with youtube_dl.YoutubeDL(self.options) as ydl:
+            info_dict = ydl.extract_info(self.url, download=False)
             self.id = info_dict.get("id", None)
             self.name = info_dict.get("name") #untested
-            current = spotify.SpotifyProcessing(self.name)
-            success = current.process()
-            if not success:
-                ydl.download(url)
-        os.chdir(root_dir) #and this?
+            self.spotify = spotify.SpotifyProcessing(self.name)
+
+    def download(self):
+        with youtube_dl.YoutubeDL(self.options) as ydl:
+            ydl.download(self.url)
+
+    def print(self):
+        print(self.name)
 
     def hook(self, d):
         if d['status'] == 'finished':
@@ -74,14 +75,6 @@ class Url:
                 os.remove(downloaded_file_path)
             except Exception as e:
                 raise e
-
-    def match_to_spotify(self):
-
-
-
-
-
-    return song_uri
 
 
 def main():

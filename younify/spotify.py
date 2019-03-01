@@ -19,8 +19,7 @@ class SpotifyProcessing():
         self.sp = None
         self.success = True
         self.setup()
-        self.name = self.name.lower()
-        self.name = clean(self.name)
+        #self.name = clean(self.name)
 
     def setup(self):
         client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
@@ -142,6 +141,7 @@ def levenshtein(seq1, seq2):
     return matrix[size_x - 1, size_y - 1]
 
 def clean(string):
+    string = string.lower()
     substitutions = {"original audio":""
                      ,"hq": ""
                      ,"official": ""
