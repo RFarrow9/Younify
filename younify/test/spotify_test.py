@@ -18,5 +18,24 @@ class TestSpotifyMethods(unittest.TestCase):
         generator3 = spotify.consecutive_groups("1 2 3 4 5 6 7 8 9 10")
         self.assertTrue(sum(1 for i in generator3)==55, sum(1 for i in generator3))
 
+    def test_SpotifyProcessing_instantiation(self):
+        #test function
+
+    def test_SpotifyProcessing_artist_song_first_pass(self):
+
+    def test_SpotifyProcessing_artist_second_pass(self):
+
+    def test_SpotifyProcessing_artist_song_second_pass(self):
+
+    def test_SpotifyProcessing_all_songs(self):
+
+    def test_SpotifyProcessing_all_albums(self):
+
+    def test_clean(self):
+        #test function
+
+    def test_most_common(self):
+        #test function
+
 if __name__ == '__main__':
     unittest.main()

@@ -111,16 +111,19 @@ class WorkingURLs(ProcessingArray):
     def __process_url(self, i, q, processed):
         while True:
             url = q.get()
-            try:
-                #RunMattsCodeHere("https://www.youtube.com/watch?v=" + URL)
-                youtube_converter.get_audio(["https://www.youtube.com/watch?v=" + url], "", "")
-                processed.add_url(url)
-            except:
+            #try:
+            video = youtube_converter.video("https://www.youtube.com/watch?v=" + url, "", "")
+            print(video.url)
+            video.download()
+            processed.add_url(url)
+           # except Exception as e:
+                #print(e)
                 #failed.AddURL(URL, 'pass through error here')
-                print("error unknown")
-            finally:
-                self.remove_url(url)
-                q.task_done()
+                #print("error unknown")
+                #return
+            #finally:
+            self.remove_url(url)
+            q.task_done()
 
     def process_urls(self, processed, failed):
         for i in range(fetch_threads):
@@ -132,7 +135,7 @@ class WorkingURLs(ProcessingArray):
     def process_url(self, url, processed):
         try:
             #RunMattsCodeHere("https://www.youtube.com/watch?v=" + URL)
-            youtube_converter.get_audio(["https://www.youtube.com/watch?v=" + url], "", "")
+            youtube_converter.get_audio("https://www.youtube.com/watch?v=" + url, "", "")
             processed.add_url(url)
         except:
             # failed.AddURL(URL, 'pass through error here')

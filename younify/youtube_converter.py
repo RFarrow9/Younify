@@ -10,7 +10,7 @@ with open('c:\\config\\config.json') as f:
 
 root_dir = config["youtube_converter"]["root_dir"]
 
-class Url:
+class video:
     def __init__(self, url, artist=None, title=None): #should the download be tied to init?
         self.artist = artist
         self.title = title
@@ -25,15 +25,16 @@ class Url:
         with youtube_dl.YoutubeDL(self.options) as ydl:
             info_dict = ydl.extract_info(self.url, download=False)
             self.id = info_dict.get("id", None)
-            self.name = info_dict.get("name") #untested
-            self.spotify = spotify.SpotifyProcessing(self.name)
+            self.name = info_dict.get("title") #untested
+            self.spotify = spotify.SpotifyMatching(self.name)
 
     def download(self):
         with youtube_dl.YoutubeDL(self.options) as ydl:
-            ydl.download(self.url)
+            ydl.download([self.url])
 
     def print(self):
-        print(self.name)
+        print("Video Title: " + str(self.name))
+        print("Video ID: " + str(self.id))
 
     def hook(self, d):
         if d['status'] == 'finished':

@@ -9,7 +9,7 @@ import json
 with open('c:\\config\\config.json') as f:
     config = json.load(f)
 
-class SpotifyProcessing():
+class SpotifyMatching():
     def __init__(self, name):
         self.name = name
         self.artist = None
@@ -19,7 +19,13 @@ class SpotifyProcessing():
         self.sp = None
         self.success = True
         self.setup()
-        #self.name = clean(self.name)
+
+    def print(self):
+        print("Name of video: " + str(self.name))
+        print("Name of artist: " + str(self.artist))
+        print("Artist URI: " + str(self.artist_uri))
+        print("Name of Song: " + str(self.song))
+        print("Song URI: " + str(self.song_uri))
 
     def setup(self):
         client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
