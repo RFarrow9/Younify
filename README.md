@@ -25,3 +25,8 @@ The code is currently split into the following modules:
 * youtube_converter - downloads and handles conversion of videos
 
 * yt_frontend - code in progress for GUI
+
+Enhancements
+=========
+
+We could use this code to harvest + unify spotify with current media libraries that exist in file form as well.
