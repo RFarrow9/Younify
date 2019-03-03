@@ -1,7 +1,5 @@
 import queue
 from threading import Thread
-
-# from younify import frontend
 from younify import youtube_converter
 
 # Need to pick a style (camelcase?) and stick with it
@@ -112,7 +110,7 @@ class WorkingURLs(ProcessingArray):
         while True:
             url = q.get()
             #try:
-            video = youtube_converter.video("https://www.youtube.com/watch?v=" + url, "", "")
+            video = youtube_converter.Video("https://www.youtube.com/watch?v=" + url, "", "")
             print(video.url)
             video.download()
             processed.add_url(url)

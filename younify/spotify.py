@@ -38,7 +38,7 @@ class SpotifyMatching():
             self.artist, self.song = self.name.split(' - ')
         elif ' — ' in self.name:
             self.artist, self.song = self.name.split(' — ')
-        elif 'by' in self.name:
+        elif ' by ' in self.name:
             self.artist, self.song = self.name.split(' by ')
         else:
             self.success = False

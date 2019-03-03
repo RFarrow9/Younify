@@ -10,7 +10,7 @@ with open('c:\\config\\config.json') as f:
 
 root_dir = config["youtube_converter"]["root_dir"]
 
-class video:
+class Video:
     def __init__(self, url, artist=None, title=None): #should the download be tied to init?
         self.artist = artist
         self.title = title
