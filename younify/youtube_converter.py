@@ -9,6 +9,7 @@ with open('c:\\config\\config.json') as f:
     config = json.load(f)
 
 root_dir = config["youtube_converter"]["root_dir"]
+spotify_dir = config["youtube_converter"]["spotify_dir"]
 
 class Video:
     def __init__(self, url, artist=None, title=None): #should the download be tied to init?
@@ -20,12 +21,12 @@ class Video:
             'extractaudio': True,  # only keep the audio
             'noplaylist': True,  # only download single song, not playlist
             'progress_hooks': [self.hook],
-            'outtmpl': '%(title)s.%(ext)s'
+            'outtmpl': spotify_dir + '\%(title)s.%(ext)s'
         }
         with youtube_dl.YoutubeDL(self.options) as ydl:
             info_dict = ydl.extract_info(self.url, download=False)
             self.id = info_dict.get("id", None)
-            self.name = info_dict.get("title") #untested
+            self.name = info_dict.get("title")
             self.spotify = spotify.SpotifyMatching(self.name)
 
     def download(self):
@@ -48,32 +49,27 @@ class Video:
         tag_file.tag.save()
 
     def convert(self, filename):
-            root_dir = config["youtube_converter"]["root_dir"]
-            temp_dir = root_dir + "\\Temp"
-            spotify_dir = config["youtube_converter"]["spotify_dir"]
-            downloaded_file_path = temp_dir + "\\" + filename
             if filename[-4:] == "webm":
-                processed_file_path = temp_dir + "\\" + filename[0:-5] + ".mp3"
+                processed_file_path = filename[0:-5] + ".mp3"
             else:
-                processed_file_path = temp_dir + "\\" + filename[0:-4] + ".mp3"
+                processed_file_path = filename[0:-4] + ".mp3"
             result = subprocess.run(
-                ["C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe", "-y", "-i", downloaded_file_path, "-acodec", "libmp3lame",
+                ["C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe", "-y", "-i", filename, "-acodec", "libmp3lame",
                  "-ab",
                  "128k", processed_file_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             if result.stderr:
                 print(result.stderr)
             filename = os.path.splitext(filename)[0]
-            final_file_path = spotify_dir + "\\" + filename + ".mp3"
             if self.artist is not None or self.title is not None:
                 self.edit_tags(processed_file_path)
             try:
-                os.rename(processed_file_path, final_file_path)
+                os.rename(processed_file_path, processed_file_path)
             except Exception as e:
-                os.remove(downloaded_file_path)
+                os.remove(filename)
                 os.remove(processed_file_path)
                 raise e
             try:
-                os.remove(downloaded_file_path)
+                os.remove(filename)
             except Exception as e:
                 raise e
 
