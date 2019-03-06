@@ -11,11 +11,41 @@ with open('c:\\config\\config.json') as f:
 root_dir = config["youtube_converter"]["root_dir"]
 spotify_dir = config["youtube_converter"]["spotify_dir"]
 
+class Classifier:
+    def __init__(self, url):
+        self.url = url
+        self.id = None
+        self.name = None
+        self.description = None
+        self.info_dict = None
+        self.options = {
+            'format': 'bestaudio/best',  # choice of quality
+            'extractaudio': True,  # only keep the audio
+            'noplaylist': True,  # only download single song, not playlist
+            'outtmpl': spotify_dir + '\%(title)s.%(ext)s'
+        }
+        self.populate()
+
+    def populate(self):
+        with youtube_dl.YoutubeDL(self.options) as ydl:
+            info_dict = ydl.extract_info(self.url, download=False)
+            self.info_dict = info_dict.get("id", None)
+            self.name = info_dict.get("title")
+            self.description = info_dict.get("description")
+            self.id =
+            self.uploader =
+            self.thumbnail =
+            self.duration =
+            self.yt_track =
+            self.yt_artist =
+
+
 class Video:
     def __init__(self, url, artist=None, title=None): #should the download be tied to init?
         self.artist = artist
         self.title = title
         self.url = url
+        self.info_dict = None
         self.options = {
             'format': 'bestaudio/best',  # choice of quality
             'extractaudio': True,  # only keep the audio
@@ -25,6 +55,7 @@ class Video:
         }
         with youtube_dl.YoutubeDL(self.options) as ydl:
             info_dict = ydl.extract_info(self.url, download=False)
+            self.info_dict = info_dict
             self.id = info_dict.get("id", None)
             self.name = info_dict.get("title")
             self.spotify = spotify.SpotifyMatching(self.name)
@@ -32,6 +63,9 @@ class Video:
     def download(self):
         with youtube_dl.YoutubeDL(self.options) as ydl:
             ydl.download([self.url])
+
+    def print_dict(self):
+        print(self.info_dict)
 
     def print(self):
         print("Video Title: " + str(self.name))

@@ -112,6 +112,7 @@ class WorkingURLs(ProcessingArray):
             #try:
             video = youtube_converter.Video("https://www.youtube.com/watch?v=" + url, "", "")
             print(video.url)
+            video.print_dict()
             video.download()
             processed.add_url(url)
            # except Exception as e:
