@@ -4,6 +4,7 @@ from younify import spotify
 import os
 import eyed3
 import json
+from abc import ABC
 
 with open('c:\\config\\config.json') as f:
     config = json.load(f)
@@ -11,13 +12,11 @@ with open('c:\\config\\config.json') as f:
 root_dir = config["youtube_converter"]["root_dir"]
 spotify_dir = config["youtube_converter"]["spotify_dir"]
 
-class Classifier:
+class Factory:
     def __init__(self, url):
         self.url = url
-        self.id = None
-        self.name = None
-        self.description = None
         self.info_dict = None
+        self.duration = None
         self.options = {
             'format': 'bestaudio/best',  # choice of quality
             'extractaudio': True,  # only keep the audio
@@ -25,37 +24,42 @@ class Classifier:
             'outtmpl': spotify_dir + '\%(title)s.%(ext)s'
         }
         self.populate()
+        self.factory()
 
     def populate(self):
         with youtube_dl.YoutubeDL(self.options) as ydl:
             info_dict = ydl.extract_info(self.url, download=False)
-            self.info_dict = info_dict.get("id", None)
-            self.name = info_dict.get("title")
-            self.description = info_dict.get("description")
-            self.id =
-            self.uploader =
-            self.thumbnail =
-            self.duration =
-            self.yt_track =
-            self.yt_artist =
+            self.info_dict = info_dict
+            self.duration = info_dict.get("duration")
 
     def factory(self):
+        """This is where we define what the video actually is"""
+        #For now, we treat everything like a song
         if self.duration > 600:
-            return self.tosong()
+            return self.to_song()
         elif self.duration <= 600:
-            return self.tosong()
+            return self.to_song()
 
-    def tosong(self):
+    def to_song(self):
+        return YoutubeSong(self.url, self.info_dict)
 
+    def to_playlist(self):
+        return YoutubePlaylist(self.url, self.info_dict)
 
+    def to_audiobook(self):
+        return YoutubeAudiobook(self.url, self.info_dict)
 
+    def to_album(self):
+        return YoutubeAlbum(self.url, self.info_dict)
 
-class YoutubeSong:
-    def __init__(self, url, artist=None, title=None): #should the download be tied to init?
-        self.artist = artist
-        self.title = title
+    def to_other(self):
+        return YoutubeOther(self.url, self.info_dict)
+
+class Youtube(ABC):
+    """"This is an abstract class, and only contains methods to be inherited"""
+    def __init__(self, url, info_dict):
         self.url = url
-        self.info_dict = None
+        self.info_dict = info_dict
         self.options = {
             'format': 'bestaudio/best',  # choice of quality
             'extractaudio': True,  # only keep the audio
@@ -63,25 +67,43 @@ class YoutubeSong:
             'progress_hooks': [self.hook],
             'outtmpl': spotify_dir + '\%(title)s.%(ext)s'
         }
-        with youtube_dl.YoutubeDL(self.options) as ydl:
-            info_dict = ydl.extract_info(self.url, download=False)
-            self.info_dict = info_dict
-            self.id = info_dict.get("id", None)
-            self.name = info_dict.get("title")
-            self.spotify = spotify.SpotifyMatching(self.name)
+        self.name = self.info_dict.get("title")
+        self.description = self.info_dict.get("description")
+        self.id = self.info_dict.get("id")
+        self.uploader = self.info_dict.get("uploader")
+        self.thumbnail = self.info_dict.get("thumbnail")
+        self.duration = self.info_dict.get("duration")
+        self.yt_track = self.info_dict.get("track")
+        self.yt_artist = self.info_dict.get("artist")
+
+    def __str__(self):
+        print(self.url)
+
+    def print_dict(self):
+        print(self.info_dict)
 
     def download(self):
         with youtube_dl.YoutubeDL(self.options) as ydl:
             ydl.download([self.url])
 
-    def print_dict(self):
-        print(self.info_dict)
+    def hook(self, d):
+        if d['status'] == 'finished':
+            self.process()
 
-    def print(self):
-        print("Video Title: " + str(self.name))
-        print("Video ID: " + str(self.id))
+    def process(self):
+        print("shouldn't be here")
+
+class YoutubeSong(Youtube):
+    def __init__(self, url, info_dict): #should the download be tied to init?
+        Youtube.__init__(self, url, info_dict)
+        self.spotify = spotify.SpotifyMatching(self.name)
+
+    def download(self):
+        with youtube_dl.YoutubeDL(self.options) as ydl:
+            ydl.download([self.url])
 
     def hook(self, d):
+        """Method override is only temporary, this should be removed in future, but keeps it working for now"""
         if d['status'] == 'finished':
             self.convert(d['filename'])
 
@@ -120,33 +142,36 @@ class YoutubeSong:
     def process(self):
         #polymorphic part
 
-class YoutubePlaylist:
-    def __init__(self):
-        #do stuff
+class YoutubePlaylist(Youtube):
+    """This should treat each song in the playlist like a YoutubeSong object"""
+    def __init__(self, url, info_dict):
+        Youtube.__init__(self, url, info_dict)
 
     def process(self):
         #this bit should be polymorphic so it is processed like all the others
+        print("placeholder")
 
-class YoutubeAudiobook:
-    def __init__(self):
-        #do different stuff
-
-    def process(self):
-        #polymorphic part
-
-class YoutubeAlbum:
-    def __init__(self):
-        # do stuff
+class YoutubeAudiobook(Youtube):
+    def __init__(self, url, info_dict):
+        Youtube.__init__(self, url, info_dict)
 
     def process(self):
-        # this bit should be polymorphic so it is processed like all the others
+        print("placeholder")
 
-class YoutubeOther:
-    def __init__(self):
-        #do stuff
+class YoutubeAlbum(Youtube):
+    """This should explicitly search spotify for the album, different to playlist!"""
+    def __init__(self, url, info_dict):
+        Youtube.__init__(self, url, info_dict)
 
     def process(self):
-        #do we want to process these?
+        print("placeholder")
+
+class YoutubeOther(Youtube):
+    def __init__(self, url, info_dict):
+        Youtube.__init__(self, url, info_dict)
+
+    def process(self):
+         print("placeholder")
 
 
 def main():
