@@ -39,8 +39,18 @@ class Classifier:
             self.yt_track =
             self.yt_artist =
 
+    def factory(self):
+        if self.duration > 600:
+            return self.tosong()
+        elif self.duration <= 600:
+            return self.tosong()
 
-class Video:
+    def tosong(self):
+
+
+
+
+class YoutubeSong:
     def __init__(self, url, artist=None, title=None): #should the download be tied to init?
         self.artist = artist
         self.title = title
@@ -106,6 +116,37 @@ class Video:
                 os.remove(filename)
             except Exception as e:
                 raise e
+
+    def process(self):
+        #polymorphic part
+
+class YoutubePlaylist:
+    def __init__(self):
+        #do stuff
+
+    def process(self):
+        #this bit should be polymorphic so it is processed like all the others
+
+class YoutubeAudiobook:
+    def __init__(self):
+        #do different stuff
+
+    def process(self):
+        #polymorphic part
+
+class YoutubeAlbum:
+    def __init__(self):
+        # do stuff
+
+    def process(self):
+        # this bit should be polymorphic so it is processed like all the others
+
+class YoutubeOther:
+    def __init__(self):
+        #do stuff
+
+    def process(self):
+        #do we want to process these?
 
 
 def main():
