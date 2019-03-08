@@ -93,14 +93,18 @@ class Youtube(ABC):
     def process(self):
         print("shouldn't be here")
 
+
 class YoutubeSong(Youtube):
     def __init__(self, url, info_dict): #should the download be tied to init?
         Youtube.__init__(self, url, info_dict)
         self.spotify = spotify.SpotifyMatching(self.name)
-
-    def download(self):
-        with youtube_dl.YoutubeDL(self.options) as ydl:
-            ydl.download([self.url])
+        self.found = None
+        self.song_id = None
+        self.artist_id = None
+*
+    def populate_metadata(self):
+        self.found = self.spotify.process()
+        self.song_id, self.artist_id = self.spotify.return_song_artist()
 
     def hook(self, d):
         """Method override is only temporary, this should be removed in future, but keeps it working for now"""
@@ -140,7 +144,9 @@ class YoutubeSong(Youtube):
                 raise e
 
     def process(self):
-        #polymorphic part
+        """for now... writing this hurts"""
+        self.convert(self, d['filename'])
+
 
 class YoutubePlaylist(Youtube):
     """This should treat each song in the playlist like a YoutubeSong object"""

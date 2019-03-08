@@ -118,7 +118,11 @@ class SpotifyMatching():
         self.artist_song_first_pass()
         if not self.success:
             self.artist_song_second_pass()
-        if not self.success:
+        return self.success
+
+    def return_song_artist(self):
+        return self.song_uri, self.artist_uri
+
             print("song not found in spotify")
             # push to playlists here?
             # push_to_playlist(playlistname)
