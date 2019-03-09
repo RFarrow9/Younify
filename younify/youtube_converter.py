@@ -77,7 +77,8 @@ class Youtube(ABC):
         self.yt_artist = self.info_dict.get("artist")
 
     def __str__(self):
-        print(self.url)
+        print("type: " + type(self).__name__)
+        print("url: " + self.url)
 
     def print_dict(self):
         print(self.info_dict)
@@ -98,10 +99,13 @@ class YoutubeSong(Youtube):
     def __init__(self, url, info_dict): #should the download be tied to init?
         Youtube.__init__(self, url, info_dict)
         self.spotify = spotify.SpotifyMatching(self.name)
+        """Attributes specific to songs"""
         self.found = None
         self.song_id = None
         self.artist_id = None
-*
+        self.artist = None
+        self.title = None
+
     def populate_metadata(self):
         self.found = self.spotify.process()
         self.song_id, self.artist_id = self.spotify.return_song_artist()
@@ -142,11 +146,6 @@ class YoutubeSong(Youtube):
                 os.remove(filename)
             except Exception as e:
                 raise e
-
-    def process(self):
-        """for now... writing this hurts"""
-        self.convert(self, d['filename'])
-
 
 class YoutubePlaylist(Youtube):
     """This should treat each song in the playlist like a YoutubeSong object"""
