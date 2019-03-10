@@ -77,8 +77,7 @@ class Youtube(ABC):
         self.yt_artist = self.info_dict.get("artist")
 
     def __str__(self):
-        print("type: " + type(self).__name__)
-        print("url: " + self.url)
+        return "type: " + type(self).__name__ + "\n" + "url: " + self.url
 
     def print_dict(self):
         print(self.info_dict)
@@ -133,15 +132,15 @@ class YoutubeSong(Youtube):
                  "128k", processed_file_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             if result.stderr:
                 print(result.stderr)
-            filename = os.path.splitext(filename)[0]
+            #filename = os.path.splitext(filename)[0]
             if self.artist is not None or self.title is not None:
                 self.edit_tags(processed_file_path)
-            try:
-                os.rename(processed_file_path, processed_file_path)
-            except Exception as e:
-                os.remove(filename)
-                os.remove(processed_file_path)
-                raise e
+            #try:
+            #    os.rename(processed_file_path, processed_file_path)
+            #except Exception as e:
+            #    os.remove(filename)
+            #    os.remove(processed_file_path)
+            #    raise e
             try:
                 os.remove(filename)
             except Exception as e:

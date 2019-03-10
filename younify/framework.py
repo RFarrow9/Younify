@@ -18,7 +18,6 @@ def main():
     processed = ProcessedURLs()
     working = WorkingURLs()
     failed = FailedURLs()
-    print("got to here")
     working.push_url_to_queue("fKFbnhcNnjE")
     while working.count_urls() > 0:
         try:
@@ -111,9 +110,9 @@ class WorkingURLs(ProcessingArray):
         while True:
             url = q.get()
             #try:
-            unclassified = youtube_converter.VideoFactory("https://www.youtube.com/watch?v=" + url)
-            video = unclassified.classify()
-            print(video.url)
+            video = youtube_converter.VideoFactory("https://www.youtube.com/watch?v=" + url).classify()
+            #video = unclassified.classify()
+            print(video)
             video.print_dict()
             video.download()
             processed.add_url(url)
