@@ -6,11 +6,17 @@ import eyed3
 import json
 from abc import ABC
 
+"""
+To use this... 
+
+"""
+
 with open('c:\\config\\config.json') as f:
     config = json.load(f)
 
 root_dir = config["youtube_converter"]["root_dir"]
 spotify_dir = config["youtube_converter"]["spotify_dir"]
+
 
 class VideoFactory:
     def __init__(self, url):

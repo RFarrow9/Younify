@@ -2,10 +2,10 @@ import queue
 from threading import Thread
 from younify import youtube_converter
 
-# Need to pick a style (camelcase?) and stick with it
-# Testing to be in seperate module
-# Array + gui should be split into seperate modules
-# Single module to hang everything together (main?)
+"""
+To use this...
+
+"""
 
 fetch_threads = 4
 enclosure_queue = queue.Queue()

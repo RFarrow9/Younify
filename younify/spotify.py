@@ -6,6 +6,11 @@ import operator
 import itertools
 import json
 
+"""
+To use this...
+
+"""
+
 with open('c:\\config\\config.json') as f:
     config = json.load(f)
 
