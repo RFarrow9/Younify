@@ -9,7 +9,7 @@ import json
 with open('c:\\config\\config.json') as f:
     config = json.load(f)
 
-class SpotifyMatching():
+class SpotifyMatching:
     def __init__(self, name):
         self.name = name
         self.artist = None
@@ -123,10 +123,10 @@ class SpotifyMatching():
     def return_song_artist(self):
         return self.song_uri, self.artist_uri
 
-            print("song not found in spotify")
+            #print("song not found in spotify")
             # push to playlists here?
             # push_to_playlist(playlistname)
-            print("should commence manual download here")
+            #print("should commence manual download here")
 
 def levenshtein(seq1, seq2):
     size_x = len(seq1) + 1

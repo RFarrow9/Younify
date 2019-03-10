@@ -12,7 +12,7 @@ with open('c:\\config\\config.json') as f:
 root_dir = config["youtube_converter"]["root_dir"]
 spotify_dir = config["youtube_converter"]["spotify_dir"]
 
-class Factory:
+class VideoFactory:
     def __init__(self, url):
         self.url = url
         self.info_dict = None
@@ -24,7 +24,7 @@ class Factory:
             'outtmpl': spotify_dir + '\%(title)s.%(ext)s'
         }
         self.populate()
-        self.factory()
+        self.classify()
 
     def populate(self):
         with youtube_dl.YoutubeDL(self.options) as ydl:
@@ -32,7 +32,7 @@ class Factory:
             self.info_dict = info_dict
             self.duration = info_dict.get("duration")
 
-    def factory(self):
+    def classify(self):
         """This is where we define what the video actually is"""
         #For now, we treat everything like a song
         if self.duration > 600:
