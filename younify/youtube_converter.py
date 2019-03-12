@@ -23,6 +23,7 @@ class VideoFactory:
         self.url = url
         self.info_dict = None
         self.duration = None
+        self.description = None
         self.options = {
             'format': 'bestaudio/best',  # choice of quality
             'extractaudio': True,  # only keep the audio
@@ -37,6 +38,7 @@ class VideoFactory:
             info_dict = ydl.extract_info(self.url, download=False)
             self.info_dict = info_dict
             self.duration = info_dict.get("duration")
+            self.description = info_dict.get("description")
 
     def classify(self):
         """This is where we define what the video actually is"""
@@ -45,6 +47,9 @@ class VideoFactory:
             return self.to_song()
         elif self.duration <= 600:
             return self.to_song()
+
+    def descriptionreader(self):
+        #how do we pull out information from the description???
 
     def to_song(self):
         return YoutubeSong(self.url, self.info_dict)
