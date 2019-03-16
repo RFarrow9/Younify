@@ -6,10 +6,15 @@ import operator
 import itertools
 import json
 
+"""
+To use this...
+
+"""
+
 with open('c:\\config\\config.json') as f:
     config = json.load(f)
 
-class SpotifyMatching():
+class SpotifyMatching:
     def __init__(self, name):
         self.name = name
         self.artist = None
@@ -38,7 +43,7 @@ class SpotifyMatching():
             self.artist, self.song = self.name.split(' - ')
         elif ' — ' in self.name:
             self.artist, self.song = self.name.split(' — ')
-        elif 'by' in self.name:
+        elif ' by ' in self.name:
             self.artist, self.song = self.name.split(' by ')
         else:
             self.success = False
@@ -118,11 +123,15 @@ class SpotifyMatching():
         self.artist_song_first_pass()
         if not self.success:
             self.artist_song_second_pass()
-        if not self.success:
-            print("song not found in spotify")
+        return self.success
+
+    def return_song_artist(self):
+        return self.song_uri, self.artist_uri
+
+            #print("song not found in spotify")
             # push to playlists here?
             # push_to_playlist(playlistname)
-            print("should commence manual download here")
+            #print("should commence manual download here")
 
 def levenshtein(seq1, seq2):
     size_x = len(seq1) + 1

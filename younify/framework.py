@@ -1,13 +1,11 @@
 import queue
 from threading import Thread
-
-# from younify import frontend
 from younify import youtube_converter
 
-# Need to pick a style (camelcase?) and stick with it
-# Testing to be in seperate module
-# Array + gui should be split into seperate modules
-# Single module to hang everything together (main?)
+"""
+To use this...
+
+"""
 
 fetch_threads = 4
 enclosure_queue = queue.Queue()
@@ -20,7 +18,7 @@ def main():
     processed = ProcessedURLs()
     working = WorkingURLs()
     failed = FailedURLs()
-    working.push_url_to_queue("GdzrrWA8e7A")
+    working.push_url_to_queue("fKFbnhcNnjE")
     while working.count_urls() > 0:
         try:
             working.process_urls(processed, failed)
@@ -112,8 +110,10 @@ class WorkingURLs(ProcessingArray):
         while True:
             url = q.get()
             #try:
-            video = youtube_converter.video("https://www.youtube.com/watch?v=" + url, "", "")
-            print(video.url)
+            video = youtube_converter.VideoFactory("https://www.youtube.com/watch?v=" + url).classify()
+            #video = unclassified.classify()
+            print(video)
+            video.print_dict()
             video.download()
             processed.add_url(url)
            # except Exception as e:
