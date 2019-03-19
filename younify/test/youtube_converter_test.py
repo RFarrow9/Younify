@@ -3,19 +3,21 @@ import unittest
 
 class TestConverterMethods(unittest.TestCase):
 
-    def test_get_audio(self):
-        url = youtube_converter.video("https://www.youtube.com/watch?v=r4WlNj1TTqA")
-        #self.assertTrue(youtube_converter.levenshtein("twat", "mong") == 4)
-        #s#elf.assertTrue(youtube_converter.levenshtein("twat", "twat") == 0)
-        #url.print(self)
-        url.print()
-        url.spotify.print()
+#    def test_get_audio_song(self):
+#        video = youtube_converter.VideoFactory("https://www.youtube.com/watch?v=oKeCXlnL5Lg").classify()
+#        print(video)
+        #video.process()
 
-    def instantiations(self):
-        url = youtube_converter.video("https://www.youtube.com/watch?v=8-fkmRaX0Wk")
+    def test_get_audio_playlist(self):
+        video = youtube_converter.VideoFactory("https://www.youtube.com/watch?v=eqJFVg05b8Q").classify()
+        print(video)
+        #video.print_desc()
+ #       #video.process()
 
-    def test_convert(self):
-        print("this is a placeholder")
-        
+ #   def test_another(self):
+ #       video = youtube_converter.VideoFactory("https://www.youtube.com/watch?v=nICgdqB7wME").classify()
+ #       print(video)
+
 if __name__ == '__main__':
     unittest.main()
+

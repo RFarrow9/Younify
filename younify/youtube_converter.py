@@ -39,10 +39,11 @@ class VideoFactory:
             'format': 'bestaudio/best',  # choice of quality
             'extractaudio': True,  # only keep the audio
             'noplaylist': True,  # only download single song, not playlist
-            'outtmpl': spotify_dir + '\%(title)s.%(ext)s'
+            'outtmpl': spotify_dir + '\%(title)s.%(ext)s',
+            'quiet': True
         }
         self.populate()
-        self.classify()
+
 
     def populate(self):
         with youtube_dl.YoutubeDL(self.options) as ydl:
@@ -55,12 +56,13 @@ class VideoFactory:
         """This is where we define what the video actually is"""
         #For now, we treat everything like a song
         if self.duration > 600:
-            return self.to_song()
+            return self.to_playlist()
         elif self.duration <= 600:
             return self.to_song()
 
     def descriptionreader(self):
         #how do we pull out information from the description???
+        print("placeholder")
 
     def to_song(self):
         return YoutubeSong(self.url, self.info_dict)
@@ -87,7 +89,8 @@ class Youtube(ABC):
             'extractaudio': True,  # only keep the audio
             'noplaylist': True,  # only download single song, not playlist
             'progress_hooks': [self.hook],
-            'outtmpl': spotify_dir + '\%(title)s.%(ext)s'
+            'outtmpl': spotify_dir + '\%(title)s.%(ext)s',
+            'quiet': True
         }
         self.name = self.info_dict.get("title")
         self.description = self.info_dict.get("description")
@@ -104,6 +107,9 @@ class Youtube(ABC):
     def print_dict(self):
         print(self.info_dict)
 
+    def print_desc(self):
+        print(self.description)
+
     def download(self):
         with youtube_dl.YoutubeDL(self.options) as ydl:
             ydl.download([self.url])
@@ -113,12 +119,11 @@ class Youtube(ABC):
             self.process()
 
     def process(self):
-        print("shouldn't be here")
-
+        print("This method should be overwritten")
 
 class YoutubeSong(Youtube):
     def __init__(self, url, info_dict): #should the download be tied to init?
-        Youtube.__init__(self, url, info_dict)
+        super().__init__(url, info_dict)
         self.spotify = spotify.SpotifyMatching(self.name)
         """Attributes specific to songs"""
         self.found = None
@@ -174,24 +179,66 @@ class YoutubeSong(Youtube):
 class YoutubePlaylist(Youtube):
     """This should treat each song in the playlist like a YoutubeSong object"""
     def __init__(self, url, info_dict):
-        Youtube.__init__(self, url, info_dict)
+        super().__init__(url, info_dict)
         """Attributes specific to playlists"""
-        regex = r'https://www.youtube.com/watch?v=(.*)&t(.*)'
-        self.num_songs = countnonoverlappingrematches(regex, self.description) #Counts the number of timestamps in the description
-        matchObj = re.match(regex, self.description)
-        for i in range(self.num_songs-2):
-            self.temp += matchObj.group(i+1) #at the moment grab the info into a single variable
+        regex_layer1 = r"[0-9]\:[0-9][0-9]\:[0-9][0-9]"
+        regex_layer2 = r"[0-9][0-9]\:[0-9][0-9]"
+        self.num_songs = self.countmatches(regex_layer2) #Counts the number of timestamps in the description, these dont overlap so this should work
+        timestamps_layer1 = re.findall(regex_layer1, self.description)
+        augmented_description = re.sub(regex_layer1, '', self.description)
+        timestamps_layer2 = re.findall(regex_layer2, augmented_description)
+        self.timestamps = timestamps_layer2 + timestamps_layer1
+
+        for timestamp in self.timestamps:
+           print(timestamp)
+
+           #    matchObj = re.match(regex, self.description)
+   #     for i in range(self.num_songs-2):
+    #        self.temp += matchObj.group(i+1) #at the moment grab the info into a single variable
         #If this is null, can we grab the top 10 comments for example and do it with this?
+
+    def __str__(self):
+        return "type: " + type(self).__name__ + "\n" + "url: " + self.url + "\n" + "songs in playlist: " + str(self.num_songs)
 
     def process(self):
         self.download()
-        self.cut()
-        for each song in playlist:
-            video = VideoFactory("filename" as file).classify()
-        print("placeholder")
+    #    self.cut()
+    #    for each song in playlist:
+    #        video = VideoFactory("filename" as file).classify()
+    #    print("placeholder")
 
-    def countnonoverlappingrematches(pattern, thestring):
-        return re.subn(pattern, '', thestring)[1]
+    def hook(self, d):
+        """Method override is only temporary, this should be removed in future, but keeps it working for now"""
+        if d['status'] == 'finished':
+            self.convert(d['filename'])
+
+    def convert(self, filename):
+        if filename[-4:] == "webm":
+            processed_file_path = filename[0:-5] + ".mp3"
+        else:
+            processed_file_path = filename[0:-4] + ".mp3"
+        result = subprocess.run(
+            ["C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe", "-y", "-i", filename, "-acodec", "libmp3lame",
+             "-ab",
+             "128k", processed_file_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if result.stderr:
+            print(result.stderr)
+        # filename = os.path.splitext(filename)[0]
+        #if self.artist is not None or self.title is not None:
+        #    self.edit_tags(processed_file_path)
+        # try:
+        #    os.rename(processed_file_path, processed_file_path)
+        # except Exception as e:
+        #    os.remove(filename)
+        #    os.remove(processed_file_path)
+        #    raise e
+        try:
+            os.remove(filename)
+        except Exception as e:
+            raise e
+
+    def countmatches(self, pattern):
+        return re.subn(pattern, '', self.description)[1]
 
 class YoutubeAudiobook(Youtube):
     def __init__(self, url, info_dict):
