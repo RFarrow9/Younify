@@ -169,8 +169,7 @@ class YoutubeSong(Youtube):
                 raise e
 
     def process(self):
-        #this bit should be polymorphic so it is processed like all the others
-        print("placeholder")
+        self.download()
 
 class YoutubePlaylist(Youtube):
     """This should treat each song in the playlist like a YoutubeSong object"""
@@ -178,15 +177,17 @@ class YoutubePlaylist(Youtube):
         Youtube.__init__(self, url, info_dict)
         """Attributes specific to playlists"""
         regex = r'https://www.youtube.com/watch?v=(.*)&t(.*)'
-        self.num_songs = countnonoverlappingrematches(regex, self.description)
+        self.num_songs = countnonoverlappingrematches(regex, self.description) #Counts the number of timestamps in the description
         matchObj = re.match(regex, self.description)
-        for i to self.num_songs:
-            self.info += matchObj.group(1)
-        #Counts the number of timestamps in the description
+        for i in range(self.num_songs-2):
+            self.temp += matchObj.group(i+1) #at the moment grab the info into a single variable
         #If this is null, can we grab the top 10 comments for example and do it with this?
 
     def process(self):
-        #this bit should be polymorphic so it is processed like all the others
+        self.download()
+        self.cut()
+        for each song in playlist:
+            video = VideoFactory("filename" as file).classify()
         print("placeholder")
 
     def countnonoverlappingrematches(pattern, thestring):
