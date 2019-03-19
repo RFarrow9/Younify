@@ -2,14 +2,15 @@ import subprocess
 import youtube_dl
 from younify import spotify
 import os
+import re
 import eyed3
 import json
 from abc import ABC
 
 """
 This is the VideoFactory and URL class handling file
-To use this correctly you will need to instantiate a instance of the video VideoFactory
-with a URL, call the method classify into another variable, for example:
+To use this correctly you will need to instantiate a instance of the VideoFactory
+with a URL, call the method classify into another variable, for example (from external module):
 
     video = youtube_converter.VideoFactory("https://www.youtube.com/watch?v=" + url).classify()
 
@@ -167,14 +168,29 @@ class YoutubeSong(Youtube):
             except Exception as e:
                 raise e
 
+    def process(self):
+        #this bit should be polymorphic so it is processed like all the others
+        print("placeholder")
+
 class YoutubePlaylist(Youtube):
     """This should treat each song in the playlist like a YoutubeSong object"""
     def __init__(self, url, info_dict):
         Youtube.__init__(self, url, info_dict)
+        """Attributes specific to playlists"""
+        regex = r'https://www.youtube.com/watch?v=(.*)&t(.*)'
+        self.num_songs = countnonoverlappingrematches(regex, self.description)
+        matchObj = re.match(regex, self.description)
+        for i to self.num_songs:
+            self.info += matchObj.group(1)
+        #Counts the number of timestamps in the description
+        #If this is null, can we grab the top 10 comments for example and do it with this?
 
     def process(self):
         #this bit should be polymorphic so it is processed like all the others
         print("placeholder")
+
+    def countnonoverlappingrematches(pattern, thestring):
+        return re.subn(pattern, '', thestring)[1]
 
 class YoutubeAudiobook(Youtube):
     def __init__(self, url, info_dict):
