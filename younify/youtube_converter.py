@@ -7,7 +7,17 @@ import json
 from abc import ABC
 
 """
-To use this... 
+This is the VideoFactory and URL class handling file
+To use this correctly you will need to instantiate a instance of the video VideoFactory
+with a URL, call the method classify into another variable, for example:
+
+    video = youtube_converter.VideoFactory("https://www.youtube.com/watch?v=" + url).classify()
+
+Regardless of the classtype instantiated, they all then have the method process()
+
+    video.process()
+
+This will handle playlists/albums/songs/audiobooks accordingly
 
 """
 
