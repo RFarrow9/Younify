@@ -119,12 +119,15 @@ class Youtube(ABC):
             self.process()
 
     def process(self):
-        print("This method should be overwritten")
+        if cls is Youtube:
+            raise TypeError("process cannot be run from base class, override the method")
+        return object.__new__(cls, *args, **kwargs)
 
 class YoutubeSong(Youtube):
     def __init__(self, url, info_dict): #should the download be tied to init?
         super().__init__(url, info_dict)
         self.spotify = spotify.SpotifyMatching(self.name)
+        self.success = None
         """Attributes specific to songs"""
         self.found = None
         self.song_id = None
@@ -139,7 +142,8 @@ class YoutubeSong(Youtube):
     def hook(self, d):
         """Method override is only temporary, this should be removed in future, but keeps it working for now"""
         if d['status'] == 'finished':
-            self.convert(d['filename'])
+            self.filename = d['filename']
+            self.convert()
 
     def edit_tags(self, file_path):
         tag_file = eyed3.load(file_path)
@@ -148,11 +152,11 @@ class YoutubeSong(Youtube):
         tag_file.tag.album = self.title
         tag_file.tag.save()
 
-    def convert(self, filename):
+    def convert(self):
             if filename[-4:] == "webm":
-                processed_file_path = filename[0:-5] + ".mp3"
+                processed_file_path = self.filename[0:-5] + ".mp3"
             else:
-                processed_file_path = filename[0:-4] + ".mp3"
+                processed_file_path = self.filename[0:-4] + ".mp3"
             result = subprocess.run(
                 ["C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe", "-y", "-i", filename, "-acodec", "libmp3lame",
                  "-ab",
@@ -173,8 +177,14 @@ class YoutubeSong(Youtube):
             except Exception as e:
                 raise e
 
+    def assign_metadata(self):
+
+
     def process(self):
-        self.download()
+        self.success = self.spotify.process()
+        if not self.success:
+            self.download()
+            #automatically calls the conversion and follows through
 
 class YoutubePlaylist(Youtube):
     """This should treat each song in the playlist like a YoutubeSong object"""

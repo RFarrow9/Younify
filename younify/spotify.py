@@ -123,6 +123,9 @@ class SpotifyMatching:
         self.artist_song_first_pass()
         if not self.success:
             self.artist_song_second_pass()
+        if self.success:
+            #add to playlist here
+            print("success")
         return self.success
 
     def return_song_artist(self):
