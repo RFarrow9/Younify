@@ -191,17 +191,22 @@ class YoutubePlaylist(Youtube):
     def __init__(self, url, info_dict):
         super().__init__(url, info_dict)
         """Attributes specific to playlists"""
+        self.timestamps = [,]
         regex_layer1 = r"[0-9]\:[0-9][0-9]\:[0-9][0-9]"
         regex_layer2 = r"[0-9][0-9]\:[0-9][0-9]"
         self.num_songs = self.countmatches(regex_layer2) #Counts the number of timestamps in the description, these dont overlap so this should work
         timestamps_layer1 = re.findall(regex_layer1, self.description)
         augmented_description = re.sub(regex_layer1, '', self.description)
         timestamps_layer2 = re.findall(regex_layer2, augmented_description)
-        self.timestamps = timestamps_layer2 + timestamps_layer1
-
-        for timestamp in self.timestamps:
-           print(timestamp)
-
+        timestamps = timestamps_layer2 + timestamps_layer1
+        for timestamp in timestamps:
+           for line in self.description:
+               if timestamp in line:
+                   self.timestamps.append(line.replace(timestamp, ""), timestamp)
+                   break
+                   break
+        for item in self.timestamps:
+            print(item)
            #    matchObj = re.match(regex, self.description)
    #     for i in range(self.num_songs-2):
     #        self.temp += matchObj.group(i+1) #at the moment grab the info into a single variable
