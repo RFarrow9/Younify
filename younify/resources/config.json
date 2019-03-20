@@ -1,0 +1,12 @@
+{
+    "spotify": {
+        "client_id": "",
+		"secret_id": ""
+				},
+	"youtube_converter": {
+		"root_dir":"C:\\Users\\robfa\\Documents\\Python\\Youtube Thing",
+		"spotify_dir":"C:\\Users\\robfa\\Music\\From YouTube",
+		"artwork":"C:\\Users\\robfa\\PycharmProjects\\Younify\\younify\\resources\\Yin_yang.svg"
+	}
+	
+}

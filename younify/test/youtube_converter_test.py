@@ -3,15 +3,20 @@ import unittest
 
 class TestConverterMethods(unittest.TestCase):
 
-#    def test_get_audio_song(self):
-#        video = youtube_converter.VideoFactory("https://www.youtube.com/watch?v=oKeCXlnL5Lg").classify()
-#        print(video)
-        #video.process()
-
-    def test_get_audio_playlist(self):
-        video = youtube_converter.VideoFactory("https://www.youtube.com/watch?v=eqJFVg05b8Q").classify()
+    def test_get_audio_song(self):
+        video = youtube_converter.VideoFactory("https://www.youtube.com/watch?v=Jmv5pTyz--I").classify()
         print(video)
-        #video.print_desc()
+        video.process()
+
+    def test_globals(self):
+        print(youtube_converter.root_dir)
+        print(youtube_converter.spotify_dir)
+        print(youtube_converter.artwork)
+
+#    def test_get_audio_playlist(self):
+#        video = youtube_converter.VideoFactory("https://www.youtube.com/watch?v=eqJFVg05b8Q").classify()
+#        print(video)
+#        #video.print_desc()
  #       #video.process()
 
  #   def test_another(self):

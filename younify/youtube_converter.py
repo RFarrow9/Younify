@@ -27,6 +27,7 @@ with open('c:\\config\\config.json') as f:
 
 root_dir = config["youtube_converter"]["root_dir"]
 spotify_dir = config["youtube_converter"]["spotify_dir"]
+artwork = config["youtube_converter"]["artwork"]
 
 
 class VideoFactory:
@@ -119,15 +120,17 @@ class Youtube(ABC):
             self.process()
 
     def process(self):
-        if cls is Youtube:
-            raise TypeError("process cannot be run from base class, override the method")
-        return object.__new__(cls, *args, **kwargs)
+        #if cls is Youtube:
+        raise TypeError("process cannot be run from base class, override the method")
+        #return object.__new__(cls, *args, **kwargs)
 
 class YoutubeSong(Youtube):
-    def __init__(self, url, info_dict): #should the download be tied to init?
+    def __init__(self, url, info_dict):
         super().__init__(url, info_dict)
         self.spotify = spotify.SpotifyMatching(self.name)
         self.success = None
+        self.filename = None
+        self.temp_filename = None
         """Attributes specific to songs"""
         self.found = None
         self.song_id = None
@@ -142,7 +145,7 @@ class YoutubeSong(Youtube):
     def hook(self, d):
         """Method override is only temporary, this should be removed in future, but keeps it working for now"""
         if d['status'] == 'finished':
-            self.filename = d['filename']
+            self.temp_filename = d['filename']
             self.convert()
 
     def edit_tags(self, file_path):
@@ -153,19 +156,20 @@ class YoutubeSong(Youtube):
         tag_file.tag.save()
 
     def convert(self):
-            if filename[-4:] == "webm":
-                processed_file_path = self.filename[0:-5] + ".mp3"
+            if self.temp_filename[-4:] == "webm":
+                self.filename = self.temp_filename[0:-5] + ".mp3"
             else:
-                processed_file_path = self.filename[0:-4] + ".mp3"
+                self.filename = self.temp_filename[0:-4] + ".mp3"
             result = subprocess.run(
-                ["C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe", "-y", "-i", filename, "-acodec", "libmp3lame",
+                ["C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe", "-y", "-i", self.temp_filename, "-acodec", "libmp3lame",
                  "-ab",
-                 "128k", processed_file_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                 "128k", self.filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             if result.stderr:
                 print(result.stderr)
             #filename = os.path.splitext(filename)[0]
             if self.artist is not None or self.title is not None:
-                self.edit_tags(processed_file_path)
+                self.edit_tags(self.filename)
+            self.assign_metadata()
             #try:
             #    os.rename(processed_file_path, processed_file_path)
             #except Exception as e:
@@ -173,12 +177,18 @@ class YoutubeSong(Youtube):
             #    os.remove(processed_file_path)
             #    raise e
             try:
-                os.remove(filename)
+                os.remove(self.temp_filename)
             except Exception as e:
                 raise e
 
     def assign_metadata(self):
-
+        """""this would be better using a with statement - but how?"""
+        eyed3file = eyed3.load(self.filename)
+        image = open(artwork, "rb")
+        imagestream = image.read()
+        eyed3file.tag.images.set(3, imagestream, "image/jpeg")
+        eyed3file.tag.save()
+        image.close()
 
     def process(self):
         self.success = self.spotify.process()
@@ -191,7 +201,7 @@ class YoutubePlaylist(Youtube):
     def __init__(self, url, info_dict):
         super().__init__(url, info_dict)
         """Attributes specific to playlists"""
-        self.timestamps = [,]
+        self.timestamps = []
         regex_layer1 = r"[0-9]\:[0-9][0-9]\:[0-9][0-9]"
         regex_layer2 = r"[0-9][0-9]\:[0-9][0-9]"
         self.num_songs = self.countmatches(regex_layer2) #Counts the number of timestamps in the description, these dont overlap so this should work
@@ -199,11 +209,11 @@ class YoutubePlaylist(Youtube):
         augmented_description = re.sub(regex_layer1, '', self.description)
         timestamps_layer2 = re.findall(regex_layer2, augmented_description)
         timestamps = timestamps_layer2 + timestamps_layer1
+        print(self.description)
         for timestamp in timestamps:
            for line in self.description:
                if timestamp in line:
-                   self.timestamps.append(line.replace(timestamp, ""), timestamp)
-                   break
+                   self.timestamps.append([line.replace(timestamp, ""), timestamp])
                    break
         for item in self.timestamps:
             print(item)
