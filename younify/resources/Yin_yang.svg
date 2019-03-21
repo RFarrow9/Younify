@@ -53,7 +53,6 @@
      style="fill:#ff0000;fill-opacity:1" />
   <path
      d="M0,38a38,38 0 0 1 0,-76a19,19 0 0 1 0,38a19,19 0 0 0 0,38"
-     fill="#181818"
      id="path4"
      style="fill:#1ed760;fill-opacity:1" />
   <circle
@@ -68,4 +67,9 @@
      r="8.3898296"
      cx="-0.16949147"
      style="stroke-width:1.677966" />
+  <circle
+	 r="38.5"
+	 fill="none"
+	 stroke="black"
+	 stroke-width="1"/>
 </svg>
