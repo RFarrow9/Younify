@@ -21,6 +21,8 @@ class SpotifyMatching:
         self.artist_uri = None
         self.song = None
         self.song_uri = None
+        self.album = None
+        self.album_uri = None
         self.sp = None
         self.success = True
         self.setup()
@@ -53,6 +55,32 @@ class SpotifyMatching:
                 for items in results['tracks']['items']:
                     self.song = items['name']
                     self.song_uri = items['uri']
+                    for artist in items['artists'][0]:
+                        self.artist = artist['name']
+                        self.artist_uri = artist['uri']
+            else:
+                self.success = False
+
+    def artist_album_first_pass(self):
+        """
+        This method is untested, and very similar to the artist_song_first_pass method. There is probably a better way of doing this.
+        """
+        if ' -- ' in self.name:
+            self.artist, self.album = self.album.split(" -- ")
+        elif ' - ' in self.name:
+            self.artist, self.album = self.name.split(' - ')
+        elif ' — ' in self.name:
+            self.artist, self.album = self.name.split(' — ')
+        elif ' by ' in self.name:
+            self.artist, self.album = self.name.split(' by ')
+        else:
+            self.success = False
+        if self.success:
+            results = self.sp.search(q='artist: ' + self.artist + 'album: ' + self.album, type='album', limit=1)
+            if results['albums']['total'] >= 1:
+                for items in results['albums']['items']:
+                    self.album = items['name']
+                    self.album_uri = items['uri']
                     for artist in items['artists'][0]:
                         self.artist = artist['name']
                         self.artist_uri = artist['uri']
