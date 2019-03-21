@@ -156,6 +156,9 @@ class SpotifyMatching:
             print("success")
         return self.success
 
+    def add_to_playlist(self, playlist_uri):
+        self.sp.add_to_playlist(self.song_uri)#?
+
     def return_song_artist(self):
         return self.song_uri, self.artist_uri
 

@@ -88,12 +88,18 @@ class ManualWindow(QWidget):
         super(ManualWindow, self).__init__()
         self.setGeometry(100, 100, 400, 200)
         self.layout = QVBoxLayout()
+        #Method to put in a default value if this is empty,
+        # can use the QLineEdit.selectionChanged method and check for empty string literals
         self.layout.addWidget(QLabel("Enter the URL"))
         self.url_field = QLineEdit("")
         self.layout.addWidget(self.url_field)
+        #Method to put in a default value if this is empty,
+        # can use the QLineEdit.selectionChanged method and check for empty string literals
         self.layout.addWidget(QLabel("Enter the artist "))
         self.artist_field = QLineEdit("")
         self.layout.addWidget(self.artist_field)
+        #Method to put in a default value if this is empty,
+        # can use the QLineEdit.selectionChanged method and check for empty string literals
         self.layout.addWidget(QLabel("Enter the song title"))
         self.title_field = QLineEdit("")
         self.layout.addWidget(self.title_field)
@@ -109,6 +115,8 @@ class YTSettingsWindow(QWidget):
         super(YTSettingsWindow, self).__init__()
         self.setGeometry(100, 100, 400, 200)
         self.layout = QVBoxLayout()
+        #Method to put in a default value if this is empty,
+        # can use the QLineEdit.selectionChanged method and check for empty string literals
         self.layout.addWidget(QLabel("Enter the URL"))
         self.url_field = QLineEdit("")
         self.layout.addWidget(self.url_field)

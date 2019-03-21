@@ -182,7 +182,10 @@ class YoutubeSong(Youtube):
                 raise e
 
     def assign_metadata(self):
-        """""this would be better using a with statement - but how?"""
+        """
+        This would be better usign a with statement, which would close the file automatically not explicitly.
+        However doing this seems to result in an error, come back to this later
+        """
         eyed3file = eyed3.load(self.filename)
         image = open(artwork, "rb")
         imagestream = image.read()
@@ -202,6 +205,7 @@ class YoutubePlaylist(Youtube):
         super().__init__(url, info_dict)
         """Attributes specific to playlists"""
         self.timestamps = []
+        #Could this regex part be done slicker?
         regex_layer1 = r"[0-9]\:[0-9][0-9]\:[0-9][0-9]"
         regex_layer2 = r"[0-9][0-9]\:[0-9][0-9]"
         self.num_songs = self.countmatches(regex_layer2) #Counts the number of timestamps in the description, these dont overlap so this should work
@@ -209,6 +213,7 @@ class YoutubePlaylist(Youtube):
         augmented_description = re.sub(regex_layer1, '', self.description)
         timestamps_layer2 = re.findall(regex_layer2, augmented_description)
         timestamps = timestamps_layer2 + timestamps_layer1
+        #End regex part
         print(self.description)
         for timestamp in timestamps:
            for line in self.description:
@@ -248,15 +253,6 @@ class YoutubePlaylist(Youtube):
              "128k", processed_file_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if result.stderr:
             print(result.stderr)
-        # filename = os.path.splitext(filename)[0]
-        #if self.artist is not None or self.title is not None:
-        #    self.edit_tags(processed_file_path)
-        # try:
-        #    os.rename(processed_file_path, processed_file_path)
-        # except Exception as e:
-        #    os.remove(filename)
-        #    os.remove(processed_file_path)
-        #    raise e
         try:
             os.remove(filename)
         except Exception as e:
@@ -273,7 +269,7 @@ class YoutubeAudiobook(Youtube):
         print("placeholder")
 
 class YoutubeAlbum(Youtube):
-    """This should explicitly search spotify for the album, different to playlist!"""
+    """This should explicitly search spotify for the album, different to playlist"""
     def __init__(self, url, info_dict):
         Youtube.__init__(self, url, info_dict)
 
