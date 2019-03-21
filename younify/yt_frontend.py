@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5 import QtGui, QtWidgets
 import json
-import breeze_resources
+from younify import breeze_resources
 import ctypes
 
 with open('c:\\config\\config.json') as f:
@@ -20,7 +20,7 @@ def main():
     file = QFile(":/dark.qss")
     file.open(QFile.ReadOnly | QFile.Text)
     stream = QTextStream(file)
-    #app.setStyleSheet(stream.readAll())
+    app.setStyleSheet(stream.readAll())
     app.setWindowIcon(QtGui.QIcon(icon))
     myWindow = MainWindow()
     myWindow.show()
