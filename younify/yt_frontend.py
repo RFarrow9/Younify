@@ -20,7 +20,7 @@ def main():
     file = QFile(":/dark.qss")
     file.open(QFile.ReadOnly | QFile.Text)
     stream = QTextStream(file)
-    app.setStyleSheet(stream.readAll())
+    #app.setStyleSheet(stream.readAll())
     app.setWindowIcon(QtGui.QIcon(icon))
     myWindow = MainWindow()
     myWindow.show()
@@ -85,30 +85,49 @@ class TabTable(QWidget):
 
 class ManualWindow(QWidget):
     def __init__(self):
-        super(ManualWindow, self).__init__()
+        super().__init__()
         self.setGeometry(100, 100, 400, 200)
         self.layout = QVBoxLayout()
-        #Method to put in a default value if this is empty,
-        # can use the QLineEdit.selectionChanged method and check for empty string literals
-        self.layout.addWidget(QLabel("Enter the URL"))
-        self.url_field = QLineEdit("")
-        self.layout.addWidget(self.url_field)
-        #Method to put in a default value if this is empty,
-        # can use the QLineEdit.selectionChanged method and check for empty string literals
-        self.layout.addWidget(QLabel("Enter the artist "))
-        self.artist_field = QLineEdit("")
-        self.layout.addWidget(self.artist_field)
-        #Method to put in a default value if this is empty,
-        # can use the QLineEdit.selectionChanged method and check for empty string literals
-        self.layout.addWidget(QLabel("Enter the song title"))
-        self.title_field = QLineEdit("")
-        self.layout.addWidget(self.title_field)
-        button = QPushButton("Do the thing")
+        self.inner_layout1 = QHBoxLayout()
+        self.inner_layout2 = QHBoxLayout()
+        self.inner_layout3 = QHBoxLayout()
+        self.url_field = CustomQLineEdit("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+        self.artist_field = CustomQLineEdit("The Beegees")
+        self.title_field = CustomQLineEdit("Stayin' Alive")
+
+        self.inner_layout1.addWidget(CustomQLabel("Youtube URL:"))
+        self.inner_layout1.addWidget(self.url_field)
+
+        self.inner_layout2.addWidget(CustomQLabel("Artist: "))
+        self.inner_layout2.addWidget(CustomQLineEdit("The Beegees"))
+
+        self.inner_layout3.addWidget(CustomQLabel("Song title:"))
+        self.inner_layout3.addWidget(self.title_field)
+
+        self.layout.addLayout(self.inner_layout1)
+        self.layout.addLayout(self.inner_layout2)
+        self.layout.addLayout(self.inner_layout3)
+        button = QPushButton("Process URL")
         self.layout.addWidget(button)
-        button.clicked.connect(lambda: youtube_converter.Url([self.url_field.text()],
-                                                             self.artist_field.text(),
-                                                             self.title_field.text()))
+        button.clicked.connect(lambda: youtube_converter._process_url([self.url_field.text()],
+                                                                      self.artist_field.text(),
+                                                                      self.title_field.text()))
         self.setLayout(self.layout)
+
+class CustomQLineEdit(QLineEdit):
+    def __init__(self, text="Don't mind me."):
+        super().__init__()
+        self.textEditor=QLineEdit(self)
+        self.textEditor.setPlaceholderText(text)
+        self.setGeometry(0, 0, 2000, 50)
+
+class CustomQLabel(QLabel):
+    def __init__(self, text):
+        super().__init__()
+        self.text = text
+        self.setGeometry(100, 100, 200, 200)
+        self.setText(text)
+        self.show()
 
 class YTSettingsWindow(QWidget):
     def __init__(self):
