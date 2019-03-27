@@ -152,12 +152,17 @@ class SpotifyMatching:
         if not self.success:
             self.artist_song_second_pass()
         if self.success:
-            #add to playlist here
+            self.add_to_playlist()
             print("success")
         return self.success
 
-    def add_to_playlist(self, playlist_uri):
-        self.sp.add_to_playlist(self.song_uri)#?
+    def add_to_playlist(self, playlist_uri="None"):
+        """"Not sure how this should work, currently the playlist is a class attribute
+        , if it should be a class attribute, should it be an array?"""
+        if self.playlist_uri == "None":
+            return
+        else:
+            self.sp.add_to_playlist(self.song_uri)#?
 
     def return_song_artist(self):
         return self.song_uri, self.artist_uri

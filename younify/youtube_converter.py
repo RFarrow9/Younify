@@ -185,6 +185,8 @@ class YoutubeSong(Youtube):
         """
         This would be better usign a with statement, which would close the file automatically not explicitly.
         However doing this seems to result in an error, come back to this later
+
+        At the moment this only assigns the artwork for files.
         """
         eyed3file = eyed3.load(self.filename)
         image = open(artwork, "rb")

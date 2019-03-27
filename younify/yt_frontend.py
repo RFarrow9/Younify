@@ -20,6 +20,7 @@ def main():
     file = QFile(":/dark.qss")
     file.open(QFile.ReadOnly | QFile.Text)
     stream = QTextStream(file)
+    """Fix the dark theme, this may need recompiling from source"""
     #app.setStyleSheet(stream.readAll())
     app.setWindowIcon(QtGui.QIcon(icon))
     myWindow = MainWindow()
@@ -29,7 +30,7 @@ def main():
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.setGeometry(100, 100, 500, 400)
+        self.setGeometry(100, 100, 500, 200)
         self.setWindowTitle("Younify")
         self.central_widget = QStackedWidget()
         self.table_widget = TabTable(self)
@@ -91,15 +92,19 @@ class ManualWindow(QWidget):
         self.inner_layout1 = QHBoxLayout()
         self.inner_layout2 = QHBoxLayout()
         self.inner_layout3 = QHBoxLayout()
-        self.url_field = CustomQLineEdit("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
-        self.artist_field = CustomQLineEdit("The Beegees")
-        self.title_field = CustomQLineEdit("Stayin' Alive")
+        self.url_field = QLineEdit()
+        self.artist_field = QLineEdit()
+        self.title_field = QLineEdit()
 
-        self.inner_layout1.addWidget(CustomQLabel("Youtube URL:"))
+        self.url_field.setPlaceholderText("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+        self.artist_field.setPlaceholderText("The Beegees")
+        self.title_field.setPlaceholderText("Stayin' Alive")
+
+        self.inner_layout1.addWidget(CustomQLabel("Youtube URL:",))
         self.inner_layout1.addWidget(self.url_field)
 
         self.inner_layout2.addWidget(CustomQLabel("Artist: "))
-        self.inner_layout2.addWidget(CustomQLineEdit("The Beegees"))
+        self.inner_layout2.addWidget(self.artist_field)
 
         self.inner_layout3.addWidget(CustomQLabel("Song title:"))
         self.inner_layout3.addWidget(self.title_field)
@@ -109,23 +114,25 @@ class ManualWindow(QWidget):
         self.layout.addLayout(self.inner_layout3)
         button = QPushButton("Process URL")
         self.layout.addWidget(button)
-        button.clicked.connect(lambda: youtube_converter._process_url([self.url_field.text()],
-                                                                      self.artist_field.text(),
-                                                                      self.title_field.text()))
+        #button.clicked.connect(lambda: youtube_converter._process_url([self.url_field.text()],
+        #                                                              self.artist_field.text(),
+        #                                                              self.title_field.text()))
         self.setLayout(self.layout)
 
 class CustomQLineEdit(QLineEdit):
     def __init__(self, text="Don't mind me."):
+        """"Looks like the super call is showing the Qline behind by default"""
         super().__init__()
         self.textEditor=QLineEdit(self)
         self.textEditor.setPlaceholderText(text)
-        self.setGeometry(0, 0, 2000, 50)
+        self.textEditor.show()
+        #self.setGeometry(0, 0, 2000, 50)
 
 class CustomQLabel(QLabel):
     def __init__(self, text):
         super().__init__()
         self.text = text
-        self.setGeometry(100, 100, 200, 200)
+        self.setMinimumWidth(130)
         self.setText(text)
         self.show()
 
