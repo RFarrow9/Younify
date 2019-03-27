@@ -20,22 +20,30 @@ class TestSpotifyMethods(unittest.TestCase):
 
     def test_SpotifyProcessing_instantiation(self):
         #test function
+        print("placeholder")
 
     def test_SpotifyProcessing_artist_song_first_pass(self):
+        print("placeholder")
 
     def test_SpotifyProcessing_artist_second_pass(self):
+        print("placeholder")
 
     def test_SpotifyProcessing_artist_song_second_pass(self):
+        print("placeholder")
 
     def test_SpotifyProcessing_all_songs(self):
+        print("placeholder")
 
     def test_SpotifyProcessing_all_albums(self):
+        print("placeholder")
 
     def test_clean(self):
         #test function
+        print("placeholder")
 
     def test_most_common(self):
         #test function
+        print("placeholder")
 
 if __name__ == '__main__':
     unittest.main()
