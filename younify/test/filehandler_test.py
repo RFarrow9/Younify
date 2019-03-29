@@ -7,6 +7,7 @@ with open('c:\\config\\config.json') as f:
 
 test_audio_file = config["filehandler_test"]["test_audio_file"]
 
+
 class TestFileHandlerMethods(unittest.TestCase):
 
     def test_instantiation(self):

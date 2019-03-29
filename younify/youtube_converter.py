@@ -152,7 +152,7 @@ class YoutubeSong(Youtube):
         tag_file = eyed3.load(file_path)
         tag_file.tag.artist = self.artist
         tag_file.tag.title = self.title
-        tag_file.tag.album = self.title
+        tag_file.tag.album = self.album
         tag_file.tag.save()
 
     def convert(self):

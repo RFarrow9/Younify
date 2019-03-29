@@ -5,6 +5,7 @@ from younify import spotify
 At this point in time there are no fancy factories/singletons/abstract base classes required due to limited functionality.
 """
 
+
 class FileHandler:
     def __init__(self, file):
         self.file = file
