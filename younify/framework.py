@@ -29,6 +29,7 @@ def main():
             processed.update_temp()
             working.update_temp()
 
+
 class ProcessingArray:
     def __new__(cls, *args, **kwargs):
         if cls is ProcessingArray:
@@ -58,6 +59,7 @@ class ProcessingArray:
     def retrieve_urls(self):
         return self.urls
 
+
 class ProcessedURLs(ProcessingArray):
     def __init__(self):
         ProcessingArray.__init__(self)
@@ -74,6 +76,7 @@ class ProcessedURLs(ProcessingArray):
         for URL in self.urls:
             file.write(URL[-11:] + "\r")
         file.close()
+
 
 class WorkingURLs(ProcessingArray):
     def __init__(self):
@@ -134,14 +137,14 @@ class WorkingURLs(ProcessingArray):
 
     def process_url(self, url, processed):
         try:
-            #RunMattsCodeHere("https://www.youtube.com/watch?v=" + URL)
             youtube_converter.get_audio("https://www.youtube.com/watch?v=" + url, "", "")
             processed.add_url(url)
         except:
-            # failed.AddURL(URL, 'pass through error here')
+            #add proper error handling here
             print("error unknown")
         finally:
             self.remove_url(url)
+
 
 class FailedURLs:
     def __init__(self):
@@ -175,6 +178,7 @@ class FailedURLs:
 #    Functions defined below
 #
 
+
 def linecount(filename):
     count = 0
     file = open(filename)
@@ -182,6 +186,7 @@ def linecount(filename):
         count += 1
     file.close()
     return count
+
 
 def find_urls_in_file(filename):
     count, urls = 0, []
@@ -202,6 +207,7 @@ def find_urls_in_file(filename):
         file.close()
     return urls
 
+
 def find_url(string):
     count, url, array = 0, '', []
     index = string.find('https://www.youtube.com/watch?v=')
@@ -211,6 +217,7 @@ def find_url(string):
         array.append(url)
         find_url(string[index+43:])
     return count, array
+
 
 if __name__ == '__main__':
     main()

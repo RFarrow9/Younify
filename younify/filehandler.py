@@ -26,7 +26,6 @@ class FileHandler:
         print("placeholder")
         #self.filename = substring(self.file)
 
-
     def third_pass(self):
         """""For third pass we assume there is no valid metadata at all and use fingerprinting services"""
         #take 2 30 second clips, push to free fingerprinting services to identify information

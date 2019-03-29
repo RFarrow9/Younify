@@ -45,7 +45,6 @@ class VideoFactory:
         }
         self.populate()
 
-
     def populate(self):
         with youtube_dl.YoutubeDL(self.options) as ydl:
             info_dict = ydl.extract_info(self.url, download=False)
@@ -79,6 +78,7 @@ class VideoFactory:
 
     def to_other(self):
         return YoutubeOther(self.url, self.info_dict)
+
 
 class Youtube(ABC):
     """"This is an abstract class, and only contains methods to be inherited"""
@@ -152,7 +152,7 @@ class YoutubeSong(Youtube):
         tag_file = eyed3.load(file_path)
         tag_file.tag.artist = self.artist
         tag_file.tag.title = self.title
-        tag_file.tag.album = self.album
+        tag_file.tag.album = self.album # needs matching
         tag_file.tag.save()
 
     def convert(self):
@@ -166,13 +166,13 @@ class YoutubeSong(Youtube):
                  "128k", self.filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             if result.stderr:
                 print(result.stderr)
-            #filename = os.path.splitext(filename)[0]
+            # filename = os.path.splitext(filename)[0]
             if self.artist is not None or self.title is not None:
                 self.edit_tags(self.filename)
             self.assign_metadata()
-            #try:
+            # try:
             #    os.rename(processed_file_path, processed_file_path)
-            #except Exception as e:
+            # except Exception as e:
             #    os.remove(filename)
             #    os.remove(processed_file_path)
             #    raise e
@@ -199,35 +199,39 @@ class YoutubeSong(Youtube):
         self.success = self.spotify.process()
         if not self.success:
             self.download()
-            #automatically calls the conversion and follows through
+            # automatically calls the conversion and follows through
+
 
 class YoutubePlaylist(Youtube):
-    """This should treat each song in the playlist like a YoutubeSong object"""
+    """This should treat each song in the playlist like a YoutubeSong object
+        How do we specify that a video that is part of a playlist is handled like a
+        song/playlist?
+    """
     def __init__(self, url, info_dict):
         super().__init__(url, info_dict)
         """Attributes specific to playlists"""
         self.timestamps = []
-        #Could this regex part be done slicker?
+        # Could this regex part be done slicker?
         regex_layer1 = r"[0-9]\:[0-9][0-9]\:[0-9][0-9]"
         regex_layer2 = r"[0-9][0-9]\:[0-9][0-9]"
-        self.num_songs = self.countmatches(regex_layer2) #Counts the number of timestamps in the description, these dont overlap so this should work
+        self.num_songs = self.countmatches(regex_layer2) # Counts the number of timestamps in the description, these dont overlap so this should work
         timestamps_layer1 = re.findall(regex_layer1, self.description)
         augmented_description = re.sub(regex_layer1, '', self.description)
         timestamps_layer2 = re.findall(regex_layer2, augmented_description)
         timestamps = timestamps_layer2 + timestamps_layer1
-        #End regex part
+        # End regex part
         print(self.description)
         for timestamp in timestamps:
-           for line in self.description:
-               if timestamp in line:
-                   self.timestamps.append([line.replace(timestamp, ""), timestamp])
-                   break
+            for line in self.description:
+                if timestamp in line:
+                    self.timestamps.append([line.replace(timestamp, ""), timestamp])
+                    break
         for item in self.timestamps:
             print(item)
-           #    matchObj = re.match(regex, self.description)
-   #     for i in range(self.num_songs-2):
-    #        self.temp += matchObj.group(i+1) #at the moment grab the info into a single variable
-        #If this is null, can we grab the top 10 comments for example and do it with this?
+            # matchObj = re.match(regex, self.description)
+            # for i in range(self.num_songs-2):
+            # self.temp += matchObj.group(i+1) #at the moment grab the info into a single variable
+            # If this is null, can we grab the top 10 comments for example and do it with this?
 
     def __str__(self):
         return "type: " + type(self).__name__ + "\n" + "url: " + self.url + "\n" + "songs in playlist: " + str(self.num_songs)
@@ -245,6 +249,7 @@ class YoutubePlaylist(Youtube):
             self.convert(d['filename'])
 
     def convert(self, filename):
+        """"Add ref to self in here"""
         if filename[-4:] == "webm":
             processed_file_path = filename[0:-5] + ".mp3"
         else:
@@ -263,12 +268,14 @@ class YoutubePlaylist(Youtube):
     def countmatches(self, pattern):
         return re.subn(pattern, '', self.description)[1]
 
+
 class YoutubeAudiobook(Youtube):
     def __init__(self, url, info_dict):
         Youtube.__init__(self, url, info_dict)
 
     def process(self):
         print("placeholder")
+
 
 class YoutubeAlbum(Youtube):
     """This should explicitly search spotify for the album, different to playlist"""
@@ -278,18 +285,20 @@ class YoutubeAlbum(Youtube):
     def process(self):
         print("placeholder")
 
+
 class YoutubeOther(Youtube):
     def __init__(self, url, info_dict):
         Youtube.__init__(self, url, info_dict)
 
     def process(self):
-         print("placeholder")
+        print("placeholder")
 
 
 def main():
     #Url(['https://www.youtube.com/watch?v=RPxvTd_jCPQ'], "Young Scrolls", "Sheogorath - Zoom")
     #get_audio(["https://www.youtube.com/watch?v=xdOykEJSXIg"], "Anthony Hamilton", "Freedom")
     print(root_dir)
+
 
 if __name__ == "__main__":
     #print("nothing to do here")

@@ -8,7 +8,7 @@ with open('c:\\config\\config.json') as f:
 class TestFingerprintingMethods(unittest.TestCase):
 
     def test_instantiation(self):
-        fingerprint = fingerprinting.fingerprinter()
+        fingerprint = fingerprinting.FingerPrinter()
         print(fingerprint)
 
 if __name__ == '__main__':
