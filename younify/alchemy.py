@@ -2,8 +2,8 @@ import os
 import sys
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, backref
-from sqlalchemy import create_engine
+from sqlalchemy.orm import relationship, backref, sessionmaker
+from sqlalchemy import create_engine, MetaData
 import pyodbc
 """
 This file handles the database interactions
@@ -22,6 +22,13 @@ engine = create_engine(conn)
 engine.connect()
 
 Base = declarative_base()
+session = sessionmaker()
+session.configure(bind=engine)
+
+def DropAllTables():
+    meta = MetaData(engine)
+    meta.reflect()
+    meta.drop_all()
 
 class User(Base):
     __tablename__ = "Users"
@@ -62,9 +69,10 @@ class Song(Base):
     album_id = Column(Integer, ForeignKey(Album.id))  # Can be null, if populated, must exist in Albums table
     title = Column(String)
     # Other song attribs here
-    user = relationship(User, backref=backref('user', uselist=False))
+    user = relationship(User, backref=backref('song', uselist=False))
     playlist = relationship(Playlist, backref=backref('playlist', uselist=False))
 
 
-
-Base.metadata.create_all(engine)
+if __name__ == "__main__":
+    #DropAllTables()
+    Base.metadata.create_all(engine)

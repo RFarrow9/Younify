@@ -2,7 +2,9 @@
   <dictionary name="robfa">
     <words>
       <w>audiobook</w>
+      <w>pushtodb</w>
       <w>spotify</w>
+      <w>tablename</w>
     </words>
   </dictionary>
 </component>

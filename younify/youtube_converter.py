@@ -1,6 +1,6 @@
 import subprocess
 import youtube_dl
-from younify import spotify
+from younify import spotify, alchemy
 import os
 import re
 import eyed3
@@ -200,6 +200,15 @@ class YoutubeSong(Youtube):
         if not self.success:
             self.download()
             # automatically calls the conversion and follows through
+        self.pushtodb()
+
+    def pushtodb(self):
+        song = alchemy.Song()
+        song.title = self.name
+        song.user_id = "1"
+        s = alchemy.session()
+        s.add(song)
+        s.commit()
 
 
 class YoutubePlaylist(Youtube):
