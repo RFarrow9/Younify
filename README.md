@@ -18,8 +18,6 @@ The code is currently split into the following modules:
 
 * framework - holds arrays for processing and handles temp file updates, and multithreading for youtube_converter
 
-* frontend - no longer being used
-
 * scratch - scratch pad for redundant code/testing code
 
 * spotify - interacts with spotify api surprisingly
@@ -28,7 +26,17 @@ The code is currently split into the following modules:
 
 * yt_frontend - code in progress for GUI
 
+* alchemy - handles azure shardification and database requests
+
+* filehandler - handles files? This will be useful for parsing existing libraries for spotify transfer
+
 Enhancements
 =========
 
 We could use this code to harvest + unify spotify with current media libraries that exist in file form as well.
+Use proper threading techniques
+Pickle temp files
+Look at migrating temp files into azure
+Azure shardification by user? How do we identify the user?
+Handle the spotify song limit? Still only 10k?
+Develop the website to be less crap
