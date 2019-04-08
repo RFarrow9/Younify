@@ -2,7 +2,7 @@ import os
 import sys
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy import create_engine
 import pyodbc
 """
@@ -31,20 +31,9 @@ class User(Base):
     nickname = Column(String)
     new = Column(String)
 
-class Song(Base):
-    __tablename__ = "Songs"
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey(User.id))
-    playlist_id = Column(Integer, ForeignKey(Playlist.id)) # Can be null, if populated, must exist in Playlists table
-    album_id = Column(Integer, ForeignKey(Album.id)) # Can be null, if populated, must exist in Albums table
-    title = Column(String)
-    # Other song attribs here
-    user = relationship(User, backref=backref('user', uselist=False))
-    playlist = relationship(Playlist, backref=backref('playlist', uselist=False))
-
 
 class Playlist(Base):
-    __tablename = "Playlists"
+    __tablename__ = "Playlists"
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey(User.id))
     # Playlist attributes here
@@ -54,11 +43,27 @@ class Playlist(Base):
 class Album(Base):
     __tablename__ = "Albums"
     id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey(User.id))
+    # Album attributes here
+
 
 class Audiobook(Base):
     __tablename__ = "Audiobooks"
     id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey(User.id))
+    # Audiobook attributes here
 
+
+class Song(Base):
+    __tablename__ = "Songs"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey(User.id))
+    playlist_id = Column(Integer, ForeignKey(Playlist.id))  # Can be null, if populated, must exist in Playlists table
+    album_id = Column(Integer, ForeignKey(Album.id))  # Can be null, if populated, must exist in Albums table
+    title = Column(String)
+    # Other song attribs here
+    user = relationship(User, backref=backref('user', uselist=False))
+    playlist = relationship(Playlist, backref=backref('playlist', uselist=False))
 
 
 
