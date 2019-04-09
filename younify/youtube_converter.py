@@ -1,6 +1,7 @@
+from younify import spotify, alchemy
 import subprocess
 import youtube_dl
-from younify import spotify, alchemy
+
 import os
 import re
 import eyed3
@@ -205,7 +206,12 @@ class YoutubeSong(Youtube):
     def pushtodb(self):
         song = alchemy.Song()
         song.title = self.name
-        song.user_id = "1"
+        song.artist = self.artist
+        song.url = self.url
+        song.found = self.found
+        song.artist_id = self.artist_id
+        song.song_id = self.song_id
+        song.user_id = "1" # Hardcoding the foreign key for the timebeing
         s = alchemy.session()
         s.add(song)
         s.commit()
@@ -303,12 +309,6 @@ class YoutubeOther(Youtube):
         print("placeholder")
 
 
-def main():
-    #Url(['https://www.youtube.com/watch?v=RPxvTd_jCPQ'], "Young Scrolls", "Sheogorath - Zoom")
-    #get_audio(["https://www.youtube.com/watch?v=xdOykEJSXIg"], "Anthony Hamilton", "Freedom")
-    print(root_dir)
-
-
 if __name__ == "__main__":
-    #print("nothing to do here")
-    main()
+    print("nothing to do here")
+

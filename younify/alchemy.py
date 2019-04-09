@@ -67,12 +67,16 @@ class Song(Base):
     user_id = Column(Integer, ForeignKey(User.id))
     playlist_id = Column(Integer, ForeignKey(Playlist.id))  # Can be null, if populated, must exist in Playlists table
     album_id = Column(Integer, ForeignKey(Album.id))  # Can be null, if populated, must exist in Albums table
+    url = Column(String)
     title = Column(String)
-    # Other song attribs here
+    artist = Column(String)
+    found = Column(String)
+    artist_id = Column(String)
+    song_id = Column(String)
     user = relationship(User, backref=backref('song', uselist=False))
     playlist = relationship(Playlist, backref=backref('playlist', uselist=False))
 
 
 if __name__ == "__main__":
-    #DropAllTables()
+    DropAllTables()
     Base.metadata.create_all(engine)

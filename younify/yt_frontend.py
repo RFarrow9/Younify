@@ -222,5 +222,5 @@ class ProcessingWindow(QWidget):
                                                              self.title_field.text()))
         self.setLayout(self.layout)
 
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    print("nothing to do here")
