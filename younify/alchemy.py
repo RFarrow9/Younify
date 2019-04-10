@@ -30,6 +30,7 @@ def DropAllTables():
     meta.reflect()
     meta.drop_all()
 
+
 class User(Base):
     __tablename__ = "Users"
     id = Column(Integer, primary_key=True)

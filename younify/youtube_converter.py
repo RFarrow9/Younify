@@ -226,16 +226,19 @@ class YoutubePlaylist(Youtube):
         super().__init__(url, info_dict)
         """Attributes specific to playlists"""
         self.timestamps = []
-        # Could this regex part be done slicker?
+        self.num_songs = None
+        self.find_timestamps()
+        # This should hold the objects that represent YoutubeSongs
+        self.songs = []
+
+    def find_timestamps(self):
         regex_layer1 = r"[0-9]\:[0-9][0-9]\:[0-9][0-9]"
         regex_layer2 = r"[0-9][0-9]\:[0-9][0-9]"
-        self.num_songs = self.countmatches(regex_layer2) # Counts the number of timestamps in the description, these dont overlap so this should work
+        self.num_songs = self.countmatches(regex_layer2)  # Counts the number of timestamps in the description, these dont overlap so this should work
         timestamps_layer1 = re.findall(regex_layer1, self.description)
         augmented_description = re.sub(regex_layer1, '', self.description)
         timestamps_layer2 = re.findall(regex_layer2, augmented_description)
         timestamps = timestamps_layer2 + timestamps_layer1
-        # End regex part
-        print(self.description)
         for timestamp in timestamps:
             for line in self.description:
                 if timestamp in line:
@@ -282,6 +285,20 @@ class YoutubePlaylist(Youtube):
 
     def countmatches(self, pattern):
         return re.subn(pattern, '', self.description)[1]
+
+    def pushtodb(self):
+        playlist = alchemy.Playlist()
+        playlist.songs = []
+        #playlist.title = self.name
+        #playlist.artist = self.artist
+        playlist.url = self.url
+        #playlist.found = self.found
+        #playlist.artist_id = self.artist_id
+        #playlist.song_id = self.song_id
+        playlist.user_id = "1" # Hardcoding the foreign key for the timebeing
+        s = alchemy.session()
+        s.add(song)
+        s.commit()
 
 
 class YoutubeAudiobook(Youtube):

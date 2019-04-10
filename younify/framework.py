@@ -9,6 +9,7 @@ To use this...
 
 fetch_threads = 4
 enclosure_queue = queue.Queue()
+# Convert these into JSON configs
 temp_processing = "C:\\Users\\robfa\\PycharmProjects\\Younify\\younify\\temp\\temp-processed.tmp"
 temp_working = "C:\\Users\\robfa\\PycharmProjects\\Younify\\younify\\temp\\temp-working.tmp"
 bookmarks = "C:\\Users\\robfa\\PycharmProjects\\Younify\\younify\\test\\working\\bookmarks.html"

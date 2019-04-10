@@ -13,6 +13,7 @@ icon = config["yt_frontend"]["icon"]
 myappid = "rftech.younify.1.1"
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
+
 def main():
     app = QApplication(["Younify"])
     #trayIcon = QtWidgets.QWinTaskbarButton(QtGui.QIcon(icon), app)
@@ -27,6 +28,7 @@ def main():
     myWindow.show()
     app.exec_()
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -35,6 +37,7 @@ class MainWindow(QMainWindow):
         self.central_widget = QStackedWidget()
         self.table_widget = TabTable(self)
         self.setCentralWidget(self.table_widget)
+
 
 class TabTable(QWidget):
     def __init__(self, parent):
@@ -53,11 +56,11 @@ class TabTable(QWidget):
         self.tab4 = QWidget()
         self.tab5 = QWidget()
         # Add tabs
-        self.tabs.addTab(self.tab1,"Manual Run")
-        self.tabs.addTab(self.tab2,"Youtube Settings")
-        self.tabs.addTab(self.tab3,"Spotify Settings")
-        self.tabs.addTab(self.tab4,"Advanced Settings")
-        self.tabs.addTab(self.tab5,"Processing")
+        self.tabs.addTab(self.tab1, "Manual Run")
+        self.tabs.addTab(self.tab2, "Youtube Settings")
+        self.tabs.addTab(self.tab3, "Spotify Settings")
+        self.tabs.addTab(self.tab4, "Advanced Settings")
+        self.tabs.addTab(self.tab5, "Processing")
         # Create first tab
         self.tab1.layout = QVBoxLayout(self.tab1)
         self.tab2.layout = QVBoxLayout(self.tab2)

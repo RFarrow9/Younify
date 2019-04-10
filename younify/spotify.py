@@ -7,8 +7,10 @@ import itertools
 import json
 
 """
-To use this...
+This is the module that handles interfacing with spotify. It is pulled in from the YoutubeSongs/Playlist classes in the youtube converter module.
+This will then check the information against spotify to match if possible with a spotify song (or album?).
 
+This needs to have some sort of authentication to work fully. For this it may need extension to have a wrapper class that holds persistent state.
 """
 
 with open('c:\\config\\config.json') as f:
