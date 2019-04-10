@@ -42,16 +42,12 @@ class SpotifyMatching:
         self.sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
     def artist_song_first_pass(self):
-        if ' -- ' in self.name:
-            self.artist, self.song = self.name.split(" -- ")
-        elif ' - ' in self.name:
-            self.artist, self.song = self.name.split(' - ')
-        elif ' — ' in self.name:
-            self.artist, self.song = self.name.split(' — ')
-        elif ' by ' in self.name:
-            self.artist, self.song = self.name.split(' by ')
-        else:
-            self.success = False
+        self.success = False
+        for splitter in ["--", " - ", " — ", " by ", "//"]:
+            if splitter in self.name:
+                self.artist, self.song = self.name.split(splitter)
+                self.success = True
+                break
         if self.success:
             results = self.sp.search(q='artist: ' + self.artist + 'track: ' + self.song, type='track', limit=1)
             if results['tracks']['total'] >= 1:
@@ -68,16 +64,12 @@ class SpotifyMatching:
         """
         This method is untested, and very similar to the artist_song_first_pass method. There is probably a better way of doing this.
         """
-        if ' -- ' in self.name:
-            self.artist, self.album = self.album.split(" -- ")
-        elif ' - ' in self.name:
-            self.artist, self.album = self.name.split(' - ')
-        elif ' — ' in self.name:
-            self.artist, self.album = self.name.split(' — ')
-        elif ' by ' in self.name:
-            self.artist, self.album = self.name.split(' by ')
-        else:
-            self.success = False
+        self.success = False
+        for splitter in ["--", " - ", " — ", " by ", "//"]:
+            if splitter in self.name:
+                self.artist, self.album = self.name.split(splitter)
+                self.success = True
+                break
         if self.success:
             results = self.sp.search(q='artist: ' + self.artist + 'album: ' + self.album, type='album', limit=1)
             if results['albums']['total'] >= 1:
@@ -101,7 +93,7 @@ class SpotifyMatching:
             if len(items) > 0:
                 artist = items[0]
                 if _min > cutoff:
-                    for splitter in ["-", ",", " by "]:
+                    for splitter in ["-", ",", " by ", "//"]:
                         for sub in self.name.split(splitter):
                             sp_artist = artist['name'].lower()
                             sp_uri = artist['uri']

@@ -4,7 +4,7 @@ import unittest
 class TestConverterMethods(unittest.TestCase):
 
     def test_get_audio_song(self):
-        video = youtube_converter.VideoFactory("https://www.youtube.com/watch?v=Jmv5pTyz--I").classify()
+        video = youtube_converter.VideoFactory("https://www.youtube.com/watch?v=GmzWbgzo6B4").classify()
         print(video)
         video.process()
 

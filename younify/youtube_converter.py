@@ -94,14 +94,23 @@ class Youtube(ABC):
             'outtmpl': spotify_dir + '\%(title)s.%(ext)s',
             'quiet': True
         }
-        self.name = self.info_dict.get("title")
-        self.description = self.info_dict.get("description")
-        self.id = self.info_dict.get("id")
-        self.uploader = self.info_dict.get("uploader")
-        self.thumbnail = self.info_dict.get("thumbnail")
-        self.duration = self.info_dict.get("duration")
-        self.yt_track = self.info_dict.get("track")
-        self.yt_artist = self.info_dict.get("artist")
+        self.name = None
+        self.description = None
+        self.id = None
+        self.uploader = None
+        self.thumbnail = None
+        self.duration = None
+        self.yt_track = None
+        self.yt_artist = None
+        if self.info_dict is not None:
+            self.name = self.info_dict.get("title")
+            self.description = self.info_dict.get("description")
+            self.id = self.info_dict.get("id")
+            self.uploader = self.info_dict.get("uploader")
+            self.thumbnail = self.info_dict.get("thumbnail")
+            self.duration = self.info_dict.get("duration")
+            self.yt_track = self.info_dict.get("track")
+            self.yt_artist = self.info_dict.get("artist")
 
     def __str__(self):
         return "type: " + type(self).__name__ + "\n" + "url: " + self.url
@@ -125,9 +134,12 @@ class Youtube(ABC):
         raise TypeError("process cannot be run from base class, override the method")
         #return object.__new__(cls, *args, **kwargs)
 
+
 class YoutubeSong(Youtube):
-    def __init__(self, url, info_dict):
+    def __init__(self, url, info_dict, name):
         super().__init__(url, info_dict)
+        if name is not None:
+            self.name = name
         self.spotify = spotify.SpotifyMatching(self.name)
         self.success = None
         self.filename = None
@@ -199,11 +211,15 @@ class YoutubeSong(Youtube):
     def process(self):
         self.success = self.spotify.process()
         if not self.success:
-            self.download()
-            # automatically calls the conversion and follows through
+            if self.url is not None:
+                self.download()
+            else:
+                # Handle failed and from playlist here
+                # Should be pushed back up to playlist object?
+        # automatically pushed to playlist if success already
         self.pushtodb()
 
-    def pushtodb(self):
+    def push_to_db(self):
         song = alchemy.Song()
         song.title = self.name
         song.artist = self.artist
@@ -240,26 +256,24 @@ class YoutubePlaylist(Youtube):
         timestamps_layer2 = re.findall(regex_layer2, augmented_description)
         timestamps = timestamps_layer2 + timestamps_layer1
         for timestamp in timestamps:
-            for line in self.description:
+            for line in self.description.splitlines():
                 if timestamp in line:
                     self.timestamps.append([line.replace(timestamp, ""), timestamp])
                     break
-        for item in self.timestamps:
-            print(item)
-            # matchObj = re.match(regex, self.description)
-            # for i in range(self.num_songs-2):
-            # self.temp += matchObj.group(i+1) #at the moment grab the info into a single variable
-            # If this is null, can we grab the top 10 comments for example and do it with this?
 
     def __str__(self):
         return "type: " + type(self).__name__ + "\n" + "url: " + self.url + "\n" + "songs in playlist: " + str(self.num_songs)
 
     def process(self):
-        self.download()
-    #    self.cut()
-    #    for each song in playlist:
-    #        video = VideoFactory("filename" as file).classify()
-    #    print("placeholder")
+        failure = 0
+        for song in self.timestamps:
+            self.songs.append(YoutubeSong(url=None, info_dict=None, name=song[0]))
+        for obj in self.songs:
+            if not obj.success:
+                failure = 1
+        if failure == 1:
+            self.download()
+
 
     def hook(self, d):
         """Method override is only temporary, this should be removed in future, but keeps it working for now"""
