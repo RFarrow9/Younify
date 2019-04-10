@@ -44,6 +44,7 @@ class Playlist(Base):
     __tablename__ = "Playlists"
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey(User.id))
+    url = Column(String)
     # Playlist attributes here
     user = relationship(User, backref=backref('user', uselist=False))
 

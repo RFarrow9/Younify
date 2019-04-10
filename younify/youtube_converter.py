@@ -1,7 +1,6 @@
 from younify import spotify, alchemy
 import subprocess
 import youtube_dl
-
 import os
 import re
 import eyed3
@@ -21,10 +20,13 @@ Regardless of the classtype instantiated, they all then have the method process(
 
 This will handle playlists/albums/songs/audiobooks accordingly
 
+There are two kinds of playlist! single video ones (that we handle), and youtube based ones. 
 """
 
+Base = alchemy.Base
+
 with open('c:\\config\\config.json') as f:
-    config = json.load(f)
+    config = json.l(f)
 
 root_dir = config["youtube_converter"]["root_dir"]
 spotify_dir = config["youtube_converter"]["spotify_dir"]
@@ -136,7 +138,7 @@ class Youtube(ABC):
 
 
 class YoutubeSong(Youtube):
-    def __init__(self, url, info_dict, name):
+    def __init__(self, url, info_dict, name, playlist=None):
         super().__init__(url, info_dict)
         if name is not None:
             self.name = name
@@ -150,6 +152,7 @@ class YoutubeSong(Youtube):
         self.artist_id = None
         self.artist = None
         self.title = None
+        self.playlist = playlist
 
     def populate_metadata(self):
         self.found = self.spotify.process()
@@ -218,10 +221,11 @@ class YoutubeSong(Youtube):
                 # Handle failed and from playlist here
                 # Should be pushed back up to playlist object?
         # automatically pushed to playlist if success already
-        self.pushtodb()
+        self.push_to_db()
 
     def push_to_db(self):
         song = alchemy.Song()
+        song.playlist_id = self.playlist.id
         song.title = self.name
         song.artist = self.artist
         song.url = self.url
@@ -241,12 +245,15 @@ class YoutubePlaylist(Youtube):
     """
     def __init__(self, url, info_dict):
         super().__init__(url, info_dict)
+        __tablename__ = "Playlists"
         """Attributes specific to playlists"""
         self.timestamps = []
+        self.url = url
         self.num_songs = None
         self.find_timestamps()
         # This should hold the objects that represent YoutubeSongs
         self.songs = []
+        self.playlist_pk = None
 
     def find_timestamps(self):
         regex_layer1 = r"[0-9]\:[0-9][0-9]\:[0-9][0-9]"
@@ -268,7 +275,7 @@ class YoutubePlaylist(Youtube):
     def process(self):
         failure = 0
         for song in self.timestamps:
-            self.songs.append(YoutubeSong(url=None, info_dict=None, name=song[0]))
+            self.songs.append(YoutubeSong(url=None, info_dict=None, name=song[0], playlist=self))
         for obj in self.songs:
             if not obj.success:
                 failure = 1
@@ -305,7 +312,7 @@ class YoutubePlaylist(Youtube):
     def cut(self):
         print("placeholder")
 
-    def pushtodb(self):
+    def push_to_db(self):
         playlist = alchemy.Playlist()
         playlist.songs = self.songs
         playlist.url = self.url
@@ -313,6 +320,10 @@ class YoutubePlaylist(Youtube):
         s = alchemy.session()
         s.add(playlist)
         s.commit()
+        self.playlist_pk = s.query(alchemy.Playlist).filter(alchemy.Playlist.url == self.url).one().pk
+        for song in self.songs:
+            song.playlist_id = self.playlist_pk
+            song.push_to_db()
 
 
 class YoutubeAudiobook(Youtube):
