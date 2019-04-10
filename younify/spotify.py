@@ -16,6 +16,8 @@ This needs to have some sort of authentication to work fully. For this it may ne
 with open('c:\\config\\config.json') as f:
     config = json.load(f)
 
+splitters = ["--", " - ", " — ", " by ", "//"]
+
 
 class SpotifyMatching:
     def __init__(self, name):
@@ -43,7 +45,7 @@ class SpotifyMatching:
 
     def artist_song_first_pass(self):
         self.success = False
-        for splitter in ["--", " - ", " — ", " by ", "//"]:
+        for splitter in splitters:
             if splitter in self.name:
                 self.artist, self.song = self.name.split(splitter)
                 self.success = True
@@ -65,7 +67,7 @@ class SpotifyMatching:
         This method is untested, and very similar to the artist_song_first_pass method. There is probably a better way of doing this.
         """
         self.success = False
-        for splitter in ["--", " - ", " — ", " by ", "//"]:
+        for splitter in splitters:
             if splitter in self.name:
                 self.artist, self.album = self.name.split(splitter)
                 self.success = True

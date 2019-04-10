@@ -214,6 +214,7 @@ class YoutubeSong(Youtube):
             if self.url is not None:
                 self.download()
             else:
+                print("placeholder")
                 # Handle failed and from playlist here
                 # Should be pushed back up to playlist object?
         # automatically pushed to playlist if success already
@@ -273,6 +274,7 @@ class YoutubePlaylist(Youtube):
                 failure = 1
         if failure == 1:
             self.download()
+            self.cut()
 
 
     def hook(self, d):
@@ -300,18 +302,16 @@ class YoutubePlaylist(Youtube):
     def countmatches(self, pattern):
         return re.subn(pattern, '', self.description)[1]
 
+    def cut(self):
+        print("placeholder")
+
     def pushtodb(self):
         playlist = alchemy.Playlist()
-        playlist.songs = []
-        #playlist.title = self.name
-        #playlist.artist = self.artist
+        playlist.songs = self.songs
         playlist.url = self.url
-        #playlist.found = self.found
-        #playlist.artist_id = self.artist_id
-        #playlist.song_id = self.song_id
         playlist.user_id = "1" # Hardcoding the foreign key for the timebeing
         s = alchemy.session()
-        s.add(song)
+        s.add(playlist)
         s.commit()
 
 
