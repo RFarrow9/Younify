@@ -1,10 +1,8 @@
-import os
-import sys
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref, sessionmaker
 from sqlalchemy import create_engine, MetaData
-import pyodbc
+
 """
 This file handles the database interactions
 
