@@ -56,16 +56,15 @@ class VideoFactory:
             self.description = info_dict.get("description")
 
     def classify(self):
-        """This is where we define what the video actually is"""
-        #For now, we treat everything like a song
-        if self.duration > 600:
+        # For now, we treat everything like a song or playlist
+        timestamps = self.countmatches(r"[0-9][0-9]\:[0-9][0-9]")
+        if self.duration > 600 or timestamps >= 5:
             return self.to_playlist()
-        elif self.duration <= 600:
+        else:
             return self.to_song()
 
-    def descriptionreader(self):
-        #how do we pull out information from the description???
-        print("placeholder")
+    def countmatches(self, pattern):
+        return re.subn(pattern, '', self.description)[1]
 
     def to_song(self):
         return YoutubeSong(self.url, self.info_dict)
@@ -89,9 +88,9 @@ class Youtube(ABC):
         self.url = url
         self.info_dict = info_dict
         self.options = {
-            'format': 'bestaudio/best',  # choice of quality
-            'extractaudio': True,  # only keep the audio
-            'noplaylist': True,  # only download single song, not playlist
+            'format': 'bestaudio/best',
+            'extractaudio': True,
+            'noplaylist': True,
             'progress_hooks': [self.hook],
             'outtmpl': spotify_dir + '\%(title)s.%(ext)s',
             'quiet': True
@@ -123,6 +122,9 @@ class Youtube(ABC):
     def print_desc(self):
         print(self.description)
 
+    def countmatches(self, pattern):
+        return re.subn(pattern, '', self.description)[1]
+
     def download(self):
         with youtube_dl.YoutubeDL(self.options) as ydl:
             ydl.download([self.url])
@@ -132,9 +134,10 @@ class Youtube(ABC):
             self.process()
 
     def process(self):
-        #if cls is Youtube:
         raise TypeError("process cannot be run from base class, override the method")
-        #return object.__new__(cls, *args, **kwargs)
+
+    def push_to_db(self):
+        raise TypeError("process cannot be run from base class, override the method")
 
 
 class YoutubeSong(Youtube):
@@ -239,10 +242,6 @@ class YoutubeSong(Youtube):
 
 
 class YoutubePlaylist(Youtube):
-    """This should treat each song in the playlist like a YoutubeSong object
-        How do we specify that a video that is part of a playlist is handled like a
-        song/playlist?
-    """
     def __init__(self, url, info_dict):
         super().__init__(url, info_dict)
         __tablename__ = "Playlists"
@@ -283,7 +282,6 @@ class YoutubePlaylist(Youtube):
             self.download()
             self.cut()
 
-
     def hook(self, d):
         """Method override is only temporary, this should be removed in future, but keeps it working for now"""
         if d['status'] == 'finished':
@@ -305,9 +303,6 @@ class YoutubePlaylist(Youtube):
             os.remove(filename)
         except Exception as e:
             raise e
-
-    def countmatches(self, pattern):
-        return re.subn(pattern, '', self.description)[1]
 
     def cut(self):
         print("placeholder")
@@ -334,7 +329,7 @@ class YoutubeAudiobook(Youtube):
         print("placeholder")
 
 
-class YoutubeAlbum(Youtube):
+class YoutubeAlbum(YoutubePlaylist):
     """This should explicitly search spotify for the album, different to playlist"""
     def __init__(self, url, info_dict):
         Youtube.__init__(self, url, info_dict)
