@@ -32,5 +32,6 @@ class TestFileHandlerMethods(unittest.TestCase):
         #Put assertions below
         #Make sure this file contains data to be fingerprinted
 
+
 if __name__ == '__main__':
     unittest.main()

@@ -1,4 +1,6 @@
 import eyed3
+import os
+from datetime import date
 from younify import spotify
 
 """Behaviour: Take from the file the name/artist/album whatever metadata can be scraped and use this to find the song in spotify
@@ -13,7 +15,7 @@ class FileHandler:
         self.filetags = eyed3.load(self.file)
         #Assumption here is that the filename can be treated the same as a youtube title string
         #Validate this assumption
-        self.sp = spotify.SpotifyMatching(self.filename)
+        self.sp = spotify.SpotifyMatching(self.file)
 
     def first_pass(self):
         """"for first pass we assume the file has valid metadata"""
@@ -43,4 +45,63 @@ class FileHandler:
         print("placeholder")
 
     def __str__(self):
-        return str(self.filename)
+        return str(self.file)
+
+    def __repr__(self):
+        # how do?
+
+
+class FolderHandler:
+    def __init__(self, path):
+        """"note that self.file references are local"""
+        if path[:-1] == "\\":
+            self.path = path[0:-1]
+        else:
+            self.path = path
+        self.files = os.listdir(self.path)
+        if "Thumbs.db" in self.files: self.files.remove("Thumbs.db")
+        self.oldest = None
+        self.newest = None
+
+    def get_oldest_file(self):
+        oldest_time = None
+        oldest_file = None
+        if len(self.files) == 0:
+            print("no files in directory")
+        else:
+            oldest_file = self.files[0]
+            oldest_time = os.path.getctime(self.path + '\\' + oldest_file)
+        if len(self.files) >= 2:
+            for file in self.files:
+                file = self.path + "\\" + file
+                if oldest_time > os.path.getctime(file):
+                    oldest_time = os.path.getctime(file)
+                    oldest_file = file
+        self.oldest = oldest_file
+        return FileHandler(self.oldest)
+
+    def get_newest_file(self):
+        newest_time = None
+        newest_file = None
+        if len(self.files) == 0:
+            print("no files in directory")
+        else:
+            newest_file = self.files[0]
+            newest_time = os.path.getctime(self.path + '\\' + newest_file)
+        if len(self.files) >= 2:
+            for file in self.files:
+                file = self.path + '\\' + file
+                if newest_time < os.path.getctime(file):
+                    newest_time = os.path.getctime(file)
+                    newest_file = file
+        self.newest = newest_file
+        return FileHandler(self.newest)
+
+    def move_all_files(self, newfolder, archive=True):
+        if archive:
+            archivedate = str(date.today())
+        else:
+            archivedate = ""
+        for file in self.files:
+            os.rename(self.path + '\\' + file, newfolder + '\\' + archivedate + file)
+        #Do not change path after operation, so now points to an empty dir
