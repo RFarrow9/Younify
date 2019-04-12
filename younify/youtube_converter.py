@@ -23,10 +23,8 @@ This will handle playlists/albums/songs/audiobooks accordingly
 There are two kinds of playlist! single video ones (that we handle), and youtube based ones. 
 """
 
-Base = alchemy.Base
-
 with open('c:\\config\\config.json') as f:
-    config = json.l(f)
+    config = json.load(f)
 
 root_dir = config["youtube_converter"]["root_dir"]
 spotify_dir = config["youtube_converter"]["spotify_dir"]
@@ -38,6 +36,7 @@ class VideoFactory:
         self.url = url
         self.info_dict = None
         self.duration = None
+        self.name = None
         self.description = None
         self.options = {
             'format': 'bestaudio/best',  # choice of quality
@@ -54,11 +53,12 @@ class VideoFactory:
             self.info_dict = info_dict
             self.duration = info_dict.get("duration")
             self.description = info_dict.get("description")
+            self.name = self.info_dict.get("title")
 
     def classify(self):
         # For now, we treat everything like a song or playlist
         timestamps = self.countmatches(r"[0-9][0-9]\:[0-9][0-9]")
-        if self.duration > 600 or timestamps >= 5:
+        if self.duration > 1200 or timestamps >= 5:
             return self.to_playlist()
         else:
             return self.to_song()
@@ -67,7 +67,7 @@ class VideoFactory:
         return re.subn(pattern, '', self.description)[1]
 
     def to_song(self):
-        return YoutubeSong(self.url, self.info_dict)
+        return YoutubeSong(self.url, self.info_dict, self.name, None)
 
     def to_playlist(self):
         return YoutubePlaylist(self.url, self.info_dict)
@@ -143,8 +143,8 @@ class Youtube(ABC):
 class YoutubeSong(Youtube):
     def __init__(self, url, info_dict, name, playlist=None):
         super().__init__(url, info_dict)
-        if name is not None:
-            self.name = name
+        #if url is None: # Then is from playlist
+        #    self.name = self.info_dict.get("title")
         self.spotify = spotify.SpotifyMatching(self.name)
         self.success = None
         self.filename = None
@@ -228,7 +228,10 @@ class YoutubeSong(Youtube):
 
     def push_to_db(self):
         song = alchemy.Song()
-        song.playlist_id = self.playlist.id
+        if self.playlist is not None:
+            song.playlist_id = self.playlist.id
+        else:
+            song.playlist_id = None
         song.title = self.name
         song.artist = self.artist
         song.url = self.url
@@ -274,8 +277,10 @@ class YoutubePlaylist(Youtube):
     def process(self):
         failure = 0
         for song in self.timestamps:
+            print("running: " + str(song))
             self.songs.append(YoutubeSong(url=None, info_dict=None, name=song[0], playlist=self))
         for obj in self.songs:
+            obj.process()
             if not obj.success:
                 failure = 1
         if failure == 1:

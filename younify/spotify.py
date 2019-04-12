@@ -30,6 +30,7 @@ class SpotifyMatching:
         self.album_uri = None
         self.sp = None
         self.success = True
+        self.playlist_uri = None
         self.setup()
 
     def print(self):
@@ -147,6 +148,7 @@ class SpotifyMatching:
     def process(self):
         self.artist_song_first_pass()
         if not self.success:
+            self.artist_second_pass()
             self.artist_song_second_pass()
         if self.success:
             self.add_to_playlist()
@@ -159,7 +161,8 @@ class SpotifyMatching:
         if self.playlist_uri == "None":
             return
         else:
-            self.sp.add_to_playlist(self.song_uri)#?
+            return
+            ## self.sp.add_to_playlist(self.song_uri)#?
 
     def return_song_artist(self):
         return self.song_uri, self.artist_uri
