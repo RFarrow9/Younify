@@ -143,8 +143,10 @@ class Youtube(ABC):
 class YoutubeSong(Youtube):
     def __init__(self, url, info_dict, name, playlist=None):
         super().__init__(url, info_dict)
-        #if url is None: # Then is from playlist
-        #    self.name = self.info_dict.get("title")
+        if url is None: # Then is from playlist
+            self.name = name
+        else:
+            self.name = self.info_dict.get("title")
         self.spotify = spotify.SpotifyMatching(self.name)
         self.success = None
         self.filename = None
@@ -215,6 +217,7 @@ class YoutubeSong(Youtube):
         image.close()
 
     def process(self):
+        print(self.name)
         self.success = self.spotify.process()
         if not self.success:
             if self.url is not None:
@@ -229,7 +232,7 @@ class YoutubeSong(Youtube):
     def push_to_db(self):
         song = alchemy.Song()
         if self.playlist is not None:
-            song.playlist_id = self.playlist.id
+            song.playlist_id = self.playlist.pk
         else:
             song.playlist_id = None
         song.title = self.name
@@ -255,7 +258,7 @@ class YoutubePlaylist(Youtube):
         self.find_timestamps()
         # This should hold the objects that represent YoutubeSongs
         self.songs = []
-        self.playlist_pk = None
+        self.pk = None
 
     def find_timestamps(self):
         regex_layer1 = r"[0-9]\:[0-9][0-9]\:[0-9][0-9]"
@@ -275,6 +278,7 @@ class YoutubePlaylist(Youtube):
         return "type: " + type(self).__name__ + "\n" + "url: " + self.url + "\n" + "songs in playlist: " + str(self.num_songs)
 
     def process(self):
+        self.push_to_db()
         failure = 0
         for song in self.timestamps:
             print("running: " + str(song))
@@ -317,12 +321,15 @@ class YoutubePlaylist(Youtube):
         playlist.songs = self.songs
         playlist.url = self.url
         playlist.user_id = "1" # Hardcoding the foreign key for the timebeing
+        playlist.song_count = self.num_songs
+        playlist.title = self.name
         s = alchemy.session()
         s.add(playlist)
         s.commit()
-        self.playlist_pk = s.query(alchemy.Playlist).filter(alchemy.Playlist.url == self.url).one().pk
+        s.refresh(playlist)
+        self.pk = playlist.id
         for song in self.songs:
-            song.playlist_id = self.playlist_pk
+            song.playlist_id = self.pk
             song.push_to_db()
 
 

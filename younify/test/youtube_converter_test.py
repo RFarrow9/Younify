@@ -8,10 +8,10 @@ class TestConverterMethods(unittest.TestCase):
         print(youtube_converter.spotify_dir)
         print(youtube_converter.artwork)
 
-    def test_get_audio_song(self):
-        video = youtube_converter.VideoFactory("https://www.youtube.com/watch?v=Am9lfs7M_OQ").classify()
-        print(video)
-        video.process()
+ #   def test_get_audio_song(self):
+ #       video = youtube_converter.VideoFactory("https://www.youtube.com/watch?v=Am9lfs7M_OQ").classify()
+ #       print(video)
+ #       video.process()
 
     def test_get_audio_playlist(self):
         video = youtube_converter.VideoFactory("https://www.youtube.com/watch?v=GmzWbgzo6B4").classify()

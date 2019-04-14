@@ -22,6 +22,7 @@ splitters = ["--", " - ", " — ", " by ", "//"]
 class SpotifyMatching:
     def __init__(self, name):
         self.name = name
+        self.name_clean = clean(name)
         self.artist = None
         self.artist_uri = None
         self.song = None
@@ -47,17 +48,19 @@ class SpotifyMatching:
     def artist_song_first_pass(self):
         self.success = False
         for splitter in splitters:
-            if splitter in self.name:
-                self.artist, self.song = self.name.split(splitter)
+            if splitter in self.name_clean:
+                self.artist, self.song = self.name_clean.split(splitter)
                 self.success = True
                 break
         if self.success:
+            print("artist: " + str(self.artist))
+            print("song: "  + str(self.song))
             results = self.sp.search(q='artist: ' + self.artist + 'track: ' + self.song, type='track', limit=1)
             if results['tracks']['total'] >= 1:
                 for items in results['tracks']['items']:
                     self.song = items['name']
                     self.song_uri = items['uri']
-                    for artist in items['artists'][0]:
+                    for artist in items['artists']:
                         self.artist = artist['name']
                         self.artist_uri = artist['uri']
             else:
@@ -122,7 +125,15 @@ class SpotifyMatching:
                 if results['tracks']['total'] >= 1:
                     for items in results['tracks']['items']:
                         song_potentials.append([items['name'], items['uri']])
-            self.song, self.song_uri = most_common(song_potentials)
+            if len(song_potentials) >= 2:
+                self.song, self.song_uri = most_common(song_potentials)
+                self.success = True
+            elif len(song_potentials) == 1:
+                self.song = song_potentials[0][0]
+                self.song_uri = song_potentials[0][1]
+                self.success = True
+            else:
+                self.success = False
             self.success = True
             # handle cases where every 'song' appears just once - levenshtein back to original string (minus the artist)
 
@@ -152,7 +163,6 @@ class SpotifyMatching:
             self.artist_song_second_pass()
         if self.success:
             self.add_to_playlist()
-            print("success")
         return self.success
 
     def add_to_playlist(self, playlist_uri="None"):
@@ -208,7 +218,7 @@ def clean(string):
     substrings = sorted(substitutions, key=len, reverse=True)
     regex = re.compile('|'.join(map(re.escape, substrings)))
     string = re.sub("[\(\[].*?[\)\]]", "", string)
-    return regex.sub(lambda match: substitutions[match.group(0)], string)
+    return str(regex.sub(lambda match: substitutions[match.group(0)], string))
 
 def consecutive_groups(string="this is a test string"):
     input = tuple(string.split())
@@ -230,9 +240,8 @@ def most_common(_list):
   return max(groups, key=_auxfun)[0]
 
 def main():
-    var =+ 1
-    print(var)
-
+    test = SpotifyMatching("Billy Corgan & Mike Garson // Orah / Random Thought (from \"Stigmata\") [1999]")
+    test.process()
 
 if __name__ == '__main__':
     main()
