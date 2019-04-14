@@ -53,9 +53,10 @@ class SpotifyMatching:
                 self.success = True
                 break
         if self.success:
-            print("artist: " + str(self.artist))
-            print("song: "  + str(self.song))
+            # even when song exists, and is correct, spotify still returns junk approx 10% of the time
+            # limit to 4-5 and pick the right one?
             results = self.sp.search(q='artist: ' + self.artist + 'track: ' + self.song, type='track', limit=1)
+            #print(results)
             if results['tracks']['total'] >= 1:
                 for items in results['tracks']['items']:
                     self.song = items['name']
@@ -90,7 +91,8 @@ class SpotifyMatching:
 
     def artist_second_pass(self):
         gen = consecutive_groups(self.name)
-        _min, cutoff = 100, 8
+        _min  = 100
+        cutoff = 3
         sp_artist_min, sp_artist_uri_min = None, None
         for i in gen:
             potential = " ".join(i)
@@ -159,10 +161,15 @@ class SpotifyMatching:
     def process(self):
         self.artist_song_first_pass()
         if not self.success:
+            print("first pass failure, proceeding to second..")
             self.artist_second_pass()
             self.artist_song_second_pass()
         if self.success:
             self.add_to_playlist()
+        else:
+            print("second pass failure.. song not found")
+        print("artist: " + self.artist)
+        print("song: " + self.song)
         return self.success
 
     def add_to_playlist(self, playlist_uri="None"):
