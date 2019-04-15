@@ -1,31 +1,26 @@
 from younify import youtube_converter, framework
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-from PyQt5 import QtGui, QtWidgets
-import json
-from younify import breeze_resources
+from PyQt5 import QtGui
+from PyQt5 import QtWidgets
+import json, os, sys
+import qdarkstyle
 import ctypes
 
 with open('c:\\config\\config.json') as f:
     config = json.load(f)
 
 icon = config["yt_frontend"]["icon"]
+dark = config["yt_frontend"]["dark"]
 myappid = "rftech.younify.1.1"
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
-
 def main():
     app = QApplication(["Younify"])
-    #trayIcon = QtWidgets.QWinTaskbarButton(QtGui.QIcon(icon), app)
-    #trayIcon.show()
-    file = QFile(":/dark.qss")
-    file.open(QFile.ReadOnly | QFile.Text)
-    stream = QTextStream(file)
-    """Fix the dark theme, this may need recompiling from source"""
-    #app.setStyleSheet(stream.readAll())
+    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     app.setWindowIcon(QtGui.QIcon(icon))
-    myWindow = MainWindow()
-    myWindow.show()
+    window = QtWidgets.QMainWindow()
+    window.show()
     app.exec_()
 
 
@@ -210,6 +205,7 @@ class ProcessingWindow(QWidget):
             self.tableWidget.setItem(idx, 3, QTableWidgetItem("Awaiting"))
             self.tableWidget.setItem(idx, 4, QTableWidgetItem("Normal"))
         self.layout = QVBoxLayout()
+        self.layout.addWidget(QLabel("Processing Array"))
         self.layout.addWidget(self.tableWidget)
         self.setLayout(self.layout)
 
