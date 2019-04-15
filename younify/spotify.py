@@ -47,25 +47,40 @@ class SpotifyMatching:
 
     def artist_song_first_pass(self):
         self.success = False
+        song_potentials = []
+        index = 0
+        _min = 20
         for splitter in splitters:
             if splitter in self.name_clean:
+                # This is poor handling of strings, should only set self when success=true
                 self.artist, self.song = self.name_clean.split(splitter)
                 self.success = True
                 break
         if self.success:
-            # even when song exists, and is correct, spotify still returns junk approx 10% of the time
-            # limit to 4-5 and pick the right one?
-            results = self.sp.search(q='artist: ' + self.artist + 'track: ' + self.song, type='track', limit=1)
-            #print(results)
+            results = self.sp.search(q='artist: ' + self.artist + 'track: ' + self.song, type='track', limit=5)
             if results['tracks']['total'] >= 1:
                 for items in results['tracks']['items']:
-                    self.song = items['name']
-                    self.song_uri = items['uri']
+                    song_potentials.append([items['name'], items['uri']])
                     for artist in items['artists']:
-                        self.artist = artist['name']
-                        self.artist_uri = artist['uri']
+                        song_potentials[index].append([artist['name'], artist['uri']])
+                    index += 1
             else:
+                self.artist = None
+                self.song = None
                 self.success = False
+        cutoff = matching(self.name_clean)
+        for potentials in song_potentials:
+            if levenshtein(self.name_clean, potentials[0] + potentials[2]) < min:
+                _min = levenshtein(self.name_clean, potentials[0] + potentials[2])
+                self.artist = potentials[2]
+                self.artist_uri = potentials[3]
+                self.song = potentials[0]
+                self.song_uri = potentials[1]
+        if levenshtein(self.name_clean, self.artist + self.song) > cutoff:
+            self.success = False
+            self.artist = None
+            self.song = None
+
 
     def artist_album_first_pass(self):
         """
@@ -89,10 +104,10 @@ class SpotifyMatching:
             else:
                 self.success = False
 
-    def artist_second_pass(self):
+    def artist_second_pass_old(self):
         gen = consecutive_groups(self.name)
-        _min  = 100
-        cutoff = 3
+        _min = 100
+        cutoff = matching(self.name)
         sp_artist_min, sp_artist_uri_min = None, None
         for i in gen:
             potential = " ".join(i)
@@ -116,9 +131,36 @@ class SpotifyMatching:
             self.artist = sp_artist_min
             self.artist_uri = sp_artist_uri_min
 
-    def artist_song_second_pass(self):
+    def artist_second_pass(self):
+        gen = consecutive_groups(self.name_clean)
+        _min = 100
+        cutoff = matching(self.name_clean)
+        sp_artist_min, sp_artist_uri_min = None, None
+        for splitter in ["-", ",", " by ", "//"]:
+            if splitter in self.name_clean:
+                for sub in self.name_clean.split(splitter):
+                    yt_artist = sub.rstrip().lower()
+                    for i in gen:
+                        potential = " ".join(i)
+                        results = self.sp.search(q='artist:' + potential, type='artist')
+                        items = results['artists']['items']
+                        if len(items) > 0:
+                            artist = items[0]
+                            sp_artist = artist['name'].lower()
+                            sp_uri = artist['uri']
+                            if _min > levenshtein(sp_artist, yt_artist):
+                                sp_artist_min = sp_artist
+                                sp_artist_uri_min = sp_uri
+                                _min = levenshtein(sp_artist, yt_artist)
+        if _min >= cutoff:
+            self.success = False
+        else:
+            self.artist = sp_artist_min
+            self.artist_uri = sp_artist_uri_min
+
+    def song_second_pass(self):
         if self.artist is not None:
-            cleaned = self.name.lower().replace(self.artist, "")
+            cleaned = self.name_clean.lower().replace(self.artist, "")
             song_potentials = []
             gen = consecutive_groups(cleaned)
             for i in gen:
@@ -129,14 +171,16 @@ class SpotifyMatching:
                         song_potentials.append([items['name'], items['uri']])
             if len(song_potentials) >= 2:
                 self.song, self.song_uri = most_common(song_potentials)
-                self.success = True
             elif len(song_potentials) == 1:
                 self.song = song_potentials[0][0]
                 self.song_uri = song_potentials[0][1]
-                self.success = True
             else:
                 self.success = False
-            self.success = True
+            cutoff = matching(self.name_clean)
+            if levenshtein(self.name_clean, self.artist + self.song) > cutoff:
+                self.success = False
+            else:
+                self.success = True
             # handle cases where every 'song' appears just once - levenshtein back to original string (minus the artist)
 
     def all_songs(self):
@@ -163,7 +207,7 @@ class SpotifyMatching:
         if not self.success:
             print("first pass failure, proceeding to second..")
             self.artist_second_pass()
-            self.artist_song_second_pass()
+            self.song_second_pass()
         if self.success:
             self.add_to_playlist()
         else:
@@ -211,6 +255,17 @@ def levenshtein(seq1, seq2):
                     matrix[x-1, y-1] + 1,
                     matrix[x, y-1] + 1)
     return matrix[size_x - 1, size_y - 1]
+
+
+def matching(string):
+    if len(string) <= 4:
+        return 0
+    elif len(string) <= 6:
+        return 1
+    elif len(string) <= 9:
+        return 2
+    else:
+        return 3
 
 def clean(string):
     string = string.lower()

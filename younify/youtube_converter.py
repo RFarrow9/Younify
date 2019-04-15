@@ -326,7 +326,7 @@ class YoutubePlaylist(Youtube):
         s = alchemy.session()
         s.add(playlist)
         s.commit()
-        s.refresh(playlist)
+        s.refresh(playlist) # is this neccessary?
         self.pk = playlist.id
         for song in self.songs:
             song.playlist_id = self.pk
