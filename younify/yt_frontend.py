@@ -1,4 +1,4 @@
-from younify import youtube_converter
+from younify import youtube_converter, framework
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5 import QtGui, QtWidgets
@@ -117,9 +117,6 @@ class ManualWindow(QWidget):
         self.layout.addLayout(self.inner_layout3)
         button = QPushButton("Process URL")
         self.layout.addWidget(button)
-        #button.clicked.connect(lambda: youtube_converter._process_url([self.url_field.text()],
-        #                                                              self.artist_field.text(),
-        #                                                              self.title_field.text()))
         self.setLayout(self.layout)
 
 class CustomQLineEdit(QLineEdit):
@@ -157,9 +154,6 @@ class YTSettingsWindow(QWidget):
         self.layout.addWidget(self.title_field)
         button = QPushButton("Do the thing")
         self.layout.addWidget(button)
-        button.clicked.connect(lambda: youtube_converter.Url([self.url_field.text()],
-                                                             self.artist_field.text(),
-                                                             self.title_field.text()))
         self.setLayout(self.layout)
 
 class SPSettingsWindow(QWidget):
@@ -178,9 +172,6 @@ class SPSettingsWindow(QWidget):
         self.layout.addWidget(self.title_field)
         button = QPushButton("Do the thing")
         self.layout.addWidget(button)
-        button.clicked.connect(lambda: youtube_converter.Url([self.url_field.text()],
-                                                             self.artist_field.text(),
-                                                             self.title_field.text()))
         self.setLayout(self.layout)
 
 class AdvancedSettingsWindow(QWidget):
@@ -208,21 +199,18 @@ class ProcessingWindow(QWidget):
     def __init__(self):
         super(ProcessingWindow, self).__init__()
         self.setGeometry(100, 100, 400, 200)
+        self.tableWidget = QTableWidget()
+        self.tableWidget.setRowCount(framework.working.count_urls())
+        self.tableWidget.setColumnCount(5)
+        self.tableWidget.setHorizontalHeaderLabels(["Title", "URL", "Length(s)", "Status", "Priority"])
+        for idx, obj in enumerate(framework.working.retrieve_urls()):
+            self.tableWidget.setItem(idx, 0, QTableWidgetItem(str(obj.name)))
+            self.tableWidget.setItem(idx, 1, QTableWidgetItem(str(obj.url)))
+            self.tableWidget.setItem(idx, 2, QTableWidgetItem(str(obj.duration)))
+            self.tableWidget.setItem(idx, 3, QTableWidgetItem("Awaiting"))
+            self.tableWidget.setItem(idx, 4, QTableWidgetItem("Normal"))
         self.layout = QVBoxLayout()
-        self.layout.addWidget(QLabel("Enter the URL"))
-        self.url_field = QLineEdit("")
-        self.layout.addWidget(self.url_field)
-        self.layout.addWidget(QLabel("Enter the artist "))
-        self.artist_field = QLineEdit("")
-        self.layout.addWidget(self.artist_field)
-        self.layout.addWidget(QLabel("Enter the song title"))
-        self.title_field = QLineEdit("")
-        self.layout.addWidget(self.title_field)
-        button = QPushButton("Do the thing")
-        self.layout.addWidget(button)
-        button.clicked.connect(lambda: youtube_converter.Url([self.url_field.text()],
-                                                             self.artist_field.text(),
-                                                             self.title_field.text()))
+        self.layout.addWidget(self.tableWidget)
         self.setLayout(self.layout)
 
 if __name__ == "__main__":

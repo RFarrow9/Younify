@@ -1,35 +1,20 @@
 import queue
+import json
 from threading import Thread
 from younify import youtube_converter
 
 """
-To use this...
-
+These should be using singleton patterns
 """
 
 fetch_threads = 4
 enclosure_queue = queue.Queue()
 # Convert these into JSON configs
-temp_processing = "C:\\Users\\robfa\\PycharmProjects\\Younify\\younify\\temp\\temp-processed.tmp"
-temp_working = "C:\\Users\\robfa\\PycharmProjects\\Younify\\younify\\temp\\temp-working.tmp"
-bookmarks = "C:\\Users\\robfa\\PycharmProjects\\Younify\\younify\\test\\working\\bookmarks.html"
-bookmarks1 = "C:\\Users\\robfa\\Desktop\\bookmarks.html"
+with open('c:\\config\\config.json') as f:
+    config = json.load(f)
 
-def main():
-    processed = ProcessedURLs()
-    working = WorkingURLs()
-    failed = FailedURLs()
-    working.push_url_to_queue("fKFbnhcNnjE")
-    while working.count_urls() > 0:
-        try:
-            working.process_urls(processed, failed)
-        except:
-            processed.update_temp()
-            working.update_temp()
-        finally:
-            processed.update_temp()
-            working.update_temp()
-
+temp_processing = config["framework"]["processing"]
+temp_working = config["framework"]["working"]
 
 class ProcessingArray:
     def __new__(cls, *args, **kwargs):
@@ -42,7 +27,7 @@ class ProcessingArray:
 
     def add_url(self, url):
         if url not in self.urls:
-            self.urls.append(url)
+            self.urls.append(youtube_converter.VideoFactory(url).classify())
 
     def count_urls(self):
         return len(self.urls)
@@ -67,7 +52,7 @@ class ProcessedURLs(ProcessingArray):
         try:
             file = open(temp_processing, "r")
             for line in file:
-                self.add_url(line[:-1])
+                self.add_url("https://www.youtube.com/watch?v="+line[:-1])
             file.close()
         except:
             print("file not found")
@@ -85,7 +70,7 @@ class WorkingURLs(ProcessingArray):
         try:
             file = open(temp_working, "r")
             for line in file:
-                self.add_url(line[:-1])
+                self.add_url("https://www.youtube.com/watch?v="+line[:-1])
             file.close()
         except:
             print("file not found")
@@ -220,5 +205,20 @@ def find_url(string):
     return count, array
 
 
-if __name__ == '__main__':
-    main()
+# This might not be the best way to do this, but at the moment allows for 'global access'
+processed = ProcessedURLs()
+working = WorkingURLs()
+failed = FailedURLs()
+working.push_url_to_queue("https://www.youtube.com/watch?v=fKFbnhcNnjE")
+working.push_url_to_queue("https://www.youtube.com/watch?v=NfHT7brehoc")
+#while working.count_urls() > 0:
+#    try:
+#        working.process_urls(processed, failed)
+#    except:
+#        processed.update_temp()
+#        working.update_temp()
+#    finally:
+#        processed.update_temp()
+#        working.update_temp()
+
+

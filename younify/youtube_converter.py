@@ -47,6 +47,9 @@ class VideoFactory:
         }
         self.populate()
 
+    def __repr__(self):
+        return self.url
+
     def populate(self):
         with youtube_dl.YoutubeDL(self.options) as ydl:
             info_dict = ydl.extract_info(self.url, download=False)
