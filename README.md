@@ -1,18 +1,14 @@
 Younify
 ===========
 ## Contents
-[<img src="younify/resources/Yin_yang.svg" alt="Logo" width="5"/> What is Younify?](#what-is)
-
-[<img src="younify/resources/Yin_yang.svg" alt="Logo" width="5"/> Technologies](#tech)
-
-[<img src="younify/resources/Yin_yang.svg" alt="Logo" width="5"/> Progress](#prog)
-
-[<img src="younify/resources/Yin_yang.svg" alt="Logo" width="5"/> Modules so far](#mod)
-
-[<img src="younify/resources/Yin_yang.svg" alt="Logo" width="5"/> Future Enhancements](#fut) 
+* [What is Younify?](#what-is)
+* [Technologies](#tech)
+* [Progress](#prog)
+* [Modules so far](#mod)
+* [Future Enhancements](#fut) 
 
 <a name="what-is"></a>
-## What is Younify? <img src="younify/resources/Yin_yang.svg" alt="Logo" width="20"/>
+## <img src="younify/resources/Yin_yang.svg" alt="Logo" width="20"/> What is Younify?
 
 Younify is a tool currently in early stages of development that hopefully will allow for youtube music videos/playlists to be looked up automatically in Spotify.
 
@@ -28,7 +24,7 @@ The eventual end solution being a simple button that can integrate in a browser 
  https://younify.azurewebsites.net/
  
 <a name="tech"></a>
-## Technologies
+## <img src="younify/resources/Yin_yang.svg" alt="Logo" width="20"/> Technologies
 * Azure
 * Object-orientated programming
 * Object-Relational mapping (SQL Alchemy)
@@ -40,7 +36,7 @@ The eventual end solution being a simple button that can integrate in a browser 
 * Github (obviously!)
 
 <a name="prog"></a>
-## Progress
+## <img src="younify/resources/Yin_yang.svg" alt="Logo" width="20"/> Progress
 Currently the program works to process URLs with little issue, and appears to have a reasonable hitrate when pulling 
 metadata from spotify. However the code to put the actual song into a spotify playlist is not yet done.
 
@@ -53,7 +49,7 @@ fillers. The processing tab does include a table, which does populate from the f
 holds all the objects to be processed).
 
 <a name="mod"></a>
-## Modules so far
+## <img src="younify/resources/Yin_yang.svg" alt="Logo" width="20"/> Modules so far
 
 The code is currently split into the following modules:
 
@@ -74,7 +70,7 @@ For further documentation on these files, see the headers inside the files thems
 * fingerprinting - this is a holder for a module that handles interacting with audio fingerprint APIs
 
 <a name="fut"></a>
-## Future enhancements
+## <img src="younify/resources/Yin_yang.svg" alt="Logo" width="20"/> Future enhancements
 
 * It would not be difficult to make minor extensions to the code to also handle pulling metadata out of 
 files in order to sync offline libraries with spotify. 
