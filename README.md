@@ -10,8 +10,7 @@ Younify
 * [Future enhancements](#Future enhancements) 
 
 
-## What is Younify? 
-<img src="younify/resources/Yin_yang.svg" alt="Logo" width="200"/>
+## What is Younify? <img src="younify/resources/Yin_yang.svg" alt="Logo" width="20"/>
 
 Younify is a tool currently in early stages of development that hopefully will allow for youtube music videos/playlists to be looked up automatically in Spotify.
 
@@ -28,7 +27,7 @@ Some words here
 
 ## Progress
 
-##Modules so far
+## Modules so far
 The code is currently split into the following modules:
 
 * classification - this will handle classification of youtube videos, as well as artist and song assignment
