@@ -1,11 +1,11 @@
 Younify
 ===========
 ## Contents
-* [<img src="younify/resources/Yin_yang.svg" alt="Logo" width="5"/> What is Younify?](#what-is)
-* [<img src="younify/resources/Yin_yang.svg" alt="Logo" width="5"/> Technologies](#tech)
-* [<img src="younify/resources/Yin_yang.svg" alt="Logo" width="5"/> Progress](#prog)
-* [<img src="younify/resources/Yin_yang.svg" alt="Logo" width="5"/> Modules so far](#mod)
-* [<img src="younify/resources/Yin_yang.svg" alt="Logo" width="5"/> Future Enhancements](#fut) 
+[<img src="younify/resources/Yin_yang.svg" alt="Logo" width="5"/> What is Younify?](#what-is)
+[<img src="younify/resources/Yin_yang.svg" alt="Logo" width="5"/> Technologies](#tech)
+[<img src="younify/resources/Yin_yang.svg" alt="Logo" width="5"/> Progress](#prog)
+[<img src="younify/resources/Yin_yang.svg" alt="Logo" width="5"/> Modules so far](#mod)
+[<img src="younify/resources/Yin_yang.svg" alt="Logo" width="5"/> Future Enhancements](#fut) 
 
 <a name="what-is"></a>
 ## What is Younify? <img src="younify/resources/Yin_yang.svg" alt="Logo" width="20"/>
