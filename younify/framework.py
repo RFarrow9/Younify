@@ -4,7 +4,13 @@ from threading import Thread
 from younify import youtube_converter
 
 """
-These should be using singleton patterns
+Should we be using 'processed' as an array, or only hold fails and working?
+Processed could be sent to azure.
+Push to local file in case of limited database availability/backup recovery?
+Option to push to database? Is it neccessary?
+Thread count should come from environment variable if available
+Should the JSON interacter be in a seperate file? (as opposed to reinitialised per module)
+Work out global access to these objects (singleton?)
 """
 
 fetch_threads = 4
@@ -16,10 +22,11 @@ with open('c:\\config\\config.json') as f:
 temp_processing = config["framework"]["processing"]
 temp_working = config["framework"]["working"]
 
+
 class ProcessingArray:
     def __new__(cls, *args, **kwargs):
         if cls is ProcessingArray:
-                raise TypeError("base class may not be instantiated")
+            raise TypeError("base class may not be instantiated")
         return object.__new__(cls, *args, **kwargs)
 
     def __init__(self):
@@ -159,10 +166,6 @@ class FailedURLs:
 
     def print_sample(self):
         print(self.urls[0: 5])
-
-#
-#    Functions defined below
-#
 
 
 def linecount(filename):

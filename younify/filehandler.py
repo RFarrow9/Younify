@@ -3,7 +3,8 @@ import os
 from datetime import date
 from younify import spotify
 
-"""Behaviour: Take from the file the name/artist/album whatever metadata can be scraped and use this to find the song in spotify
+"""
+Behaviour: Take from the file the name/artist/album whatever metadata can be scraped and use this to find the song in spotify
 At this point in time there are no fancy factories/singletons/abstract base classes required due to limited functionality.
 """
 

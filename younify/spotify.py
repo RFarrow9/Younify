@@ -11,6 +11,7 @@ This is the module that handles interfacing with spotify. It is pulled in from t
 This will then check the information against spotify to match if possible with a spotify song (or album?).
 
 This needs to have some sort of authentication to work fully. For this it may need extension to have a wrapper class that holds persistent state.
+Investigate this authentication further, can we use any of the results to authenticate user in younify?
 """
 
 with open('c:\\config\\config.json') as f:
