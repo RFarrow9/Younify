@@ -53,6 +53,7 @@ class FileHandler:
 
 
 class FolderHandler:
+    # use os.path.join()
     def __init__(self, path):
         """"note that self.file references are local"""
         if path[:-1] == "\\":
