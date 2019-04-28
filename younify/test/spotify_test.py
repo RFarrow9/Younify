@@ -18,6 +18,13 @@ class TestSpotifyMethods(unittest.TestCase):
         generator3 = spotify.consecutive_groups("1 2 3 4 5 6 7 8 9 10")
         self.assertTrue(sum(1 for i in generator3)==55, sum(1 for i in generator3))
 
+    def test_extraction(self):
+        tests = []
+        tests.append("Billy Corgan & Mike Garson // Orah / Random Thought (from \"Stigmata\") [1999]")
+        for test in tests:
+            extractor = spotify.SpotifyMatching(test)
+            extractor.process()
+
     def test_SpotifyProcessing_instantiation(self):
         #test function
         print("placeholder")

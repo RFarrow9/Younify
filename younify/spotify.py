@@ -55,7 +55,6 @@ class SpotifyMatching:
             if splitter in self.name_clean:
                 # This is poor handling of strings, should only set self when success=true
                 self.artist, self.song = self.name_clean.split(splitter)
-                self.success = True
                 break
         if self.success:
             results = self.sp.search(q='artist: ' + self.artist + 'track: ' + self.song, type='track', limit=5)
@@ -68,7 +67,6 @@ class SpotifyMatching:
             else:
                 self.artist = None
                 self.song = None
-                self.success = False
         cutoff = matching(self.name_clean)
         for potentials in song_potentials:
             if levenshtein(self.name_clean, potentials[0] + potentials[2]) < min:
@@ -77,10 +75,15 @@ class SpotifyMatching:
                 self.artist_uri = potentials[3]
                 self.song = potentials[0]
                 self.song_uri = potentials[1]
-        if levenshtein(self.name_clean, self.artist + self.song) > cutoff:
+        if self.artist and self.song is not None:
+            if levenshtein(self.name_clean, self.artist + self.song) > cutoff:
+                self.success = False
+                self.artist = None
+                self.song = None
+            else:
+                self.success = True
+        else:
             self.success = False
-            self.artist = None
-            self.song = None
 
 
     def artist_album_first_pass(self):
@@ -303,8 +306,7 @@ def most_common(_list):
   return max(groups, key=_auxfun)[0]
 
 def main():
-    test = SpotifyMatching("Billy Corgan & Mike Garson // Orah / Random Thought (from \"Stigmata\") [1999]")
-    test.process()
+
 
 if __name__ == '__main__':
     main()
