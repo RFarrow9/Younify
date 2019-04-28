@@ -22,7 +22,6 @@ with open('c:\\config\\config.json') as f:
 temp_processing = config["framework"]["processing"]
 temp_working = config["framework"]["working"]
 
-
 class ProcessingArray:
     def __new__(cls, *args, **kwargs):
         if cls is ProcessingArray:
@@ -57,12 +56,11 @@ class ProcessedURLs(ProcessingArray):
     def __init__(self):
         ProcessingArray.__init__(self)
         try:
-            file = open(temp_processing, "r")
-            for line in file:
-                self.add_url("https://www.youtube.com/watch?v="+line[:-1])
-            file.close()
+            with open(temp_processing, "w+") as f:
+                for line in f:
+                    self.add_url("https://www.youtube.com/watch?v="+line[:-1])
         except:
-            print("file not found")
+            print("file not found or could classify video")
 
     def update_temp(self):
         file = open(temp_processing, "w+")
@@ -75,10 +73,9 @@ class WorkingURLs(ProcessingArray):
     def __init__(self):
         ProcessingArray.__init__(self)
         try:
-            file = open(temp_working, "r")
-            for line in file:
-                self.add_url("https://www.youtube.com/watch?v="+line[:-1])
-            file.close()
+            with open(temp_working, "w+") as f:
+                for line in f:
+                    self.add_url("https://www.youtube.com/watch?v="+line[:-1])
         except:
             print("file not found")
 
@@ -208,20 +205,8 @@ def find_url(string):
     return count, array
 
 
-# This might not be the best way to do this, but at the moment allows for 'global access'
+# This is not the best way to do this, but at the moment allows for 'global access'
 processed = ProcessedURLs()
 working = WorkingURLs()
 failed = FailedURLs()
-working.push_url_to_queue("https://www.youtube.com/watch?v=fKFbnhcNnjE")
-working.push_url_to_queue("https://www.youtube.com/watch?v=NfHT7brehoc")
-#while working.count_urls() > 0:
-#    try:
-#        working.process_urls(processed, failed)
-#    except:
-#        processed.update_temp()
-#        working.update_temp()
-#    finally:
-#        processed.update_temp()
-#        working.update_temp()
-
 
