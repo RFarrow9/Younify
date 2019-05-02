@@ -6,14 +6,24 @@ from PyQt5 import QtWidgets
 import json, os, sys
 import qdarkstyle
 import ctypes
+"""
+This is the code that handles the front end creation.
+
+Still very much a work in progress, the table that holds items to be processed is half done, as is the 'manual'
+tab where a url can be processed. Still need to add one to look at a file, and then expand on settings.
+Also need to look at how the dark theme is working, this mostly works, but needs some refinements as it can 
+look a tad ugly.
+"""
+
 
 with open('c:\\config\\config.json') as f:
     config = json.load(f)
 
 icon = config["yt_frontend"]["icon"]
 dark = config["yt_frontend"]["dark"]
-myappid = "rftech.younify.1.1"
-ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+appid = "rftech.younify.1.1"
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)
+
 
 def main():
     app = QApplication(["Younify"])

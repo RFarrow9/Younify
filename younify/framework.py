@@ -4,10 +4,17 @@ from threading import Thread
 from younify import youtube_converter
 
 """
-These should be using singleton patterns
+Should we be using 'processed' as an array, or only hold fails and working?
+Processed could be sent to azure.
+Push to local file in case of limited database availability/backup recovery?
+Option to push to database? Is it neccessary?
+Thread count should come from environment variable if available
+Should the JSON interacter be in a seperate file? (as opposed to reinitialised per module)
+Work out global access to these objects (singleton?)
 """
 
 fetch_threads = 4
+# use NUMBER_OF_PROCESSORS env var? This might work for windows, but what about unix?
 enclosure_queue = queue.Queue()
 # Convert these into JSON configs
 with open('c:\\config\\config.json') as f:
@@ -16,10 +23,11 @@ with open('c:\\config\\config.json') as f:
 temp_processing = config["framework"]["processing"]
 temp_working = config["framework"]["working"]
 
+
 class ProcessingArray:
     def __new__(cls, *args, **kwargs):
         if cls is ProcessingArray:
-                raise TypeError("base class may not be instantiated")
+            raise TypeError("base class may not be instantiated")
         return object.__new__(cls, *args, **kwargs)
 
     def __init__(self):
@@ -50,12 +58,11 @@ class ProcessedURLs(ProcessingArray):
     def __init__(self):
         ProcessingArray.__init__(self)
         try:
-            file = open(temp_processing, "r")
-            for line in file:
-                self.add_url("https://www.youtube.com/watch?v="+line[:-1])
-            file.close()
+            with open(temp_processing, "w+") as f:
+                for line in f:
+                    self.add_url("https://www.youtube.com/watch?v="+line[:-1])
         except:
-            print("file not found")
+            print("file not found or could classify video")
 
     def update_temp(self):
         file = open(temp_processing, "w+")
@@ -68,10 +75,9 @@ class WorkingURLs(ProcessingArray):
     def __init__(self):
         ProcessingArray.__init__(self)
         try:
-            file = open(temp_working, "r")
-            for line in file:
-                self.add_url("https://www.youtube.com/watch?v="+line[:-1])
-            file.close()
+            with open(temp_working, "w+") as f:
+                for line in f:
+                    self.add_url("https://www.youtube.com/watch?v="+line[:-1])
         except:
             print("file not found")
 
@@ -98,23 +104,15 @@ class WorkingURLs(ProcessingArray):
     def __process_url(self, i, q, processed):
         while True:
             url = q.get()
-            #try:
             video = youtube_converter.VideoFactory("https://www.youtube.com/watch?v=" + url).classify()
-            #video = unclassified.classify()
             print(video)
             video.print_dict()
             video.download()
             processed.add_url(url)
-           # except Exception as e:
-                #print(e)
-                #failed.AddURL(URL, 'pass through error here')
-                #print("error unknown")
-                #return
-            #finally:
             self.remove_url(url)
             q.task_done()
 
-    def process_urls(self, processed, failed):
+    def process_urls(self, processed):
         for i in range(fetch_threads):
             worker = Thread(target=self.__process_url, args=(i, enclosure_queue, processed))
             worker.setDaemon(True)
@@ -160,10 +158,6 @@ class FailedURLs:
     def print_sample(self):
         print(self.urls[0: 5])
 
-#
-#    Functions defined below
-#
-
 
 def linecount(filename):
     count = 0
@@ -205,20 +199,21 @@ def find_url(string):
     return count, array
 
 
-# This might not be the best way to do this, but at the moment allows for 'global access'
-processed = ProcessedURLs()
-working = WorkingURLs()
-failed = FailedURLs()
-working.push_url_to_queue("https://www.youtube.com/watch?v=fKFbnhcNnjE")
-working.push_url_to_queue("https://www.youtube.com/watch?v=NfHT7brehoc")
-#while working.count_urls() > 0:
-#    try:
-#        working.process_urls(processed, failed)
-#    except:
-#        processed.update_temp()
-#        working.update_temp()
-#    finally:
-#        processed.update_temp()
-#        working.update_temp()
+def main():
+    print("Nothing to do here.")
+
+
+def prime():
+    # This is not the best way to do this, but at the moment allows for 'global access'
+    processed = ProcessedURLs()
+    working = WorkingURLs()
+    failed = FailedURLs()
+
+
+if __name__ == "__main__":
+    main()
+else:
+    prime()
+
 
 

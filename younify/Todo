@@ -1,0 +1,2 @@
+# use pathlib not os.path.join
+is there a better way to use paths?

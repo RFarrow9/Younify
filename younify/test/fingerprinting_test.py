@@ -5,11 +5,12 @@ import json
 with open('c:\\config\\config.json') as f:
     config = json.load(f)
 
-class TestFingerprintingMethods(unittest.TestCase):
 
+class TestFingerprintingMethods(unittest.TestCase):
     def test_instantiation(self):
         fingerprint = fingerprinting.FingerPrinter()
         print(fingerprint)
+
 
 if __name__ == '__main__':
     unittest.main()

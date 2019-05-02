@@ -153,7 +153,7 @@ class YoutubeSong(Youtube):
         self.spotify = spotify.SpotifyMatching(self.name)
         self.success = None
         self.filename = None
-        self.temp_filename = None
+        self.raw_filename = None
         """Attributes specific to songs"""
         self.found = None
         self.song_id = None
@@ -169,7 +169,7 @@ class YoutubeSong(Youtube):
     def hook(self, d):
         """Method override is only temporary, this should be removed in future, but keeps it working for now"""
         if d['status'] == 'finished':
-            self.temp_filename = d['filename']
+            self.raw_filename = d['filename']
             self.convert()
 
     def edit_tags(self, file_path):
@@ -180,12 +180,12 @@ class YoutubeSong(Youtube):
         tag_file.tag.save()
 
     def convert(self):
-            if self.temp_filename[-4:] == "webm":
-                self.filename = self.temp_filename[0:-5] + ".mp3"
+            if self.raw_filename[-4:] == "webm":
+                self.filename = self.raw_filename[0:-5] + ".mp3"
             else:
-                self.filename = self.temp_filename[0:-4] + ".mp3"
+                self.filename = self.raw_filename[0:-4] + ".mp3"
             result = subprocess.run(
-                ["C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe", "-y", "-i", self.temp_filename, "-acodec", "libmp3lame",
+                ["C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe", "-y", "-i", self.raw_filename, "-acodec", "libmp3lame",
                  "-ab",
                  "128k", self.filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             if result.stderr:
@@ -194,21 +194,15 @@ class YoutubeSong(Youtube):
             if self.artist is not None or self.title is not None:
                 self.edit_tags(self.filename)
             self.assign_metadata()
-            # try:
-            #    os.rename(processed_file_path, processed_file_path)
-            # except Exception as e:
-            #    os.remove(filename)
-            #    os.remove(processed_file_path)
-            #    raise e
             try:
-                os.remove(self.temp_filename)
+                os.remove(self.raw_filename)
             except Exception as e:
                 raise e
 
     def assign_metadata(self):
         """
-        This would be better usign a with statement, which would close the file automatically not explicitly.
-        However doing this seems to result in an error, come back to this later
+        This would be better using a with statement, which would close the file automatically not explicitly.
+        However doing this seems to result in an error, come back to this one later
 
         At the moment this only assigns the artwork for files.
         """
@@ -244,7 +238,7 @@ class YoutubeSong(Youtube):
         song.found = self.found
         song.artist_id = self.artist_id
         song.song_id = self.song_id
-        song.user_id = "1" # Hardcoding the foreign key for the timebeing
+        song.user_id = "1" # Hardcoding this foreign key for the timebeing
         s = alchemy.session()
         s.add(song)
         s.commit()
@@ -259,7 +253,6 @@ class YoutubePlaylist(Youtube):
         self.url = url
         self.num_songs = None
         self.find_timestamps()
-        # This should hold the objects that represent YoutubeSongs
         self.songs = []
         self.pk = None
 
@@ -361,6 +354,9 @@ class YoutubeOther(Youtube):
         print("placeholder")
 
 
-if __name__ == "__main__":
-    print("nothing to do here")
+def main():
+    print("Nothing to do here.")
 
+
+if __name__ == "__main__":
+    main()

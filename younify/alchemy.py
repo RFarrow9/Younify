@@ -9,8 +9,8 @@ This file handles the database interactions
 
 Currently the database is a hosted azure instance
 
-Question remains is how this can be sharded?
-
+How can this be sharded/Horizontal partitioning?
+Bring through the dates correctly.
 Should each user only be able to see their own information?
 Should we 'cache' information for users to shortcut computation? How often would this change?
 How would we define a user? Could we do it by unique spotify user??
@@ -97,7 +97,15 @@ class Song(Base):
  #   created = Column(datetime, default=datetime.utcnow)
 
 
-if __name__ == "__main__":
+def main():
+    print("Nothing to do here.")
+
+
+def prime():
     DropAllTables()
     Base.metadata.create_all(engine)
     AddTestUser()
+
+
+if __name__ == "__main__":
+    main()
