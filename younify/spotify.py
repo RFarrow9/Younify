@@ -51,12 +51,7 @@ class SpotifyMatching:
         song_potentials = []
         index = 0
         _min = 20
-        for splitter in splitters:
-            if splitter in self.name_clean:
-                # This is poor handling of strings, should only set self when success=true
-                self.artist, self.song = self.name_clean.split(splitter)
-                break
-        if self.success:
+        def inner(index):
             results = self.sp.search(q='artist: ' + self.artist + 'track: ' + self.song, type='track', limit=5)
             if results['tracks']['total'] >= 1:
                 for items in results['tracks']['items']:
@@ -64,9 +59,10 @@ class SpotifyMatching:
                     for artist in items['artists']:
                         song_potentials[index].append([artist['name'], artist['uri']])
                     index += 1
-            else:
-                self.artist = None
-                self.song = None
+        for splitter in splitters:
+            if splitter in self.name_clean:
+                self.artist, self.song = self.name_clean.split(splitter)
+                inner(index)
         cutoff = matching(self.name_clean)
         for potentials in song_potentials:
             if levenshtein(self.name_clean, potentials[0] + potentials[2]) < min:

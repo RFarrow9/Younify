@@ -194,12 +194,6 @@ class YoutubeSong(Youtube):
             if self.artist is not None or self.title is not None:
                 self.edit_tags(self.filename)
             self.assign_metadata()
-            # try:
-            #    os.rename(processed_file_path, processed_file_path)
-            # except Exception as e:
-            #    os.remove(filename)
-            #    os.remove(processed_file_path)
-            #    raise e
             try:
                 os.remove(self.temp_filename)
             except Exception as e:
@@ -207,8 +201,8 @@ class YoutubeSong(Youtube):
 
     def assign_metadata(self):
         """
-        This would be better usign a with statement, which would close the file automatically not explicitly.
-        However doing this seems to result in an error, come back to this later
+        This would be better using a with statement, which would close the file automatically not explicitly.
+        However doing this seems to result in an error, come back to this one later
 
         At the moment this only assigns the artwork for files.
         """
@@ -244,7 +238,7 @@ class YoutubeSong(Youtube):
         song.found = self.found
         song.artist_id = self.artist_id
         song.song_id = self.song_id
-        song.user_id = "1" # Hardcoding the foreign key for the timebeing
+        song.user_id = "1" # Hardcoding this foreign key for the timebeing
         s = alchemy.session()
         s.add(song)
         s.commit()
@@ -259,7 +253,6 @@ class YoutubePlaylist(Youtube):
         self.url = url
         self.num_songs = None
         self.find_timestamps()
-        # This should hold the objects that represent YoutubeSongs
         self.songs = []
         self.pk = None
 
