@@ -14,6 +14,7 @@ Work out global access to these objects (singleton?)
 """
 
 fetch_threads = 4
+# use NUMBER_OF_PROCESSORS env var? This might work for windows, but what about unix?
 enclosure_queue = queue.Queue()
 # Convert these into JSON configs
 with open('c:\\config\\config.json') as f:
@@ -21,6 +22,7 @@ with open('c:\\config\\config.json') as f:
 
 temp_processing = config["framework"]["processing"]
 temp_working = config["framework"]["working"]
+
 
 class ProcessingArray:
     def __new__(cls, *args, **kwargs):
@@ -102,23 +104,15 @@ class WorkingURLs(ProcessingArray):
     def __process_url(self, i, q, processed):
         while True:
             url = q.get()
-            #try:
             video = youtube_converter.VideoFactory("https://www.youtube.com/watch?v=" + url).classify()
-            #video = unclassified.classify()
             print(video)
             video.print_dict()
             video.download()
             processed.add_url(url)
-           # except Exception as e:
-                #print(e)
-                #failed.AddURL(URL, 'pass through error here')
-                #print("error unknown")
-                #return
-            #finally:
             self.remove_url(url)
             q.task_done()
 
-    def process_urls(self, processed, failed):
+    def process_urls(self, processed):
         for i in range(fetch_threads):
             worker = Thread(target=self.__process_url, args=(i, enclosure_queue, processed))
             worker.setDaemon(True)
@@ -205,8 +199,21 @@ def find_url(string):
     return count, array
 
 
-# This is not the best way to do this, but at the moment allows for 'global access'
-processed = ProcessedURLs()
-working = WorkingURLs()
-failed = FailedURLs()
+def main():
+    print("Nothing to do here.")
+
+
+def prime():
+    # This is not the best way to do this, but at the moment allows for 'global access'
+    processed = ProcessedURLs()
+    working = WorkingURLs()
+    failed = FailedURLs()
+
+
+if __name__ == "__main__":
+    main()
+else:
+    prime()
+
+
 

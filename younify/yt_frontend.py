@@ -21,8 +21,9 @@ with open('c:\\config\\config.json') as f:
 
 icon = config["yt_frontend"]["icon"]
 dark = config["yt_frontend"]["dark"]
-myappid = "rftech.younify.1.1"
-ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+appid = "rftech.younify.1.1"
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)
+
 
 def main():
     app = QApplication(["Younify"])

@@ -11,11 +11,12 @@ test_audio_file = config["filehandler_test"]["test_audio_file"]
 class TestFileHandlerMethods(unittest.TestCase):
 
     def reset_to_default(self):
-        alchemy.
+        alchemy.prime()
 
     def test_object_instantiation(self):
-        Song = alchemy.FileHandler(test_audio_file)
-        print(file)
+        test_song = alchemy.Song()
+        print(test_song)
+
 
 if __name__ == '__main__':
     unittest.main()

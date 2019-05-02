@@ -97,7 +97,15 @@ class Song(Base):
  #   created = Column(datetime, default=datetime.utcnow)
 
 
-if __name__ == "__main__":
+def main():
+    print("Nothing to do here.")
+
+
+def prime():
     DropAllTables()
     Base.metadata.create_all(engine)
     AddTestUser()
+
+
+if __name__ == "__main__":
+    main()

@@ -301,7 +301,9 @@ def most_common(_list):
     return count, -min_index
   return max(groups, key=_auxfun)[0]
 
+
 def main():
+    print("Nothing to do here.")
 
 
 if __name__ == '__main__':

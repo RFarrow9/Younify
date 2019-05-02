@@ -153,7 +153,7 @@ class YoutubeSong(Youtube):
         self.spotify = spotify.SpotifyMatching(self.name)
         self.success = None
         self.filename = None
-        self.temp_filename = None
+        self.raw_filename = None
         """Attributes specific to songs"""
         self.found = None
         self.song_id = None
@@ -169,7 +169,7 @@ class YoutubeSong(Youtube):
     def hook(self, d):
         """Method override is only temporary, this should be removed in future, but keeps it working for now"""
         if d['status'] == 'finished':
-            self.temp_filename = d['filename']
+            self.raw_filename = d['filename']
             self.convert()
 
     def edit_tags(self, file_path):
@@ -180,12 +180,12 @@ class YoutubeSong(Youtube):
         tag_file.tag.save()
 
     def convert(self):
-            if self.temp_filename[-4:] == "webm":
-                self.filename = self.temp_filename[0:-5] + ".mp3"
+            if self.raw_filename[-4:] == "webm":
+                self.filename = self.raw_filename[0:-5] + ".mp3"
             else:
-                self.filename = self.temp_filename[0:-4] + ".mp3"
+                self.filename = self.raw_filename[0:-4] + ".mp3"
             result = subprocess.run(
-                ["C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe", "-y", "-i", self.temp_filename, "-acodec", "libmp3lame",
+                ["C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe", "-y", "-i", self.raw_filename, "-acodec", "libmp3lame",
                  "-ab",
                  "128k", self.filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             if result.stderr:
@@ -195,7 +195,7 @@ class YoutubeSong(Youtube):
                 self.edit_tags(self.filename)
             self.assign_metadata()
             try:
-                os.remove(self.temp_filename)
+                os.remove(self.raw_filename)
             except Exception as e:
                 raise e
 
@@ -354,6 +354,9 @@ class YoutubeOther(Youtube):
         print("placeholder")
 
 
-if __name__ == "__main__":
-    print("nothing to do here")
+def main():
+    print("Nothing to do here.")
 
+
+if __name__ == "__main__":
+    main()
