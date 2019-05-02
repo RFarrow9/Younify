@@ -1,4 +1,5 @@
 import json
+from younify import filehandler
 
 """""
 Purpose of this is to interface the fingerprinting apis with the rest of the program for a 
@@ -7,8 +8,8 @@ last ditch effort (third pass) at identifying songs correctly, either from file 
 
 
 class FingerPrinter:
-    def __init__(self, song):
-        if song.filename is not None:
+    def __init__(self, file=filehandler.FileHandler):
+        if file.name is not None:
             print("placeholder")
         # check the file is already downloaded
         # if it is, then great we can work with this

@@ -6,6 +6,8 @@ from younify import spotify
 """
 Behaviour: Take from the file the name/artist/album whatever metadata can be scraped and use this to find the song in spotify
 At this point in time there are no fancy factories/singletons/abstract base classes required due to limited functionality.
+
+The FileHandler is also used to handle files created y the youtube_converter process, so has write methods as well as read.
 """
 
 
@@ -49,6 +51,7 @@ class FileHandler:
         return str(self.file)
 
     def __repr__(self):
+        print("placeholder")
         # how do?
 
 
