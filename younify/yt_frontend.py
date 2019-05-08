@@ -219,5 +219,6 @@ class ProcessingWindow(QWidget):
         self.layout.addWidget(self.tableWidget)
         self.setLayout(self.layout)
 
+
 if __name__ == "__main__":
     print("nothing to do here")

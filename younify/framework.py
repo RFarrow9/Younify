@@ -205,8 +205,11 @@ def main():
 
 def prime():
     # This is not the best way to do this, but at the moment allows for 'global access'
+    global processed
     processed = ProcessedURLs()
+    global working
     working = WorkingURLs()
+    global failed
     failed = FailedURLs()
 
 
