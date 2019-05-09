@@ -1,9 +1,11 @@
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
+import spotipy.util as util
 import numpy as np
 import re
 import operator
 import itertools
+import sys
 import json
 
 """
@@ -43,8 +45,18 @@ class SpotifyMatching:
         print("Song URI: " + str(self.song_uri))
 
     def setup(self):
-        client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
-        self.sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+        if len(sys.argv) > 1:
+            username = sys.argv[1]
+        else:
+            print("Usage: %s username" % (sys.argv[0],))
+            sys.exit()
+        token = util.prompt_for_user_token(username)
+        if token:
+            self.sp = spotipy.Spotify(auth=token)
+        else:
+            print("Couldn't obtain token for user")
+        #client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
+        #self.sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
     def artist_song_first_pass(self):
         self.success = False
@@ -222,8 +234,8 @@ class SpotifyMatching:
         if self.playlist_uri == "None":
             return
         else:
-            return
-            ## self.sp.add_to_playlist(self.song_uri)#?
+            results = self.sp.user_playlist_add_tracks(self.playlist_uri, self.song_uri)
+            print(results)
 
     def return_song_artist(self):
         return self.song_uri, self.artist_uri
