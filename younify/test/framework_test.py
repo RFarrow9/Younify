@@ -1,27 +1,32 @@
 #import time
 from younify import framework
 import unittest
+import json
 
 fetch_threads = 4
 temp_processing = "..\\temp\\temp-processed.tmp"
 temp_working = "..\\temp\\temp-working.tmp"
-bookmarks = "C:\\Users\\robfa\\PycharmProjects\\Younify\\younify\\test\\working\\bookmarks.html"
+temp_failed = "..\\temp\\temp-failed.tmp"
+
+with open('c:\\config\\config.json') as f:
+    config = json.load(f)
+
+bookmarks = config["testing"]["bookmarks"]
 
 
 class TestFrameworkMethods(unittest.TestCase):
-
     def setup_empty(self):
-        self.WorkingURLs = framework.WorkingURLs()
-        self.FailedURLs = framework.FailedURLs()
-        self.ProcessedURLs = framework.ProcessedURLs()
+        self.WorkingURLs = framework.working
+        self.FailedURLs = framework.failed
+        self.ProcessedURLs = framework.processed
         self.WorkingURLs.truncate_urls()
         self.ProcessedURLs.truncate_urls()
         self.FailedURLs.truncate_urls()
 
     def setup_populated(self):
-        self.WorkingURLs = framework.WorkingURLs()
-        self.FailedURLs = framework.FailedURLs()
-        self.ProcessedURLs = framework.ProcessedURLs()
+        self.WorkingURLs = framework.working
+        self.FailedURLs = framework.failed
+        self.ProcessedURLs = framework.processed
 
     def teardown(self):
         self.WorkingURLs.truncate_urls()
@@ -30,9 +35,12 @@ class TestFrameworkMethods(unittest.TestCase):
 
     def test_instantiated(self):
         self.setup_populated()
-        self.assertTrue(self.WorkingURLs.count_urls() > 1200)
-        self.assertTrue(self.ProcessedURLs.count_urls() >= 2)
-        self.assertEqual(self.FailedURLs.count_urls(), 0)
+        linecount_working = framework.linecount(temp_working)
+        linecount_processed = framework.linecount(temp_processing)
+        linecount_failed = framework.linecount(temp_failed)
+        self.assertTrue(self.WorkingURLs.count_urls() == linecount_working, self.WorkingURLs.count_urls())
+        self.assertTrue(self.ProcessedURLs.count_urls() == linecount_processed, self.ProcessedURLs.count_urls())
+        self.assertTrue(self.FailedURLs.count_urls() == linecount_failed, self.FailedURLs.count_urls())
         self.teardown()
 
     def test_truncate(self):
@@ -40,9 +48,9 @@ class TestFrameworkMethods(unittest.TestCase):
         self.WorkingURLs.truncate_urls()
         self.ProcessedURLs.truncate_urls()
         self.FailedURLs.truncate_urls()
-        self.assertEqual(self.WorkingURLs.count_urls(), 0)
-        self.assertEqual(self.ProcessedURLs.count_urls(), 0)
-        self.assertEqual(self.FailedURLs.count_urls(), 0)
+        self.assertEqual(self.WorkingURLs.count_urls(), 0, self.WorkingURLs.count_urls())
+        self.assertEqual(self.ProcessedURLs.count_urls(), 0, self.ProcessedURLs.count_urls())
+        self.assertEqual(self.FailedURLs.count_urls(), 0, self.FailedURLs.count_urls())
         self.teardown()
 
     def test_fileparse(self):
@@ -54,16 +62,16 @@ class TestFrameworkMethods(unittest.TestCase):
         self.assertEqual(self.WorkingURLs.count_urls(), len(urllist))
         self.teardown()
 
-    def test_processing(self):
-        self.setup_empty()
-        working_count = self.WorkingURLs.count_urls()
-        self.assertTrue(working_count == 0)
-        self.WorkingURLs.push_url_to_queue("YSkIJTIE45c")
-        self.WorkingURLs.push_url_to_queue("B2KAipyP8mc")
-        self.assertEqual(2, self.WorkingURLs.count_urls())
-        self.WorkingURLs.process_urls(self.ProcessedURLs, self.FailedURLs)
-        self.assertEqual(0, working_count)
-        self.teardown()
+#    def test_processing(self):
+#        self.setup_empty()
+#        working_count = self.WorkingURLs.count_urls()
+#        self.assertTrue(working_count == 0)
+#        self.WorkingURLs.push_url_to_queue("YSkIJTIE45c")
+#        self.WorkingURLs.push_url_to_queue("B2KAipyP8mc")
+#        self.assertEqual(2, self.WorkingURLs.count_urls())
+#        self.WorkingURLs.process_urls(self.ProcessedURLs, self.FailedURLs)
+#        self.assertEqual(0, working_count)
+#        self.teardown()
 
     def test_fails(self):
         self.setup_empty()
@@ -74,27 +82,28 @@ class TestFrameworkMethods(unittest.TestCase):
         self.assertEqual(self.FailedURLs.count_urls(), 2)
         self.teardown()
 
-    def test_updatetemp(self):
-        self.setup_empty()
-        self.WorkingURLs.push_file_to_working(bookmarks)
-        working_count = self.WorkingURLs.count_urls()
-        self.assertTrue(working_count > 1200)
-        self.WorkingURLs.update_temp()
-        self.assertEqual(working_count, framework.linecount(temp_working))
-        self.WorkingURLs.add_url("YSkIJTIE45c")
-        self.WorkingURLs.add_url("B2KAipyP8mc")
-        self.WorkingURLs.process_url("YSkIJTIE45c", self.ProcessedURLs)
-        self.WorkingURLs.process_url("B2KAipyP8mc", self.ProcessedURLs)
-        self.assertEqual(working_count - 2, framework.linecount(bookmarks))
-        self.assertEqual(self.ProcessedURLs.count_urls(), 2)
-        self.ProcessedURLs.update_temp()
-        self.assertEqual(framework.linecount(temp_processing), 2)
+#    def test_updatetemp(self):
+#        self.setup_empty()
+#        self.WorkingURLs.push_file_to_working(bookmarks)
+#        working_count = self.WorkingURLs.count_urls()
+#        self.assertTrue(working_count > 1200)
+#        self.WorkingURLs.update_temp()
+#        self.assertEqual(working_count, framework.linecount(temp_working))
+#        self.WorkingURLs.add_url("YSkIJTIE45c")
+#        self.WorkingURLs.add_url("B2KAipyP8mc")
+#        self.WorkingURLs.process_url("YSkIJTIE45c", self.ProcessedURLs)
+#        self.WorkingURLs.process_url("B2KAipyP8mc", self.ProcessedURLs)
+#        self.assertEqual(working_count - 2, framework.linecount(bookmarks))
+#        self.assertEqual(self.ProcessedURLs.count_urls(), 2)
+#        self.ProcessedURLs.update_temp()
+#        self.assertEqual(framework.linecount(temp_processing), 2)
 
     def test_retrievetemp(self):
         self.setup_empty()
         self.WorkingURLs.push_file_to_working(bookmarks)
         self.WorkingURLs.update_temp()
         temp_working_linecount = framework.linecount(temp_working)
+        print(temp_working_linecount)
         self.assertTrue(temp_working_linecount > 1200)
         self.WorkingURLs.__init__()
         self.assertEqual(temp_working_linecount, self.WorkingURLs.count_urls())

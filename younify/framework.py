@@ -35,7 +35,7 @@ class ProcessingArray:
 
     def add_url(self, url):
         if url not in self.urls:
-            self.urls.append(youtube_converter.VideoFactory(url).classify())
+            self.urls.append(url)
 
     def count_urls(self):
         return len(self.urls)
@@ -94,7 +94,8 @@ class WorkingURLs(ProcessingArray):
 
     def push_url_to_queue(self, url):
         self.add_url(url)
-        enclosure_queue.put(url)
+        enclosure_queue.put(youtube_converter.VideoFactory(url).classify())
+        # Object is only classified (expensive) when put into the queue! Not before.
 
     def push_urls_to_queue(self):
         if self.count_urls() > 0:

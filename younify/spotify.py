@@ -6,6 +6,7 @@ import re
 import operator
 import itertools
 import sys
+import os
 import json
 
 """
@@ -45,18 +46,14 @@ class SpotifyMatching:
         print("Song URI: " + str(self.song_uri))
 
     def setup(self):
-        if len(sys.argv) > 1:
-            username = sys.argv[1]
-        else:
-            print("Usage: %s username" % (sys.argv[0],))
-            sys.exit()
-        token = util.prompt_for_user_token(username)
-        if token:
-            self.sp = spotipy.Spotify(auth=token)
-        else:
-            print("Couldn't obtain token for user")
-        #client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
-        #self.sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+        #username = os.getlogin()
+        #token = util.prompt_for_user_token(username)
+        #if token:
+        #    self.sp = spotipy.Spotify(auth=token)
+        #else:
+        #    print("Couldn't obtain token for user")
+        client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
+        self.sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
     def artist_song_first_pass(self):
         self.success = False

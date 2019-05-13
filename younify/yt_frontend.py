@@ -6,6 +6,7 @@ from PyQt5 import QtWidgets
 import json, os, sys
 import qdarkstyle
 import ctypes
+
 """
 This is the code that handles the front end creation.
 
