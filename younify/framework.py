@@ -94,7 +94,10 @@ class WorkingURLs(ProcessingArray):
 
     def push_url_to_queue(self, url):
         self.add_url(url)
-        enclosure_queue.put(youtube_converter.VideoFactory(url).classify())
+        if internet:
+            enclosure_queue.put(youtube_converter.VideoFactory(url).classify())
+        else:
+            print("No internet detected, on hold")
         # Object is only classified (expensive) when put into the queue! Not before.
 
     def push_urls_to_queue(self):
@@ -212,6 +215,8 @@ def prime():
     working = WorkingURLs()
     global failed
     failed = FailedURLs()
+    global internet
+    internet = youtube_converter.internet()
 
 
 if __name__ == "__main__":

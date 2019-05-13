@@ -7,6 +7,7 @@ import json, os, sys
 import qdarkstyle
 import ctypes
 import queue
+import socket
 
 """
 This is the code that handles the front end creation.
@@ -238,4 +239,5 @@ class ProcessingWindow(QWidget):
 
 
 if __name__ == "__main__":
-    print("nothing to do here")
+    print("nothing to do here - this will be the entry point in future")
+    internet = internet()

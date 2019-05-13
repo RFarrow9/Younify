@@ -6,7 +6,7 @@ import re
 import eyed3
 import json
 from abc import ABC
-
+import socket
 """
 This is the VideoFactory and URL class handling file
 To use this correctly you will need to instantiate a instance of the VideoFactory
@@ -30,6 +30,15 @@ root_dir = config["youtube_converter"]["root_dir"]
 spotify_dir = config["youtube_converter"]["spotify_dir"]
 artwork = config["youtube_converter"]["artwork"]
 
+def internet(host="8.8.8.8", port=53, timeout=3):
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except Exception as ex:
+        print(ex)
+        return False
+
 
 class VideoFactory:
     def __init__(self, url):
@@ -45,7 +54,10 @@ class VideoFactory:
             'outtmpl': spotify_dir + '\%(title)s.%(ext)s',
             'quiet': True
         }
-        self.populate()
+        try:
+            self.populate()
+        except:
+            print("Could not populate metadata")
 
     def __repr__(self):
         return self.url
@@ -59,7 +71,7 @@ class VideoFactory:
             self.name = self.info_dict.get("title")
 
     def classify(self):
-        # For now, we treat everything like a song or playlist
+    # For now, we treat everything like a song or playlist
         timestamps = self.countmatches(r"[0-9][0-9]\:[0-9][0-9]")
         if self.duration > 1200 or timestamps >= 5:
             return self.to_playlist()

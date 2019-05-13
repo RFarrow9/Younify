@@ -2,7 +2,6 @@ from younify import yt_frontend, framework
 import unittest
 import qdarkstyle
 
-
 class TestFrameworkMethods(unittest.TestCase):
     def setup_empty(self):
         self.WorkingURLs = framework.working

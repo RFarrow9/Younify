@@ -18,7 +18,11 @@ How would we define a user? Could we do it by unique spotify user??
 
 conn = "mssql+pyodbc://rfarrow:sWEz7vdyDXjr@younify.database.windows.net/younify?driver=ODBC+Driver+17+for+SQL+Server"
 engine = create_engine(conn)
-engine.connect()
+try:
+    engine.connect()
+except:
+    print("Could not connect to engine")
+
 
 Base = declarative_base()
 session = sessionmaker()
