@@ -6,6 +6,7 @@ from PyQt5 import QtWidgets
 import json, os, sys
 import qdarkstyle
 import ctypes
+import queue
 
 """
 This is the code that handles the front end creation.
@@ -26,6 +27,18 @@ appid = "rftech.younify.1.1"
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)
 
 
+class Drainer(object):
+    def __init__(self, q):
+        self.q = q
+
+    def __iter__(self):
+        while True:
+            try:
+                yield self.q.get_nowait()
+            except queue.Empty:
+                break
+
+
 def main():
     app = QApplication(["Younify"])
     app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
@@ -38,7 +51,7 @@ def main():
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.setGeometry(100, 100, 500, 200)
+        self.setGeometry(100, 100, 850, 300)
         self.setWindowTitle("Younify")
         self.central_widget = QStackedWidget()
         self.table_widget = TabTable(self)
@@ -201,20 +214,23 @@ class AdvancedSettingsWindow(QWidget):
                                                              self.title_field.text()))
         self.setLayout(self.layout)
 
+
 class ProcessingWindow(QWidget):
     def __init__(self):
         super(ProcessingWindow, self).__init__()
         self.setGeometry(100, 100, 400, 200)
         self.tableWidget = QTableWidget()
         self.tableWidget.setRowCount(framework.working.count_urls())
-        self.tableWidget.setColumnCount(5)
-        self.tableWidget.setHorizontalHeaderLabels(["Title", "URL", "Length(s)", "Status", "Priority"])
-        for idx, obj in enumerate(framework.working.retrieve_urls()):
+        self.tableWidget.setColumnCount(6)
+        self.tableWidget.setHorizontalHeaderLabels(["Title", "URL", "Length(s)", "Type", "Status", "Priority"])
+        for idx, obj in enumerate(Drainer(framework.enclosure_queue)):
             self.tableWidget.setItem(idx, 0, QTableWidgetItem(str(obj.name)))
             self.tableWidget.setItem(idx, 1, QTableWidgetItem(str(obj.url)))
             self.tableWidget.setItem(idx, 2, QTableWidgetItem(str(obj.duration)))
-            self.tableWidget.setItem(idx, 3, QTableWidgetItem("Awaiting"))
-            self.tableWidget.setItem(idx, 4, QTableWidgetItem("Normal"))
+            self.tableWidget.setItem(idx, 3, QTableWidgetItem(str(obj.type)))
+            self.tableWidget.setItem(idx, 4, QTableWidgetItem("Awaiting"))
+            self.tableWidget.setItem(idx, 5, QTableWidgetItem("Normal"))
+        self.tableWidget.resizeColumnsToContents()
         self.layout = QVBoxLayout()
         self.layout.addWidget(QLabel("Processing Array"))
         self.layout.addWidget(self.tableWidget)

@@ -154,6 +154,7 @@ class YoutubeSong(Youtube):
         self.success = None
         self.filename = None
         self.raw_filename = None
+        self.type = "Song"
         """Attributes specific to songs"""
         self.found = None
         self.song_id = None
@@ -248,6 +249,7 @@ class YoutubePlaylist(Youtube):
     def __init__(self, url, info_dict):
         super().__init__(url, info_dict)
         __tablename__ = "Playlists"
+        self.type = "Playlist"
         """Attributes specific to playlists"""
         self.timestamps = []
         self.url = url
@@ -332,6 +334,7 @@ class YoutubePlaylist(Youtube):
 class YoutubeAudiobook(Youtube):
     def __init__(self, url, info_dict):
         Youtube.__init__(self, url, info_dict)
+        self.type = "Audiobook"
 
     def process(self):
         print("placeholder")
@@ -341,6 +344,7 @@ class YoutubeAlbum(YoutubePlaylist):
     """This should explicitly search spotify for the album, different to playlist"""
     def __init__(self, url, info_dict):
         Youtube.__init__(self, url, info_dict)
+        self.type = "Album"
 
     def process(self):
         print("placeholder")
@@ -349,6 +353,7 @@ class YoutubeAlbum(YoutubePlaylist):
 class YoutubeOther(Youtube):
     def __init__(self, url, info_dict):
         Youtube.__init__(self, url, info_dict)
+        self.type = "Other"
 
     def process(self):
         print("placeholder")
