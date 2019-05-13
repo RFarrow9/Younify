@@ -103,16 +103,15 @@ class TestFrameworkMethods(unittest.TestCase):
         self.WorkingURLs.push_file_to_working(bookmarks)
         self.WorkingURLs.update_temp()
         temp_working_linecount = framework.linecount(temp_working)
-        print(temp_working_linecount)
         self.assertTrue(temp_working_linecount > 1200)
         self.WorkingURLs.__init__()
         self.assertEqual(temp_working_linecount, self.WorkingURLs.count_urls())
 
-    def test_retrievemultiples(self):
-        self.setup_empty()
-        self.WorkingURLs.push_file_to_working(bookmarks)
-        self.WorkingURLs.update_temp()
-        temp_working_linecount = framework.linecount(temp_working)
+#    def test_retrievemultiples(self):
+#        self.setup_empty()
+#        self.WorkingURLs.push_file_to_working(bookmarks)
+#        self.WorkingURLs.update_temp()
+#        temp_working_linecount = framework.linecount(temp_working)
 
 
 if __name__ == '__main__':

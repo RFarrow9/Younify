@@ -75,7 +75,7 @@ class WorkingURLs(ProcessingArray):
     def __init__(self):
         ProcessingArray.__init__(self)
         try:
-            with open(temp_working, "w+") as f:
+            with open(temp_working, "r") as f:
                 for line in f:
                     self.add_url("https://www.youtube.com/watch?v="+line[:-1])
         except:
