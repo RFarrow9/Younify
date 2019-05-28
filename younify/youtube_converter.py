@@ -58,6 +58,7 @@ class VideoFactory:
             self.populate()
         except:
             print("Could not populate metadata")
+            pass
 
     def __repr__(self):
         return self.url
@@ -72,14 +73,21 @@ class VideoFactory:
 
     def classify(self):
     # For now, we treat everything like a song or playlist
-        timestamps = self.countmatches(r"[0-9][0-9]\:[0-9][0-9]")
-        if self.duration > 1200 or timestamps >= 5:
-            return self.to_playlist()
+        if self.description is not None:
+            timestamps = self.countmatches(r"[0-9][0-9]\:[0-9][0-9]")
+            if self.duration > 1200 or timestamps >= 5:
+                return self.to_playlist()
+            else:
+                return self.to_song()
         else:
-            return self.to_song()
+            return
 
     def countmatches(self, pattern):
-        return re.subn(pattern, '', self.description)[1]
+        if self.description is None:
+            print("no info found, continuing")
+            pass
+        else:
+            return re.subn(pattern, '', self.description)[1]
 
     def to_song(self):
         return YoutubeSong(self.url, self.info_dict, self.name, None)
@@ -231,7 +239,10 @@ class YoutubeSong(Youtube):
         self.success = self.spotify.process()
         if not self.success:
             if self.url is not None:
-                self.download()
+                try:
+                    self.download()
+                except:
+                    print("failed to download")
             else:
                 print("placeholder")
                 # Handle failed and from playlist here

@@ -109,9 +109,12 @@ class WorkingURLs(ProcessingArray):
         while True:
             url = q.get()
             video = youtube_converter.VideoFactory("https://www.youtube.com/watch?v=" + url).classify()
-            print(video)
-            video.print_dict()
-            video.download()
+            if video is None:
+                print("Youtube link is dead, continuing with others")
+            else:
+                print(video)
+                video.print_dict()
+                video.process()
             processed.add_url(url)
             self.remove_url(url)
             q.task_done()

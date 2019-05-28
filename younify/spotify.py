@@ -52,8 +52,13 @@ class SpotifyMatching:
         #    self.sp = spotipy.Spotify(auth=token)
         #else:
         #    print("Couldn't obtain token for user")
-        client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
-        self.sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+        token = util.prompt_for_user_token(username="robbo1992", scope='playlist-modify-public', client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"], redirect_uri='http://localhost:8080')
+        #client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
+        #self.sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+        if token:
+            self.sp = spotipy.Spotify(auth=token)
+        else:
+            print("no token")
 
     def artist_song_first_pass(self):
         self.success = False
@@ -61,7 +66,8 @@ class SpotifyMatching:
         index = 0
         _min = 20
         def inner(index):
-            results = self.sp.search(q='artist: ' + self.artist + 'track: ' + self.song, type='track', limit=5)
+            results = self.sp.search(q= 'artist: ' + self.artist + 'track: ' + self.song, type='track', limit=5)
+            print(results)
             if results['tracks']['total'] >= 1:
                 for items in results['tracks']['items']:
                     song_potentials.append([items['name'], items['uri']])
@@ -73,6 +79,7 @@ class SpotifyMatching:
                 self.artist, self.song = self.name_clean.split(splitter)
                 inner(index)
         cutoff = matching(self.name_clean)
+        print("potentials: " + str(song_potentials))
         for potentials in song_potentials:
             if levenshtein(self.name_clean, potentials[0] + potentials[2]) < min:
                 _min = levenshtein(self.name_clean, potentials[0] + potentials[2])
@@ -80,15 +87,13 @@ class SpotifyMatching:
                 self.artist_uri = potentials[3]
                 self.song = potentials[0]
                 self.song_uri = potentials[1]
-        if self.artist and self.song is not None:
+        if self.artist_uri and self.song_uri is not None:
             if levenshtein(self.name_clean, self.artist + self.song) > cutoff:
                 self.success = False
                 self.artist = None
                 self.song = None
             else:
                 self.success = True
-        else:
-            self.success = False
 
 
     def artist_album_first_pass(self):
@@ -213,6 +218,7 @@ class SpotifyMatching:
 
     def process(self):
         self.artist_song_first_pass()
+        self.print()
         if not self.success:
             print("first pass failure, proceeding to second..")
             self.artist_second_pass()
@@ -221,17 +227,17 @@ class SpotifyMatching:
             self.add_to_playlist()
         else:
             print("second pass failure.. song not found")
-        print("artist: " + self.artist)
-        print("song: " + self.song)
+        #print("artist: " + self.artist)
+        #print("song: " + self.song)
         return self.success
 
-    def add_to_playlist(self, playlist_uri="None"):
+    def add_to_playlist(self, playlist_uri="spotify:playlist:3VUBchphbcLwE5WdqBW3gv", user="robbo1992"):
         """"Not sure how this should work, currently the playlist is a class attribute
         , if it should be a class attribute, should it be an array?"""
-        if self.playlist_uri == "None":
+        if playlist_uri == None:
             return
         else:
-            results = self.sp.user_playlist_add_tracks(self.playlist_uri, self.song_uri)
+            results = self.sp.user_playlist_add_tracks(user, playlist_uri, "spotify:track" + str(self.song_uri))
             print(results)
 
     def return_song_artist(self):
@@ -310,10 +316,21 @@ def most_common(_list):
     return count, -min_index
   return max(groups, key=_auxfun)[0]
 
+def return_playlists():
+    client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
+    sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+    playlists = sp.user_playlists('robbo1992')
+    while playlists:
+        for i, playlist in enumerate(playlists['items']):
+            print("%4d %s %s" % (i + 1 + playlists['offset'], playlist['uri'], playlist['name']))
+            if playlists['next']:
+                playlists = sp.next(playlists)
+            else:
+                playlists = None
 
 def main():
     print("Nothing to do here.")
 
 
 if __name__ == '__main__':
-    main()
+    return_playlists()
