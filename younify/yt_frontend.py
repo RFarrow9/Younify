@@ -240,4 +240,4 @@ class ProcessingWindow(QWidget):
 
 if __name__ == "__main__":
     print("nothing to do here - this will be the entry point in future")
-    internet = internet()
+   # internet = internet()

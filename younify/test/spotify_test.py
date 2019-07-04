@@ -4,8 +4,8 @@ import unittest
 class TestSpotifyMethods(unittest.TestCase):
 
     def test_levenshtein(self):
-        self.assertTrue(spotify.levenshtein("twat", "mong") == 4)
-        self.assertTrue(spotify.levenshtein("twat", "twat") == 0)
+        self.assertTrue(spotify.levenshtein("cat", "dog") == 3)
+        self.assertTrue(spotify.levenshtein("dog", "dog") == 0)
 
     def test_cleantitle(self):
         print("this is a placeholder")
@@ -20,7 +20,8 @@ class TestSpotifyMethods(unittest.TestCase):
 
     def test_extraction(self):
         tests = []
-        tests.append("Billy Corgan & Mike Garson // Orah / Random Thought (from \"Stigmata\") [1999]")
+        #tests.append("Billy Corgan & Mike Garson // Orah / Random Thought (from \"Stigmata\") [1999]")
+        tests.append("The killers - Human")
         for test in tests:
             extractor = spotify.SpotifyMatching(test)
             extractor.process()

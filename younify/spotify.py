@@ -52,13 +52,14 @@ class SpotifyMatching:
         #    self.sp = spotipy.Spotify(auth=token)
         #else:
         #    print("Couldn't obtain token for user")
-        token = util.prompt_for_user_token(username="robbo1992", scope='playlist-modify-public', client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"], redirect_uri='http://localhost:8080')
-        #client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
-        #self.sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-        if token:
-            self.sp = spotipy.Spotify(auth=token)
-        else:
-            print("no token")
+        token = util.prompt_for_user_token(username="robbo1992", scope='playlist-modify-private', client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"], redirect_uri='http://localhost:8080')
+        client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
+        self.sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+        #if token:
+        #    self.sp = spotipy.Spotify(auth=token)
+        #else:
+        #    print("no token")
+        print("connection successful")
 
     def artist_song_first_pass(self):
         self.success = False
@@ -66,8 +67,10 @@ class SpotifyMatching:
         index = 0
         _min = 20
         def inner(index):
+            print("song: " + str(self.song))
+            print("artist: " + str(self.artist))
             results = self.sp.search(q= 'artist: ' + self.artist + 'track: ' + self.song, type='track', limit=5)
-            print(results)
+            print("Results:" + str(results))
             if results['tracks']['total'] >= 1:
                 for items in results['tracks']['items']:
                     song_potentials.append([items['name'], items['uri']])
@@ -234,9 +237,11 @@ class SpotifyMatching:
     def add_to_playlist(self, playlist_uri="spotify:playlist:3VUBchphbcLwE5WdqBW3gv", user="robbo1992"):
         """"Not sure how this should work, currently the playlist is a class attribute
         , if it should be a class attribute, should it be an array?"""
-        if playlist_uri == None:
+        if playlist_uri == None or self.song_uri == None:
+            print("Empty fields, so can't add to playlist...")
             return
         else:
+            print(self.song_uri)
             results = self.sp.user_playlist_add_tracks(user, playlist_uri, "spotify:track" + str(self.song_uri))
             print(results)
 
@@ -333,4 +338,6 @@ def main():
 
 
 if __name__ == '__main__':
-    return_playlists()
+    instance = SpotifyMatching("test")
+    instance.setup()
+    #return_playlists()
