@@ -69,7 +69,7 @@ class SpotifyMatching:
         def inner(index):
             print("song: " + str(self.song))
             print("artist: " + str(self.artist))
-            results = self.sp.search(q= 'artist: ' + self.artist + 'track: ' + self.song, type='track', limit=5)
+            results = self.sp.search(q= 'artist: ' + self.artist + ' track: ' + self.song, type='track', limit=5)
             print("Results:" + str(results))
             if results['tracks']['total'] >= 1:
                 for items in results['tracks']['items']:
@@ -84,7 +84,10 @@ class SpotifyMatching:
         cutoff = matching(self.name_clean)
         print("potentials: " + str(song_potentials))
         for potentials in song_potentials:
-            if levenshtein(self.name_clean, potentials[0] + potentials[2]) < min:
+            print("Clean name: " + self.name_clean)
+            print(potentials)
+            print(potentials[2])
+            if levenshtein(self.name_clean, str(potentials[0]) + str(potentials[2])) < min:
                 _min = levenshtein(self.name_clean, potentials[0] + potentials[2])
                 self.artist = potentials[2]
                 self.artist_uri = potentials[3]
