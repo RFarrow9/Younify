@@ -53,12 +53,12 @@ class SpotifyMatching:
         #else:
         #    print("Couldn't obtain token for user")
         token = util.prompt_for_user_token(username="robbo1992", scope='playlist-modify-private', client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"], redirect_uri='http://localhost:8080')
-        client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
-        self.sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-        #if token:
-        #    self.sp = spotipy.Spotify(auth=token)
-        #else:
-        #    print("no token")
+        #client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
+        #self.sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+        if token:
+            self.sp = spotipy.Spotify(auth=token)
+        else:
+            print("no token")
         print("connection successful")
 
     def artist_song_first_pass(self):
@@ -75,7 +75,8 @@ class SpotifyMatching:
                 for items in results['tracks']['items']:
                     song_potentials.append([items['name'], items['uri']])
                     for artist in items['artists']:
-                        song_potentials[index].append([artist['name'], artist['uri']])
+                        song_potentials[index].append(artist['name'])
+                        song_potentials[index].append(artist['uri'])
                     index += 1
         for splitter in splitters:
             if splitter in self.name_clean:
@@ -84,16 +85,15 @@ class SpotifyMatching:
         cutoff = matching(self.name_clean)
         print("potentials: " + str(song_potentials))
         for potentials in song_potentials:
-            print("Clean name: " + self.name_clean)
-            print(potentials)
-            print(potentials[2])
-            if levenshtein(self.name_clean, str(potentials[0]) + str(potentials[2])) < min:
+            if levenshtein(self.name_clean, str(potentials[0]) + str(potentials[2])) < _min:
                 _min = levenshtein(self.name_clean, potentials[0] + potentials[2])
                 self.artist = potentials[2]
                 self.artist_uri = potentials[3]
                 self.song = potentials[0]
                 self.song_uri = potentials[1]
         if self.artist_uri and self.song_uri is not None:
+            print("cutoff: " + str(cutoff))
+            print(levenshtein(self.name_clean, self.artist + self.song))
             if levenshtein(self.name_clean, self.artist + self.song) > cutoff:
                 self.success = False
                 self.artist = None
@@ -230,6 +230,7 @@ class SpotifyMatching:
             self.artist_second_pass()
             self.song_second_pass()
         if self.success:
+            print("adding to playlist")
             self.add_to_playlist()
         else:
             print("second pass failure.. song not found")
@@ -244,8 +245,9 @@ class SpotifyMatching:
             print("Empty fields, so can't add to playlist...")
             return
         else:
+            # spotify:track:0McuGBXkEVz9Yq5gui4A7c
             print(self.song_uri)
-            results = self.sp.user_playlist_add_tracks(user, playlist_uri, "spotify:track" + str(self.song_uri))
+            results = self.sp.user_playlist_add_tracks(user, playlist_uri, ["0McuGBXkEVz9Yq5gui4A7c"])
             print(results)
 
     def return_song_artist(self):
@@ -282,13 +284,13 @@ def levenshtein(seq1, seq2):
 
 def matching(string):
     if len(string) <= 4:
-        return 0
-    elif len(string) <= 6:
-        return 1
-    elif len(string) <= 9:
-        return 2
-    else:
         return 3
+    elif len(string) <= 6:
+        return 4
+    elif len(string) <= 9:
+        return 7
+    else:
+        return 7
 
 def clean(string):
     string = string.lower()
