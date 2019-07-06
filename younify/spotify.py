@@ -52,7 +52,7 @@ class SpotifyMatching:
         #    self.sp = spotipy.Spotify(auth=token)
         #else:
         #    print("Couldn't obtain token for user")
-        token = util.prompt_for_user_token(username="robbo1992", scope='playlist-modify-private', client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"], redirect_uri='http://localhost:8080')
+        token = util.prompt_for_user_token(username="robbo1992", scope='user-library-read playlist-modify-private playlist-modify', client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"], redirect_uri='http://localhost:8080')
         #client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
         #self.sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
         if token:
@@ -247,7 +247,7 @@ class SpotifyMatching:
         else:
             # spotify:track:0McuGBXkEVz9Yq5gui4A7c
             print(self.song_uri)
-            results = self.sp.user_playlist_add_tracks(user, playlist_uri, ["0McuGBXkEVz9Yq5gui4A7c"])
+            results = self.sp.user_playlist_add_tracks(user, playlist_uri, [self.song_uri])
             print(results)
 
     def return_song_artist(self):

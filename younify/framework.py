@@ -22,6 +22,7 @@ with open('c:\\config\\config.json') as f:
 
 temp_processing = config["framework"]["processing"]
 temp_working = config["framework"]["working"]
+bookmarks = config["testing"]["bookmarks"]
 
 
 class ProcessingArray:
@@ -208,6 +209,10 @@ def find_url(string):
 
 def main():
     print("Nothing to do here.")
+    prime()
+    working.push_file_to_working(bookmarks)
+    working.push_urls_to_queue()
+    working.process_urls(processed)
 
 
 def prime():

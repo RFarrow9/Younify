@@ -26,7 +26,6 @@ There are two kinds of playlist! single video ones (that we handle), and youtube
 with open('c:\\config\\config.json') as f:
     config = json.load(f)
 
-root_dir = config["youtube_converter"]["root_dir"]
 spotify_dir = config["youtube_converter"]["spotify_dir"]
 artwork = config["youtube_converter"]["artwork"]
 
