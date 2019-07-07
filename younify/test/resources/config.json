@@ -1,0 +1,23 @@
+{
+    "spotify": {
+        "client_id": "",
+		"secret_id": ""
+				},
+	"youtube_converter": {
+		"root_dir":"C:\\Users\\robfa\\Documents\\Python\\Youtube Thing",
+		"spotify_dir":"C:\\Users\\robfa\\Music\\From YouTube",
+		"artwork":"C:\\Users\\U1162369\\Younify\\younify\\resources\\Yin_yang.jpg"
+	},
+  "yt_frontend": {
+    "icon": "C:\\Users\\U1162369\\Younify\\younify\\resources\\Yin_yang.svg",
+	"dark": "C:\\Users\\U1162369\\Younify\\younify\\resources\\dark.qss"
+  },
+  "filehandler_test": {
+    "test_audio_file": "C:\\Users\\U1162369\\Younify\\younify\\resources\\Never Gonna give you up - Rick Astley.txt"
+  },
+  "framework": {
+    "processing": "C:\\Users\\U1162369\\Younify\\younify\\temp\\temp-processed.tmp",
+    "working" : "C:\\Users\\U1162369\\Younify\\younify\\temp\\temp-working.tmp"
+  }
+	
+}

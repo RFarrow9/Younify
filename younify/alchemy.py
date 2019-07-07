@@ -2,6 +2,8 @@ from sqlalchemy import Column, ForeignKey, Integer, String, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref, sessionmaker
 from sqlalchemy import create_engine, MetaData
+from younify import motley
+import logging
 from datetime import datetime
 
 """
@@ -27,6 +29,9 @@ except:
 Base = declarative_base()
 session = sessionmaker()
 session.configure(bind=engine)
+motley.setup_logger(__name__)
+log = logging.getLogger(__name__)
+
 
 def DropAllTables():
     meta = MetaData(engine)

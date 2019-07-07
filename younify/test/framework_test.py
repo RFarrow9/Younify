@@ -1,5 +1,6 @@
 #import time
-from younify import framework
+from younify import frames, motley
+import logging
 import unittest
 import json
 
@@ -12,21 +13,24 @@ with open('c:\\config\\config.json') as f:
     config = json.load(f)
 
 bookmarks = config["testing"]["bookmarks"]
+motley.setup_logger(__name__)
+log = logging.getLogger(__name__)
 
 
 class TestFrameworkMethods(unittest.TestCase):
     def setup_empty(self):
-        self.WorkingURLs = framework.working
-        self.FailedURLs = framework.failed
-        self.ProcessedURLs = framework.processed
+        log.debug('setting up empty frames')
+        self.WorkingURLs = frames.working
+        self.FailedURLs = frames.failed
+        self.ProcessedURLs = frames.processed
         self.WorkingURLs.truncate_urls()
         self.ProcessedURLs.truncate_urls()
         self.FailedURLs.truncate_urls()
 
     def setup_populated(self):
-        self.WorkingURLs = framework.working
-        self.FailedURLs = framework.failed
-        self.ProcessedURLs = framework.processed
+        self.WorkingURLs = frames.working
+        self.FailedURLs = frames.failed
+        self.ProcessedURLs = frames.processed
 
     def teardown(self):
         self.WorkingURLs.truncate_urls()
@@ -35,9 +39,9 @@ class TestFrameworkMethods(unittest.TestCase):
 
     def test_instantiated(self):
         self.setup_populated()
-        linecount_working = framework.linecount(temp_working)
-        linecount_processed = framework.linecount(temp_processing)
-        linecount_failed = framework.linecount(temp_failed)
+        linecount_working = frames.linecount(temp_working)
+        linecount_processed = frames.linecount(temp_processing)
+        linecount_failed = frames.linecount(temp_failed)
         self.assertTrue(self.WorkingURLs.count_urls() == linecount_working, self.WorkingURLs.count_urls())
         self.assertTrue(self.ProcessedURLs.count_urls() == linecount_processed, self.ProcessedURLs.count_urls())
         self.assertTrue(self.FailedURLs.count_urls() == linecount_failed, self.FailedURLs.count_urls())
@@ -55,7 +59,7 @@ class TestFrameworkMethods(unittest.TestCase):
 
     def test_fileparse(self):
         self.setup_empty()
-        urllist = framework.find_urls_in_file(bookmarks)
+        urllist = frames.find_urls_in_file(bookmarks)
         self.WorkingURLs.push_file_to_working(bookmarks)
         self.assertTrue(len(urllist) > 1200, len(urllist))
         self.assertTrue(self.WorkingURLs.count_urls() > 1200, self.WorkingURLs.count_urls())
@@ -102,7 +106,7 @@ class TestFrameworkMethods(unittest.TestCase):
         self.setup_empty()
         self.WorkingURLs.push_file_to_working(bookmarks)
         self.WorkingURLs.update_temp()
-        temp_working_linecount = framework.linecount(temp_working)
+        temp_working_linecount = frames.linecount(temp_working)
         self.assertTrue(temp_working_linecount > 1200)
         self.WorkingURLs.__init__()
         self.assertEqual(temp_working_linecount, self.WorkingURLs.count_urls())

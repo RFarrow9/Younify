@@ -1,5 +1,10 @@
-from younify import spotify
-import unittest
+from younify import spotify, motley
+import unittest, logging
+
+motley.setup_logger(__name__)
+log = logging.getLogger(__name__)
+
+
 
 class TestSpotifyMethods(unittest.TestCase):
 

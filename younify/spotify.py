@@ -2,12 +2,13 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy.util as util
 import numpy as np
-import re
+import re, logging
 import operator
 import itertools
 import sys
 import os
 import json
+from younify import fingerprinter, motley
 
 """
 This is the module that handles interfacing with spotify. It is pulled in from the YoutubeSongs/Playlist classes in the youtube converter module.
@@ -21,7 +22,8 @@ with open('c:\\config\\config.json') as f:
     config = json.load(f)
 
 splitters = ["--", " - ", " — ", " by ", "//"]
-
+motley.setup_logger(__name__)
+log = logging.getLogger(__name__)
 
 class SpotifyMatching:
     def __init__(self, name):
@@ -80,7 +82,7 @@ class SpotifyMatching:
                     index += 1
         for splitter in splitters:
             if splitter in self.name_clean:
-                self.artist, self.song = self.name_clean.split(splitter)
+                self.artist, self.song = self.name_clean.split(splitter, 1) #May need to look at this again, can be more than 1!
                 inner(index)
         cutoff = matching(self.name_clean)
         print("potentials: " + str(song_potentials))
@@ -109,7 +111,7 @@ class SpotifyMatching:
         self.success = False
         for splitter in splitters:
             if splitter in self.name:
-                self.artist, self.album = self.name.split(splitter)
+                self.artist, self.album = self.name.split(splitter, 1) #May need to look at this again, can be more than 1!
                 self.success = True
                 break
         if self.success:
@@ -137,7 +139,7 @@ class SpotifyMatching:
                 artist = items[0]
                 if _min > cutoff:
                     for splitter in ["-", ",", " by ", "//"]:
-                        for sub in self.name.split(splitter):
+                        for sub in self.name.split(splitter, 1): #May need to look at this again, can be more than 1!
                             sp_artist = artist['name'].lower()
                             sp_uri = artist['uri']
                             yt_artist = sub.rstrip().lower()
@@ -158,7 +160,7 @@ class SpotifyMatching:
         sp_artist_min, sp_artist_uri_min = None, None
         for splitter in ["-", ",", " by ", "//"]:
             if splitter in self.name_clean:
-                for sub in self.name_clean.split(splitter):
+                for sub in self.name_clean.split(splitter, 1): #May need to look at this again, can be more than 1!
                     yt_artist = sub.rstrip().lower()
                     for i in gen:
                         potential = " ".join(i)

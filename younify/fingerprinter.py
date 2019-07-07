@@ -1,5 +1,5 @@
-import json
-from younify import filehandler
+import logging
+from younify import motley
 
 """""
 Purpose of this is to interface the fingerprinting apis with the rest of the program for a 
@@ -7,8 +7,13 @@ last ditch effort (third pass) at identifying songs correctly, either from file 
 """
 
 
+motley.setup_logger(__name__)
+log = logging.getLogger(__name__)
+
+
+
 class FingerPrinter:
-    def __init__(self, file=filehandler.FileHandler):
+    def __init__(self, file=motley.FileHandler):
         if file.name is not None:
             print("placeholder")
         # check the file is already downloaded

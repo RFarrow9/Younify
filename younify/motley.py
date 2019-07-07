@@ -1,5 +1,6 @@
 import eyed3
-import os
+import socket, json
+import os, logging
 from datetime import date
 from younify import spotify
 
@@ -9,6 +10,45 @@ At this point in time there are no fancy factories/singletons/abstract base clas
 
 The FileHandler is also used to handle files created y the youtube_converter process, so has write methods as well as read.
 """
+
+with open('c:\\config\\config.json') as f:
+    config = json.load(f)
+
+logloc = config['logging']['path']
+
+
+def setup_logger(name):
+    # create logger
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+
+    # create console handler and set level to debug
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+
+    fh = logging.FileHandler(logloc)
+    fh.setLevel(logging.DEBUG)
+
+    # create formatter
+    formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s')
+
+    # add formatter to ch
+    ch.setFormatter(formatter)
+    fh.setFormatter(formatter)
+
+    # add ch to logger
+    logger.addHandler(ch)
+    logger.addHandler(fh)
+
+
+def internet(host="8.8.8.8", port=53, timeout=3):
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except Exception as ex:
+        print(ex)
+        return False
 
 
 class FileHandler:
@@ -53,8 +93,6 @@ class FileHandler:
     def __repr__(self):
         print("placeholder")
         # how do?
-
-
 
 
 class FolderHandler:
@@ -112,3 +150,7 @@ class FolderHandler:
         for file in self.files:
             os.rename(self.path + '\\' + file, newfolder + '\\' + archivedate + file)
         #Do not change path after operation, so now points to an empty dir
+
+
+setup_logger(__name__)
+log = logging.getLogger(__name__)

@@ -1,14 +1,14 @@
-from younify import fingerprinting
-import unittest
-import json
+from younify import fingerprinter, motley
+import unittest, logging
 
-with open('c:\\config\\config.json') as f:
-    config = json.load(f)
+
+motley.setup_logger(__name__)
+log = logging.getLogger(__name__)
 
 
 class TestFingerprintingMethods(unittest.TestCase):
     def test_instantiation(self):
-        fingerprint = fingerprinting.FingerPrinter()
+        fingerprint = fingerprinter.FingerPrinter()
         print(fingerprint)
 
 
