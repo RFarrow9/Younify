@@ -1,20 +1,11 @@
-from younify import interface, frames, motley
-import json
-import logging
-import sys
-
-with open('c:\\config\\config.json') as f:
-    config = json.load(f)
-
-bookmarks = config["testing"]["bookmarks"]
-logloc = config['logging']['path']
-
+from younify import *
 
 """
 This is the entry point for the program
 
 """
 
+log = motley.setup_logger(__name__)
 
 class Entry:
     def __init__(self):
@@ -33,6 +24,9 @@ class Entry:
         self.FailedURLs.truncate_urls()
 
 
-if __name__ == "__main__":
-    setup_logger(__name__)
-    run = Entry()
+def main():
+    print("This is not the entry point. Either run unittests, or run entry.py")
+
+
+if __name__ == '__main__':
+    main()

@@ -1,14 +1,9 @@
-import spotipy
+from younify import *
 from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy.util as util
+import spotipy
 import numpy as np
-import re, logging
-import operator
 import itertools
-import sys
-import os
-import json
-from younify import fingerprinter, motley
 
 """
 This is the module that handles interfacing with spotify. It is pulled in from the YoutubeSongs/Playlist classes in the youtube converter module.
@@ -18,12 +13,9 @@ This needs to have some sort of authentication to work fully. For this it may ne
 Investigate this authentication further, can we use any of the results to authenticate user in younify?
 """
 
-with open('c:\\config\\config.json') as f:
-    config = json.load(f)
-
 splitters = ["--", " - ", " — ", " by ", "//"]
-motley.setup_logger(__name__)
-log = logging.getLogger(__name__)
+log = motley.setup_logger(__name__)
+
 
 class SpotifyMatching:
     def __init__(self, name):
@@ -54,7 +46,7 @@ class SpotifyMatching:
         #    self.sp = spotipy.Spotify(auth=token)
         #else:
         #    print("Couldn't obtain token for user")
-        token = util.prompt_for_user_token(username="robbo1992", scope='user-library-read playlist-modify-private playlist-modify', client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"], redirect_uri='http://localhost:8080')
+        token = util.prompt_for_user_token(username="robbo1992", scope='user-library-read playlist-modify-private playlist-modify', client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"], redirect_uri='http://localhost:8080', cache_path=spotify_cache)
         #client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
         #self.sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
         if token:
@@ -340,11 +332,10 @@ def return_playlists():
             else:
                 playlists = None
 
+
 def main():
-    print("Nothing to do here.")
+    print("This is not the entry point. Either run unittests, or run entry.py")
 
 
 if __name__ == '__main__':
-    instance = SpotifyMatching("test")
-    instance.setup()
-    #return_playlists()
+    main()

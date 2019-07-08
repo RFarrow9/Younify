@@ -1,14 +1,6 @@
-from younify import alchemy, motley
-import unittest
-import logging
-import json
+from younify import *
 
-with open('c:\\config\\config.json') as f:
-    config = json.load(f)
-
-test_audio_file = config["filehandler_test"]["test_audio_file"]
-motley.setup_logger(__name__)
-log = logging.getLogger(__name__)
+log = motley.setup_logger(__name__)
 
 class TestFileHandlerMethods(unittest.TestCase):
     def reset_to_default(self):

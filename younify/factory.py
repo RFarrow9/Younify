@@ -1,12 +1,8 @@
-from younify import spotify, alchemy, motley
+from younify import *
 import subprocess
 import youtube_dl
-import os
-import re, logging
-import eyed3
-import json
 from abc import ABC
-import socket
+
 """
 This is the VideoFactory and URL class handling file
 To use this correctly you will need to instantiate a instance of the VideoFactory
@@ -23,19 +19,13 @@ This will handle playlists/albums/songs/audiobooks accordingly
 There are two kinds of playlist! single video ones (that we handle), and youtube based ones. 
 """
 
-with open('c:\\config\\config.json') as f:
-    config = json.load(f)
 
-spotify_dir = config["youtube_converter"]["spotify_dir"]
-artwork = config["youtube_converter"]["artwork"]
-
-motley.setup_logger(__name__)
-log = logging.getLogger(__name__)
-
+log = motley.setup_logger(__name__)
 
 
 class VideoFactory:
     def __init__(self, url):
+        log.DEBUG("VideoFactory with URL of %s has been instantiated." % url)
         self.url = url
         self.info_dict = None
         self.duration = None
@@ -49,9 +39,10 @@ class VideoFactory:
             'quiet': True
         }
         try:
+            log.DEBUG("Populating metadata for %s." % url)
             self.populate()
         except:
-            print("Could not populate metadata")
+            log.ERROR("Populating metadata for %s has failed." % url)
             pass
 
     def __repr__(self):
@@ -59,7 +50,10 @@ class VideoFactory:
 
     def populate(self):
         with youtube_dl.YoutubeDL(self.options) as ydl:
-            info_dict = ydl.extract_info(self.url, download=False)
+            try:
+                info_dict = ydl.extract_info(self.url, download=False)
+            except:
+                log.DEBUG("Populating metadata for %s." % url)
             self.info_dict = info_dict
             self.duration = info_dict.get("duration")
             self.description = info_dict.get("description")
@@ -376,9 +370,3 @@ class YoutubeOther(Youtube):
         print("placeholder")
 
 
-def main():
-    print("Nothing to do here.")
-
-
-if __name__ == "__main__":
-    main()

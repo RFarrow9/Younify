@@ -1,13 +1,9 @@
-from younify import spotify, motley
-import unittest, logging
+from younify import *
 
-motley.setup_logger(__name__)
-log = logging.getLogger(__name__)
-
+log = motley.setup_logger(__name__)
 
 
 class TestSpotifyMethods(unittest.TestCase):
-
     def test_levenshtein(self):
         self.assertTrue(spotify.levenshtein("cat", "dog") == 3)
         self.assertTrue(spotify.levenshtein("dog", "dog") == 0)
@@ -57,6 +53,7 @@ class TestSpotifyMethods(unittest.TestCase):
     def test_most_common(self):
         #test function
         print("placeholder")
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,8 +1,5 @@
-import eyed3
-import socket, json
-import os, logging
-from datetime import date
-from younify import spotify
+from younify import *
+import socket
 
 """
 Behaviour: Take from the file the name/artist/album whatever metadata can be scraped and use this to find the song in spotify
@@ -10,11 +7,6 @@ At this point in time there are no fancy factories/singletons/abstract base clas
 
 The FileHandler is also used to handle files created y the youtube_converter process, so has write methods as well as read.
 """
-
-with open('c:\\config\\config.json') as f:
-    config = json.load(f)
-
-logloc = config['logging']['path']
 
 
 def setup_logger(name):
@@ -39,6 +31,7 @@ def setup_logger(name):
     # add ch to logger
     logger.addHandler(ch)
     logger.addHandler(fh)
+    return logger
 
 
 def internet(host="8.8.8.8", port=53, timeout=3):
@@ -152,5 +145,12 @@ class FolderHandler:
         #Do not change path after operation, so now points to an empty dir
 
 
-setup_logger(__name__)
-log = logging.getLogger(__name__)
+log = setup_logger(__name__)
+
+
+def main():
+    print("This is not the entry point. Either run unittests, or run entry.py")
+
+
+if __name__ == '__main__':
+    main()

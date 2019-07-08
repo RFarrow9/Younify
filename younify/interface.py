@@ -1,13 +1,8 @@
-from younify import factory, frames, motley
+from younify import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-from PyQt5 import QtGui
-from PyQt5 import QtWidgets
-import json, os, sys
-import qdarkstyle, logging
-import ctypes
-import queue
-import socket
+from PyQt5 import QtGui, QtWidgets
+import qdarkstyle
 
 """
 This is the code that handles the front end creation.
@@ -18,19 +13,7 @@ Also need to look at how the dark theme is working, this mostly works, but needs
 look a tad ugly.
 """
 
-
-with open('c:\\config\\config.json') as f:
-    config = json.load(f)
-
-icon = config["yt_frontend"]["icon"]
-dark = config["yt_frontend"]["dark"]
-appid = "rftech.younify.1.1"
-ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)
-
-name = __name__
-motley.setup_logger(name)
-log = logging.getLogger(__name__)
-
+log = motley.setup_logger(__name__)
 
 class Drainer(object):
     def __init__(self, q):
@@ -242,7 +225,9 @@ class ProcessingWindow(QWidget):
         self.setLayout(self.layout)
 
 
-if __name__ == "__main__":
-    print("nothing to do here - this will be the entry point in future")
-    log.debug("test message")
-   # internet = internet()
+def main():
+    print("This is not the entry point. Either run unittests, or run entry.py")
+
+
+if __name__ == '__main__':
+    main()

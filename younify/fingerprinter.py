@@ -1,15 +1,11 @@
-import logging
-from younify import motley
+from younify import *
 
 """""
 Purpose of this is to interface the fingerprinting apis with the rest of the program for a 
 last ditch effort (third pass) at identifying songs correctly, either from file or from url.
 """
 
-
-motley.setup_logger(__name__)
-log = logging.getLogger(__name__)
-
+log = motley.setup_logger(__name__)
 
 
 class FingerPrinter:
@@ -21,3 +17,11 @@ class FingerPrinter:
 
     def __str__(self):
         return "checked against..."
+
+
+def main():
+    print("This is not the entry point. Either run unittests, or run entry.py")
+
+
+if __name__ == '__main__':
+    main()

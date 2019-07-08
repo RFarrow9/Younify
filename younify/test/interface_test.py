@@ -1,9 +1,6 @@
-from younify import interface, frames, motley
-import unittest, logging
-import qdarkstyle
+from younify import *
 
-motley.setup_logger(__name__)
-log = logging.getLogger(__name__)
+log = motley.setup_logger(__name__)
 
 
 class TestFrameworkMethods(unittest.TestCase):

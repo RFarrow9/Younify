@@ -1,21 +1,6 @@
-#import time
-from younify import frames, motley
-import logging
-import unittest
-import json
+from younify import *
 
-fetch_threads = 4
-temp_processing = "..\\temp\\temp-processed.tmp"
-temp_working = "..\\temp\\temp-working.tmp"
-temp_failed = "..\\temp\\temp-failed.tmp"
-
-with open('c:\\config\\config.json') as f:
-    config = json.load(f)
-
-bookmarks = config["testing"]["bookmarks"]
-motley.setup_logger(__name__)
-log = logging.getLogger(__name__)
-
+log = motley.setup_logger(__name__)
 
 class TestFrameworkMethods(unittest.TestCase):
     def setup_empty(self):

@@ -1,10 +1,9 @@
+from younify import *
 from sqlalchemy import Column, ForeignKey, Integer, String, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref, sessionmaker
 from sqlalchemy import create_engine, MetaData
-from younify import motley
-import logging
-from datetime import datetime
+
 
 """
 This file handles the database interactions
@@ -18,19 +17,17 @@ Should we 'cache' information for users to shortcut computation? How often would
 How would we define a user? Could we do it by unique spotify user??
 """
 
-conn = "mssql+pyodbc://rfarrow:sWEz7vdyDXjr@younify.database.windows.net/younify?driver=ODBC+Driver+17+for+SQL+Server"
-engine = create_engine(conn)
+
+engine = create_engine(database_connection)
 try:
     engine.connect()
 except:
     print("Could not connect to engine")
 
-
 Base = declarative_base()
 session = sessionmaker()
 session.configure(bind=engine)
-motley.setup_logger(__name__)
-log = logging.getLogger(__name__)
+log = motley.setup_logger(__name__)
 
 
 def DropAllTables():
@@ -106,15 +103,15 @@ class Song(Base):
  #   created = Column(datetime, default=datetime.utcnow)
 
 
-def main():
-    print("Nothing to do here.")
-
-
 def prime():
     DropAllTables()
     Base.metadata.create_all(engine)
     AddTestUser()
 
 
-if __name__ == "__main__":
+def main():
+    print("This is not the entry point. Either run unittests, or run entry.py")
+
+
+if __name__ == '__main__':
     main()

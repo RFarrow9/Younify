@@ -1,9 +1,6 @@
-from younify import fingerprinter, motley
-import unittest, logging
+from younify import *
 
-
-motley.setup_logger(__name__)
-log = logging.getLogger(__name__)
+log = motley.setup_logger(__name__)
 
 
 class TestFingerprintingMethods(unittest.TestCase):

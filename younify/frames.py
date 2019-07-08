@@ -1,7 +1,5 @@
-import queue
-import json, logging
+from younify.factory import *
 from threading import Thread
-from younify import factory, motley
 
 """
 Should we be using 'processed' as an array, or only hold fails and working?
@@ -13,20 +11,8 @@ Should the JSON interacter be in a seperate file? (as opposed to reinitialised p
 Work out global access to these objects (singleton?)
 """
 
-fetch_threads = 4
-# use NUMBER_OF_PROCESSORS env var? This might work for windows, but what about unix?
-enclosure_queue = queue.Queue()
-# Convert these into JSON configs
-with open('c:\\config\\config.json') as f:
-    config = json.load(f)
 
-temp_processing = config["framework"]["processing"]
-temp_working = config["framework"]["working"]
-bookmarks = config["testing"]["bookmarks"]
-
-name = __name__
-motley.setup_logger(name)
-log = logging.getLogger(__name__)
+log = motley.setup_logger(__name__)
 
 
 class ProcessingArray:
@@ -212,29 +198,10 @@ def find_url(string):
 
 
 def main():
-    print("Nothing to do here.")
-    prime()
-    working.push_file_to_working(bookmarks)
-    working.push_urls_to_queue()
-    working.process_urls(processed)
+    print("This is not the entry point. Either run unittests, or run entry.py")
 
 
-def prime():
-    # This is not the best way to do this, but at the moment allows for 'global access'
-    global processed
-    processed = ProcessedURLs()
-    global working
-    working = WorkingURLs()
-    global failed
-    failed = FailedURLs()
-    global internet
-    internet = motley.internet()
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
-else:
-    prime()
-
 
 
