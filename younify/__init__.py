@@ -33,10 +33,15 @@ ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)
 
 from younify import motley
 from younify import interface
-from younify import factory
+from younify import alchemy
 from younify import spotify
+from younify import factory
 from younify import fingerprinter
 from younify import frames
-from younify import alchemy
+
+
+processed = frames.ProcessedURLs()
+working = frames.WorkingURLs()
+failed = frames.FailedURLs()
 
 

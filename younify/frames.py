@@ -99,7 +99,7 @@ class WorkingURLs(ProcessingArray):
     def __process_url(self, i, q, processed):
         while True:
             url = q.get()
-            video = factory.VideoFactory("https://www.youtube.com/watch?v=" + url).classify()
+            video = VideoFactory(url).classify()
             if video is None:
                 print("Youtube link is dead, continuing with others")
             else:

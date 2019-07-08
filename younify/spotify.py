@@ -4,6 +4,7 @@ import spotipy.util as util
 import spotipy
 import numpy as np
 import itertools
+import operator
 
 """
 This is the module that handles interfacing with spotify. It is pulled in from the YoutubeSongs/Playlist classes in the youtube converter module.

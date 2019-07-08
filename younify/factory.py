@@ -25,7 +25,7 @@ log = motley.setup_logger(__name__)
 
 class VideoFactory:
     def __init__(self, url):
-        log.DEBUG("VideoFactory with URL of %s has been instantiated." % url)
+        log.debug("VideoFactory with URL of %s has been instantiated." % url)
         self.url = url
         self.info_dict = None
         self.duration = None
@@ -39,10 +39,10 @@ class VideoFactory:
             'quiet': True
         }
         try:
-            log.DEBUG("Populating metadata for %s." % url)
+            log.debug("Populating metadata for %s." % url)
             self.populate()
         except:
-            log.ERROR("Populating metadata for %s has failed." % url)
+            log.error("Populating metadata for %s has failed." % url)
             pass
 
     def __repr__(self):
