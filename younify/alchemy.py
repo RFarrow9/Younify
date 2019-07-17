@@ -19,15 +19,16 @@ How would we define a user? Could we do it by unique spotify user??
 
 
 engine = create_engine(database_connection)
-try:
-    engine.connect()
-except:
-    print("Could not connect to engine")
-
 Base = declarative_base()
 session = sessionmaker()
 session.configure(bind=engine)
 log = motley.setup_logger(__name__)
+
+
+try:
+    engine.connect()
+except:
+    log.error("The database engine has failed to connect")
 
 
 def DropAllTables():
@@ -35,7 +36,9 @@ def DropAllTables():
     meta.reflect()
     meta.drop_all()
 
+
 def AddTestUser():
+    log.debug("Adding test user to database")
     testuser = User()
     testuser.name = "Test"
     testuser.fullname = "Test_User"
