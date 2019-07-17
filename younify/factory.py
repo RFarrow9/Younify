@@ -223,7 +223,7 @@ class YoutubeSong(Youtube):
         image.close()
 
     def process(self):
-        print(self.name)
+        #print(self.name)
         self.success = self.spotify.process()
         if not self.success:
             if self.url is not None:
@@ -232,7 +232,7 @@ class YoutubeSong(Youtube):
                 except:
                     print("failed to download")
             else:
-                print("placeholder")
+                log.debug("Spotify methods failing, will do manual downloads here.")
                 # Handle failed and from playlist here
                 # Should be pushed back up to playlist object?
         # automatically pushed to playlist if success already
@@ -284,13 +284,15 @@ class YoutubePlaylist(Youtube):
                     break
 
     def __str__(self):
-        return "type: " + type(self).__name__ + "\n" + "url: " + self.url + "\n" + "songs in playlist: " + str(self.num_songs)
+        log.debug("--Youtube Playlist Instantiated")
+        log.debug("URL: {}".format(self.url))
+        log.debug("Songs in playlist: {}".format(str(self.num_songs)))
 
     def process(self):
         self.push_to_db()
         failure = 0
         for song in self.timestamps:
-            print("running: " + str(song))
+            log.debug("Instantiating YoutubeSong object for {}".format(str(song)))
             self.songs.append(YoutubeSong(url=None, info_dict=None, name=song[0], playlist=self))
         for obj in self.songs:
             obj.process()

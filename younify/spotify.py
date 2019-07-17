@@ -85,7 +85,7 @@ class SpotifyMatching:
                 self.song = potentials[0]
                 self.song_uri = potentials[1]
         if self.artist_uri and self.song_uri is not None:
-            log.debug("Cutoff point for %s : %d" % (id(self), str(cutoff)))
+            log.debug("Cutoff point for %s : %d" % (id(self), cutoff))
             log.debug("Levenshtein distance between {} and {} :  {}"
                       .format(self.name_clean, self.artist + self.song,
                               levenshtein(self.name, self.artist + self.song)))
@@ -229,7 +229,7 @@ class SpotifyMatching:
             log.debug("Second pass success, adding to playlist.")
             self.add_to_playlist()
         else:
-            log.warn("Second pass failure.")
+            log.warning("Second pass failure.")
         return self.success
 
     def add_to_playlist(self, playlist_uri="spotify:playlist:3VUBchphbcLwE5WdqBW3gv", user="robbo1992"):
