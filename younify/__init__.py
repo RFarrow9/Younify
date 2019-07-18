@@ -27,7 +27,7 @@ test_audio_file = config["filehandler_test"]["test_audio_file"]
 
 
 enclosure_queue = queue.Queue()
-fetch_threads = 4 # use NUMBER_OF_PROCESSORS env var? This might work for windows, but what about unix?
+fetch_threads = os.getenv('NUMBER_OF_PROCESSORS', 4)
 appid = "rftech.younify.1.1"
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)
 
