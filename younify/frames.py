@@ -85,7 +85,7 @@ class WorkingURLs(ProcessingArray):
 
     def push_url_to_queue(self, url):
         self.add_url(url)
-        if internet:
+        if motley.internet:
             enclosure_queue.put(factory.VideoFactory(url).classify())
         else:
             print("No internet detected, on hold")
@@ -101,7 +101,7 @@ class WorkingURLs(ProcessingArray):
             url = q.get()
             video = VideoFactory(url).classify()
             if video is None:
-                print("Youtube link is dead, continuing with others")
+                log.warning("Youtube link for %s appears to be void." % url)
             else:
                 print(video)
                 video.print_dict()
@@ -116,16 +116,6 @@ class WorkingURLs(ProcessingArray):
             worker.setDaemon(True)
             worker.start()
             enclosure_queue.join()
-
-    def process_url(self, url, processed):
-        try:
-            factory.get_audio("https://www.youtube.com/watch?v=" + url, "", "")
-            processed.add_url(url)
-        except:
-            #add proper error handling here
-            print("error unknown")
-        finally:
-            self.remove_url(url)
 
 
 class FailedURLs:

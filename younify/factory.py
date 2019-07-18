@@ -53,7 +53,7 @@ class VideoFactory:
             try:
                 info_dict = ydl.extract_info(self.url, download=False)
             except:
-                log.DEBUG("Populating metadata for %s." % url)
+                log.DEBUG("Populating metadata for %s." % self.url)
             self.info_dict = info_dict
             self.duration = info_dict.get("duration")
             self.description = info_dict.get("description")
@@ -72,7 +72,7 @@ class VideoFactory:
 
     def countmatches(self, pattern):
         if self.description is None:
-            print("no info found, continuing")
+            log.warning("No description information found for %s" % id(self))
             pass
         else:
             return re.subn(pattern, '', self.description)[1]
@@ -198,7 +198,7 @@ class YoutubeSong(Youtube):
                  "-ab",
                  "128k", self.filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             if result.stderr:
-                print(result.stderr)
+                log.error(result.stderr)
             # filename = os.path.splitext(filename)[0]
             if self.artist is not None or self.title is not None:
                 self.edit_tags(self.filename)
@@ -223,14 +223,13 @@ class YoutubeSong(Youtube):
         image.close()
 
     def process(self):
-        #print(self.name)
         self.success = self.spotify.process()
         if not self.success:
             if self.url is not None:
                 try:
                     self.download()
                 except:
-                    print("failed to download")
+                    log.warning("Song %s failed to download." % self.name)
             else:
                 log.debug("Spotify methods failing, will do manual downloads here.")
                 # Handle failed and from playlist here
@@ -239,6 +238,7 @@ class YoutubeSong(Youtube):
         self.push_to_db()
 
     def push_to_db(self):
+        log.debug("Writing song to database: %s" %id(self))
         song = alchemy.Song()
         if self.playlist is not None:
             song.playlist_id = self.playlist.pk
@@ -318,14 +318,14 @@ class YoutubePlaylist(Youtube):
              "-ab",
              "128k", processed_file_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if result.stderr:
-            print(result.stderr)
+            log.error(result.stderr)
         try:
             os.remove(filename)
         except Exception as e:
             raise e
 
     def cut(self):
-        print("placeholder")
+        raise NotImplemented()
 
     def push_to_db(self):
         playlist = alchemy.Playlist()
@@ -350,7 +350,7 @@ class YoutubeAudiobook(Youtube):
         self.type = "Audiobook"
 
     def process(self):
-        print("placeholder")
+        raise NotImplemented()
 
 
 class YoutubeAlbum(YoutubePlaylist):
@@ -360,7 +360,7 @@ class YoutubeAlbum(YoutubePlaylist):
         self.type = "Album"
 
     def process(self):
-        print("placeholder")
+        raise NotImplemented()
 
 
 class YoutubeOther(Youtube):
@@ -369,6 +369,6 @@ class YoutubeOther(Youtube):
         self.type = "Other"
 
     def process(self):
-        print("placeholder")
+        raise NotImplemented()
 
 

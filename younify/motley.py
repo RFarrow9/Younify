@@ -40,7 +40,16 @@ def internet(host="8.8.8.8", port=53, timeout=3):
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
         return True
     except Exception as ex:
-        print(ex)
+        log.error("Internet connection severed. Pausing threads and retrying.: %s" %ex)
+        for x in range(0, 20):
+            try:
+                socket.setdefaulttimeout(timeout)
+                socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+                return True
+            except:
+                pass
+            time.sleep(10)
+        log.critical("Internet connection severed. No active internet connection detected after 200 seconds.")
         return False
 
 
@@ -61,8 +70,7 @@ class FileHandler:
 
     def second_pass(self):
         """"for second pass we assume the only metadata is the filename itself"""
-        print("placeholder")
-        #self.filename = substring(self.file)
+        raise NotImplemented()
 
     def third_pass(self):
         """""For third pass we assume there is no valid metadata at all and use fingerprinting services"""
@@ -74,17 +82,17 @@ class FileHandler:
 
     def move_file(self):
         """"Move the file to specified location"""
-        print("placeholder")
+        raise NotImplemented()
 
     def convert_file(self):
         """"Convert the file to standard format (mp3?) if not already"""
-        print("placeholder")
+        raise NotImplemented()
 
     def __str__(self):
         return str(self.file)
 
     def __repr__(self):
-        print("placeholder")
+        raise NotImplemented()
         # how do?
 
 
@@ -105,7 +113,7 @@ class FolderHandler:
         oldest_time = None
         oldest_file = None
         if len(self.files) == 0:
-            print("no files in directory")
+            log.warning("No files found in directory: %s" % self.path)
         else:
             oldest_file = self.files[0]
             oldest_time = os.path.getctime(self.path + '\\' + oldest_file)
@@ -122,7 +130,7 @@ class FolderHandler:
         newest_time = None
         newest_file = None
         if len(self.files) == 0:
-            print("no files in directory")
+            log.warning("No files found in directory: %s" % self.path)
         else:
             newest_file = self.files[0]
             newest_time = os.path.getctime(self.path + '\\' + newest_file)

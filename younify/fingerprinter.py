@@ -11,12 +11,13 @@ log = motley.setup_logger(__name__)
 class FingerPrinter:
     def __init__(self, file=motley.FileHandler):
         if file.name is not None:
-            print("placeholder")
+            raise NotImplemented()
+        raise NotImplemented()
         # check the file is already downloaded
         # if it is, then great we can work with this
 
     def __str__(self):
-        return "checked against..."
+        raise NotImplemented()
 
 
 def main():

@@ -9,17 +9,41 @@ import operator
 """
 This is the module that handles interfacing with spotify. It is pulled in from the YoutubeSongs/Playlist classes in the youtube converter module.
 This will then check the information against spotify to match if possible with a spotify song (or album?).
-
-This needs to have some sort of authentication to work fully. For this it may need extension to have a wrapper class that holds persistent state.
-Investigate this authentication further, can we use any of the results to authenticate user in younify?
 """
+
+
+def create_token():
+    """
+        This function generates a global token for authentication. It has been removed from the class itself to
+        avoid calling this function multiple times as it only needs to be used as a singleton.
+
+        It will make a second attempt if the first one fails, this can take up to 200 seconds whilst waiting for
+        internet connection if this is severed.
+    """
+    def token_helper():
+        token = util.prompt_for_user_token(username="robbo1992", scope='user-library-read playlist-modify-private playlist-modify',
+                                           client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"],
+                                           redirect_uri='http://localhost:8080', cache_path=spotify_cache)
+        return token
+    if token_helper():
+        log.debug("Succesfully generated a spotify token for authentication")
+        return spotipy.Spotify(auth=token)
+    else:
+        if motley.internet:
+            if token_helper():
+                log.debug("Succesfully generated a spotify token for authentication")
+                return spotipy.Spotify(auth=token)
+            else:
+                log.error("Authentication error in create_token method.")
+
 
 splitters = ["--", " - ", " — ", " by ", "//"]
 log = motley.setup_logger(__name__)
+token = create_token()
 
 
 class SpotifyMatching:
-    def __init__(self, name):
+    def __init__(self, name, token=token):
         self.name = name
         self.name_clean = clean(name)
         self.artist = None
@@ -28,10 +52,9 @@ class SpotifyMatching:
         self.song_uri = None
         self.album = None
         self.album_uri = None
-        self.sp = None
+        self.sp = token
         self.success = True
         self.playlist_uri = None
-        self.setup()
 
     def print(self):
         print("Name of video: " + str(self.name))
@@ -48,136 +71,115 @@ class SpotifyMatching:
         log.info("Name of Song: %s" % str(self.song))
         log.info("Song URI: %s" % str(self.song))
 
-    def setup(self):
-        token = util.prompt_for_user_token(username="robbo1992", scope='user-library-read playlist-modify-private playlist-modify', client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"], redirect_uri='http://localhost:8080', cache_path=spotify_cache)
-        if token:
-            self.sp = spotipy.Spotify(auth=token)
-        else:
-            log.error("No token was generated for connecting to spotify API")
-        log.debug("Succesfully generated a spotify token for authentication")
-
     def artist_song_first_pass(self):
+        """
+            This is the first attempt at generating the artist + song from the youtube title string.
+            This works by splitting the string based on a global set of potential artist/song splits,
+            and running all sequential sets against the spotipy api.
+            This is typically lightweight, and should only result in a couple API calls.
+        """
+        log.debug("Called artist_song_first_pass for %s." % self.name)
         self.success = False
         song_potentials = []
-        index = 0
+        potential_count = 0
         _min = 20
-        def inner(index):
-            results = self.sp.search(q= 'artist: ' + self.artist + ' track: ' + self.song, type='track', limit=5)
+
+        def generate_potentials(count):
+            results = self.sp.search(q= 'artist: ' + self.artist + ' track: ' + self.song, type='track', limit=2)
             if results['tracks']['total'] >= 1:
                 for items in results['tracks']['items']:
                     song_potentials.append([items['name'], items['uri']])
                     for artist in items['artists']:
-                        song_potentials[index].append(artist['name'])
-                        song_potentials[index].append(artist['uri'])
-                    index += 1
+                        song_potentials[count].append(artist['name'])
+                        song_potentials[count].append(artist['uri'])
+                    count += 1
+
         for splitter in splitters:
-            if splitter in self.name_clean:
-                self.artist, self.song = self.name_clean.split(splitter, 1) #May need to look at this again, can be more than 1!
-                inner(index)
+            if self.name_clean.count(splitter) == 1:
+                self.artist, self.song = self.name_clean.split(splitter)
+                generate_potentials(potential_count)
+            elif self.name_clean.count(splitter) > 1:
+                for x in range(0, self.name_clean.count(splitter)):
+                    self.artist, self.song = split(self.name_clean, splitter, x)
+                    generate_potentials(potential_count)
+
         cutoff = matching(self.name_clean)
         log.debug("%s potential matches found for %d" % (len(song_potentials), id(self)))
         log.debug("Potentials: %s" % song_potentials)
         for potentials in song_potentials:
-            if levenshtein(self.name_clean, str(potentials[0]) + str(potentials[2])) < _min:
-                _min = levenshtein(self.name_clean, potentials[0] + potentials[2])
+            lev = levenshtein(self.name_clean, str(potentials[0]) + " " + str(potentials[2]))
+            if lev < _min:
+                _min = lev
                 self.artist = potentials[2]
                 self.artist_uri = potentials[3]
                 self.song = potentials[0]
                 self.song_uri = potentials[1]
+
         if self.artist_uri and self.song_uri is not None:
             log.debug("Cutoff point for %s : %d" % (id(self), cutoff))
             log.debug("Levenshtein distance between {} and {} :  {}"
                       .format(self.name_clean, self.artist + self.song,
                               levenshtein(self.name, self.artist + self.song)))
-            if levenshtein(self.name_clean, self.artist + self.song) > cutoff:
+            if _min > cutoff:
+                log.debug("Method artist_song_first_pass failed for %s." % self.name)
                 self.success = False
                 self.artist = None
                 self.song = None
             else:
+                log.debug("Method artist_song_first_pass succeeded for %s." % self.name)
                 self.success = True
-
-
-    def artist_album_first_pass(self):
-        """
-        This method is untested, and very similar to the artist_song_first_pass method. There is probably a better way of doing this.
-        """
-        self.success = False
-        for splitter in splitters:
-            if splitter in self.name:
-                self.artist, self.album = self.name.split(splitter, 1) #May need to look at this again, can be more than 1!
-                self.success = True
-                break
-        if self.success:
-            results = self.sp.search(q='artist: ' + self.artist + 'album: ' + self.album, type='album', limit=1)
-            if results['albums']['total'] >= 1:
-                for items in results['albums']['items']:
-                    self.album = items['name']
-                    self.album_uri = items['uri']
-                    for artist in items['artists'][0]:
-                        self.artist = artist['name']
-                        self.artist_uri = artist['uri']
-            else:
-                self.success = False
-
-    def artist_second_pass_old(self):
-        gen = consecutive_groups(self.name)
-        _min = 100
-        cutoff = matching(self.name)
-        sp_artist_min, sp_artist_uri_min = None, None
-        for i in gen:
-            potential = " ".join(i)
-            results = self.sp.search(q='artist:' + potential, type='artist')
-            items = results['artists']['items']
-            if len(items) > 0:
-                artist = items[0]
-                if _min > cutoff:
-                    for splitter in ["-", ",", " by ", "//"]:
-                        for sub in self.name.split(splitter, 1): #May need to look at this again, can be more than 1!
-                            sp_artist = artist['name'].lower()
-                            sp_uri = artist['uri']
-                            yt_artist = sub.rstrip().lower()
-                            if _min > levenshtein(sp_artist, yt_artist):
-                                sp_artist_min = sp_artist
-                                sp_artist_uri_min = sp_uri
-                                _min = levenshtein(sp_artist, yt_artist)
-        if _min >= cutoff:
-            self.success = False
-        else:
-            self.artist = sp_artist_min
-            self.artist_uri = sp_artist_uri_min
 
     def artist_second_pass(self):
+        """
+            This is the first attempt at generating the artist + song from the youtube title string.
+            This works by splitting the string based on a global set of potential artist/song splits,
+            and running all sequential sets against the spotipy api.
+            This is typically lightweight, and should only result in a couple API calls.
+        """
+        log.debug("Called artist_second_pass for %s." % self.name)
         gen = consecutive_groups(self.name_clean)
         _min = 100
         cutoff = matching(self.name_clean)
         sp_artist_min, sp_artist_uri_min = None, None
-        for splitter in ["-", ",", " by ", "//"]:
+        self.success = False
+
+        for splitter in splitters:
             if splitter in self.name_clean:
-                for sub in self.name_clean.split(splitter, 1): #May need to look at this again, can be more than 1!
+                for sub in self.name_clean.split(splitter):
                     yt_artist = sub.rstrip().lower()
                     for i in gen:
                         potential = " ".join(i)
-                        results = self.sp.search(q='artist:' + potential, type='artist')
+                        results = self.sp.search(q='artist:' + potential, type='artist', limit=2)
                         items = results['artists']['items']
                         if len(items) > 0:
                             artist = items[0]
                             sp_artist = artist['name'].lower()
                             sp_uri = artist['uri']
-                            if _min > levenshtein(sp_artist, yt_artist):
+                            lev = levenshtein(sp_artist, yt_artist)
+                            if _min > lev:
                                 sp_artist_min = sp_artist
                                 sp_artist_uri_min = sp_uri
-                                _min = levenshtein(sp_artist, yt_artist)
-        if _min >= cutoff:
-            self.success = False
-        else:
+                                _min = lev
+
+        if _min <= cutoff:
+            log.debug("Method artist_second_pass succeeded for %s." % self.name)
             self.artist = sp_artist_min
             self.artist_uri = sp_artist_uri_min
+            self.success = True
+        else:
+            log.debug("Method artist_second_pass failed for %s." % self.name)
+            self.success = False
 
     def song_second_pass(self):
+        """
+
+        """
+        log.debug("Called song_second_pass for %s." % self.name)
         if self.artist is not None:
             cleaned = self.name_clean.lower().replace(self.artist, "")
             song_potentials = []
             gen = consecutive_groups(cleaned)
+
             for i in gen:
                 potential = " ".join(i)
                 results = self.sp.search(q="artist:" + self.artist + " track: " + potential, type="track", limit=1)
@@ -191,12 +193,39 @@ class SpotifyMatching:
                 self.song_uri = song_potentials[0][1]
             else:
                 self.success = False
-            cutoff = matching(self.name_clean)
-            if levenshtein(self.name_clean, self.artist + self.song) > cutoff:
-                self.success = False
-            else:
+            if self.success:
+                cutoff = matching(self.name_clean)
+                if levenshtein(self.name_clean, self.artist + self.song) > cutoff:
+                    log.debug("Method song_second_pass failed for %s." % self.name)
+                    self.success = False
+                else:
+                    log.debug("Method song_second_pass succeeded for %s." % self.name)
+                    self.success = True
+                # handle cases where every 'song' appears just once - levenshtein back to original string (minus the artist)
+        log.debug("The method song_second_pass was called without a valid artist.")
+        self.success = False
+
+    def album_assignment(self):
+        """
+        This method is untested, and very similar to the artist_song_first_pass method. There is probably a better way of doing this.
+        """
+        self.success = False
+        for splitter in splitters:
+            if splitter in self.name:
+                self.artist, self.album = self.name.split(splitter, 1)  # May need to look at this again, can be more than 1!
                 self.success = True
-            # handle cases where every 'song' appears just once - levenshtein back to original string (minus the artist)
+                break
+        if self.success:
+            results = self.sp.search(q='artist: ' + self.artist + 'album: ' + self.album, type='album', limit=1)
+            if results['albums']['total'] >= 1:
+                for items in results['albums']['items']:
+                    self.album = items['name']
+                    self.album_uri = items['uri']
+                    for artist in items['artists'][0]:
+                        self.artist = artist['name']
+                        self.artist_uri = artist['uri']
+            else:
+                self.success = False
 
     def all_songs(self):
         songs = []
@@ -218,11 +247,9 @@ class SpotifyMatching:
         return albums
 
     def process(self):
-        log.debug("Starting first pass")
         self.artist_song_first_pass()
         self.log_attributes()
         if not self.success:
-            log.debug("First pass failure, proceeding to second pass.")
             self.artist_second_pass()
             self.song_second_pass()
         if self.success:
@@ -234,8 +261,8 @@ class SpotifyMatching:
 
     def add_to_playlist(self, playlist_uri="spotify:playlist:3VUBchphbcLwE5WdqBW3gv", user="robbo1992"):
         """"Not sure how this should work, currently the playlist is a class attribute
-        , if it should be a class attribute, should it be an array?"""
-        if playlist_uri == None or self.song_uri == None:
+        , if it should be a class attribute, should it be a list?"""
+        if playlist_uri is None or self.song_uri is None:
             log.warn("Object attributes are None, cannot add to playlist.")
             return
         else:
@@ -280,16 +307,19 @@ def matching(string):
     else:
         return 7
 
+
+def split(strng, sep, pos):
+    strng = strng.split(sep)
+    return sep.join(strng[:pos]), sep.join(strng[pos:])
+
+
 def clean(string):
     string = string.lower()
-    substitutions = {"original audio":""
-                     ,"hq": ""
-                     ,"official": ""
-                     ,"video":""
-                     ,"music":""
-                     , ", ":" "
-                     , ",": " "
-                     ,"lyrics":""}
+    substitutions = {"original audio":"","hq": ""
+                     ,"official": "","video":""
+                     ,"music":"", ", ":" "
+                     , ",": " ","lyrics":""
+                     ,"& ": ""}
     substrings = sorted(substitutions, key=len, reverse=True)
     regex = re.compile('|'.join(map(re.escape, substrings)))
     string = re.sub("[\(\[].*?[\)\]]", "", string)

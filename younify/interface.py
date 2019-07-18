@@ -15,6 +15,7 @@ look a tad ugly.
 
 log = motley.setup_logger(__name__)
 
+
 class Drainer(object):
     def __init__(self, q):
         self.q = q
