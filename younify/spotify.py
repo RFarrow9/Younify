@@ -209,6 +209,7 @@ class SpotifyMatching:
         """
         This method is untested, and very similar to the artist_song_first_pass method. There is probably a better way of doing this.
         """
+        log.debug("Called album_assignment for %s." % self.name)
         self.success = False
         for splitter in splitters:
             if splitter in self.name:
@@ -228,6 +229,7 @@ class SpotifyMatching:
                 self.success = False
 
     def all_songs(self):
+        log.debug("Called all_songs for %s." % self.name)
         songs = []
         albums = self.all_albums()
         for album in albums:
@@ -239,6 +241,7 @@ class SpotifyMatching:
         return songs
 
     def all_albums(self):
+        log.debug("Called all_albums for %s." % self.name)
         results = self.sp.artist_albums(self.artist_uri, album_type='album')
         albums = results['items']
         while results['next']:
@@ -247,21 +250,21 @@ class SpotifyMatching:
         return albums
 
     def process(self):
+        log.debug("Called process for %s." % self.name)
         self.artist_song_first_pass()
         self.log_attributes()
         if not self.success:
             self.artist_second_pass()
             self.song_second_pass()
         if self.success:
-            log.debug("Second pass success, adding to playlist.")
             self.add_to_playlist()
-        else:
-            log.warning("Second pass failure.")
         return self.success
 
     def add_to_playlist(self, playlist_uri="spotify:playlist:3VUBchphbcLwE5WdqBW3gv", user="robbo1992"):
-        """"Not sure how this should work, currently the playlist is a class attribute
-        , if it should be a class attribute, should it be a list?"""
+        """"
+        Not sure how this should work, currently the playlist is a class attribute, if it should be
+        a class attribute, should it be a list?
+        """
         if playlist_uri is None or self.song_uri is None:
             log.warn("Object attributes are None, cannot add to playlist.")
             return
@@ -334,8 +337,10 @@ def consecutive_groups(string="this is a test string"):
 
 
 def most_common(_list):
+#Check this handles nested lists correctly?
   SL = sorted((x, i) for i, x in enumerate(_list))
   groups = itertools.groupby(SL, key=operator.itemgetter(0))
+
   def _auxfun(g):
     item, iterable = g
     count = 0
@@ -344,6 +349,7 @@ def most_common(_list):
       count += 1
       min_index = min(min_index, where)
     return count, -min_index
+
   return max(groups, key=_auxfun)[0]
 
 

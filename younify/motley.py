@@ -1,5 +1,8 @@
 from younify import *
+from datetime import date
 import socket
+import pathlib
+import glob
 
 """
 Behaviour: Take from the file the name/artist/album whatever metadata can be scraped and use this to find the song in spotify
@@ -97,15 +100,11 @@ class FileHandler:
 
 
 class FolderHandler:
-    # use os.path.join()
     def __init__(self, path):
-        """"note that self.file references are local"""
-        if path[:-1] == "\\":
-            self.path = path[0:-1]
-        else:
-            self.path = path
-        self.files = os.listdir(self.path)
-        if "Thumbs.db" in self.files: self.files.remove("Thumbs.db")
+        self.path = pathlib.WindowsPath(path)
+        self.files = glob.glob(self.path / '*.*')
+        if "Thumbs.db" in self.files:
+            self.files.remove("Thumbs.db")
         self.oldest = None
         self.newest = None
 
@@ -116,10 +115,10 @@ class FolderHandler:
             log.warning("No files found in directory: %s" % self.path)
         else:
             oldest_file = self.files[0]
-            oldest_time = os.path.getctime(self.path + '\\' + oldest_file)
+            oldest_time = os.path.getctime(self.path / oldest_file)
         if len(self.files) >= 2:
             for file in self.files:
-                file = self.path + "\\" + file
+                file = self.path / file
                 if oldest_time > os.path.getctime(file):
                     oldest_time = os.path.getctime(file)
                     oldest_file = file
@@ -133,10 +132,10 @@ class FolderHandler:
             log.warning("No files found in directory: %s" % self.path)
         else:
             newest_file = self.files[0]
-            newest_time = os.path.getctime(self.path + '\\' + newest_file)
+            newest_time = os.path.getctime(self.path / newest_file)
         if len(self.files) >= 2:
             for file in self.files:
-                file = self.path + '\\' + file
+                file = self.path / file
                 if newest_time < os.path.getctime(file):
                     newest_time = os.path.getctime(file)
                     newest_file = file
@@ -149,8 +148,7 @@ class FolderHandler:
         else:
             archivedate = ""
         for file in self.files:
-            os.rename(self.path + '\\' + file, newfolder + '\\' + archivedate + file)
-        #Do not change path after operation, so now points to an empty dir
+            os.rename(self.path / file, newfolder / archivedate / file)
 
 
 log = setup_logger(__name__)

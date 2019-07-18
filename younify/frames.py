@@ -53,7 +53,7 @@ class ProcessedURLs(ProcessingArray):
                 for line in f:
                     self.add_url("https://www.youtube.com/watch?v="+line[:-1])
         except:
-            print("file not found or could classify video")
+            log.warning("Processing array temp file could not be opened.")
 
     def update_temp(self):
         file = open(temp_processing, "w+")
@@ -70,9 +70,10 @@ class WorkingURLs(ProcessingArray):
                 for line in f:
                     self.add_url("https://www.youtube.com/watch?v="+line[:-1])
         except:
-            print("file not found")
+            log.warning("Working array temp file could not be opened.")
 
     def update_temp(self):
+        log.debug("Updating Working URLs temp file.")
         file = open(temp_working, "w+")
         for URL in self.urls:
             file.write(URL[-11:] + "\r")
@@ -85,11 +86,11 @@ class WorkingURLs(ProcessingArray):
 
     def push_url_to_queue(self, url):
         self.add_url(url)
-        if motley.internet:
+        try:
             enclosure_queue.put(factory.VideoFactory(url).classify())
-        else:
-            print("No internet detected, on hold")
-        # Object is only classified (expensive) when put into the queue! Not before.
+        except:
+            if motley.internet():
+                enclosure_queue.put(factory.VideoFactory(url).classify())
 
     def push_urls_to_queue(self):
         if self.count_urls() > 0:
@@ -103,8 +104,7 @@ class WorkingURLs(ProcessingArray):
             if video is None:
                 log.warning("Youtube link for %s appears to be void." % url)
             else:
-                print(video)
-                video.print_dict()
+                video.log()
                 video.process()
             processed.add_url(url)
             self.remove_url(url)
@@ -157,6 +157,7 @@ def linecount(filename):
 
 
 def find_urls_in_file(filename):
+    #This should be moved into motley
     count, urls = 0, []
     file = open(filename, encoding='utf8')
     try:

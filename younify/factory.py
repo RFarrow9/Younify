@@ -171,6 +171,10 @@ class YoutubeSong(Youtube):
         self.title = None
         self.playlist = playlist
 
+    def log(self):
+        log.debug("Type: %s" % type(self).__name__)
+        log.debug("URL : %s" % self.url)
+
     def populate_metadata(self):
         self.found = self.spotify.process()
         self.song_id, self.artist_id = self.spotify.return_song_artist()
