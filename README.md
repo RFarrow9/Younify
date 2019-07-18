@@ -38,7 +38,8 @@ The eventual end solution being a simple button that can integrate in a browser 
 <a name="prog"></a>
 ## <img src="younify/resources/Yin_yang.svg" alt="Logo" width="20"/> Progress
 Currently the program works to process URLs with little issue, and appears to have a reasonable hitrate when pulling 
-metadata from spotify. However the code to put the actual song into a spotify playlist is not yet done.
+metadata from spotify. The code does now successfully populate a spotify playlist (currently hardcoded)
+with songs from the source.
 
 The program also interacts with the azure database using the ORM with no issues, and can successfully upload 
 processed playlists, parse out what songs exist in it, and push these to a songs table with an intact foreign key
@@ -55,19 +56,19 @@ The code is currently split into the following modules:
 
 For further documentation on these files, see the headers inside the files themselves.
 
-* youtube_converter - downloads and handles conversion of videos
+* factory - downloads and handles conversion of videos
 
-* framework - holds arrays for processing and handles temp file updates, and multithreading for youtube_converter
+* frames - holds arrays for processing and handles temp file updates, and multithreading for youtube_converter
 
 * spotify - interacts with spotify api surprisingly
 
-* yt_frontend - holds GUI code and linking function to frontend
+* interface - holds GUI code and linking function to frontend
 
 * alchemy - handles azure shardification and database requests via ORM
 
 * filehandler - handles files? This will be useful for parsing existing libraries for spotify transfer
 
-* fingerprinting - this is a holder for a module that handles interacting with audio fingerprint APIs
+* fingerprinter - this is a holder for a module that handles interacting with audio fingerprint APIs
 
 <a name="fut"></a>
 ## <img src="younify/resources/Yin_yang.svg" alt="Logo" width="20"/> Future enhancements
