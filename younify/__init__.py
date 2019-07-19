@@ -27,7 +27,7 @@ test_audio_file = config["filehandler_test"]["test_audio_file"]
 
 
 enclosure_queue = queue.Queue()
-fetch_threads = os.getenv('NUMBER_OF_PROCESSORS', 4)
+fetch_threads = int(os.getenv('NUMBER_OF_PROCESSORS', 4))
 appid = "rftech.younify.1.1"
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)
 

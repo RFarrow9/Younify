@@ -273,8 +273,12 @@ class YoutubePlaylist(Youtube):
         self.songs = []
         self.pk = None
 
+    def log(self):
+        log.debug("Type: %s" % type(self).__name__)
+        log.debug("URL : %s" % self.url)
+
     def find_timestamps(self):
-        regex_layer1 = r"[0-9]\:[0-9][0-9]\:[0-9][0-9]"
+        regex_layer1 = r"[0-9][0-9]\:[0-9][0-9]\:[0-9][0-9]"
         regex_layer2 = r"[0-9][0-9]\:[0-9][0-9]"
         self.num_songs = self.countmatches(regex_layer2)  # Counts the number of timestamps in the description, these dont overlap so this should work
         timestamps_layer1 = re.findall(regex_layer1, self.description)

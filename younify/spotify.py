@@ -27,12 +27,12 @@ def create_token():
         return token
     if token_helper():
         log.debug("Succesfully generated a spotify token for authentication")
-        return spotipy.Spotify(auth=token)
+        return spotipy.Spotify(auth=token_helper())
     else:
         if motley.internet:
             if token_helper():
                 log.debug("Succesfully generated a spotify token for authentication")
-                return spotipy.Spotify(auth=token)
+                return spotipy.Spotify(auth=token_helper())
             else:
                 log.error("Authentication error in create_token method.")
 
@@ -106,21 +106,26 @@ class SpotifyMatching:
         cutoff = matching(self.name_clean)
         log.debug("%s potential matches found for %d" % (len(song_potentials), id(self)))
         log.debug("Potentials: %s" % song_potentials)
-        for potentials in song_potentials:
-            lev = levenshtein(self.name_clean, str(potentials[0]) + " " + str(potentials[2]))
+        for potential in song_potentials:
+            log.debug(potential)
+            log.debug(self.name_clean)
+            log.debug(str(potential[2]) + " " + str(potential[0]))
+            lev = levenshtein(self.name_clean, str.lower(str(potential[2])) + " " + str.lower(str(potential[0])))
+            log.debug(lev)
             if lev < _min:
                 _min = lev
-                self.artist = potentials[2]
-                self.artist_uri = potentials[3]
-                self.song = potentials[0]
-                self.song_uri = potentials[1]
+                self.artist = potential[2]
+                self.artist_uri = potential[3]
+                self.song = potential[0]
+                self.song_uri = potential[1]
 
         if self.artist_uri and self.song_uri is not None:
             log.debug("Cutoff point for %s : %d" % (id(self), cutoff))
+            log.debug("Current Min: {}".format(_min))
             log.debug("Levenshtein distance between {} and {} :  {}"
                       .format(self.name_clean, self.artist + self.song,
-                              levenshtein(self.name, self.artist + self.song)))
-            if _min > cutoff:
+                              levenshtein(self.name, self.artist + " " + self.song)))
+            if int(_min) > cutoff:
                 log.debug("Method artist_song_first_pass failed for %s." % self.name)
                 self.success = False
                 self.artist = None
@@ -128,6 +133,11 @@ class SpotifyMatching:
             else:
                 log.debug("Method artist_song_first_pass succeeded for %s." % self.name)
                 self.success = True
+        else:
+            log.debug("Method artist_song_first_pass failed for %s." % self.name)
+            self.success = False
+            self.artist = None
+            self.song = None
 
     def artist_second_pass(self):
         """
@@ -326,7 +336,7 @@ def clean(string):
     substrings = sorted(substitutions, key=len, reverse=True)
     regex = re.compile('|'.join(map(re.escape, substrings)))
     string = re.sub("[\(\[].*?[\)\]]", "", string)
-    return str(regex.sub(lambda match: substitutions[match.group(0)], string))
+    return str.lstrip(str(regex.sub(lambda match: substitutions[match.group(0)], string)))
 
 
 def consecutive_groups(string="this is a test string"):
