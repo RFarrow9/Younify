@@ -2,6 +2,7 @@
   <dictionary name="robfa">
     <words>
       <w>audiobook</w>
+      <w>countlines</w>
       <w>levenshtein</w>
       <w>pushtodb</w>
       <w>spotify</w>

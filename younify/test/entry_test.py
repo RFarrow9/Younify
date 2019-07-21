@@ -12,7 +12,6 @@ class TestEntryMethods(unittest.TestCase):
         working.process_urls(processed)
 
 
-
 if __name__ == '__main__':
     unittest.main()
 

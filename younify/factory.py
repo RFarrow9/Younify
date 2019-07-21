@@ -278,6 +278,10 @@ class YoutubePlaylist(Youtube):
         log.debug("URL : %s" % self.url)
 
     def find_timestamps(self):
+        if self.timestamp_helper() == 2:
+            #Remove all the right hand most timestamps
+
+
         regex_layer1 = r"[0-9][0-9]\:[0-9][0-9]\:[0-9][0-9]"
         regex_layer2 = r"[0-9][0-9]\:[0-9][0-9]"
         self.num_songs = self.countmatches(regex_layer2)  # Counts the number of timestamps in the description, these dont overlap so this should work
@@ -290,6 +294,18 @@ class YoutubePlaylist(Youtube):
                 if timestamp in line:
                     self.timestamps.append([line.replace(timestamp, ""), timestamp])
                     break
+
+    def timestamp_helper(self):
+        countlines = 0
+        countregexes = 0
+        ls = []
+        regex_layer = r"[0-9][0-9]\:[0-9][0-9]"
+        for line in self.description.splitlines():
+            if re.match(regex_layer, line) is not None:
+                ls = re.findall(regex_layer, line)
+                countregexes += len(ls)
+                countlines += 1
+        return countregexes/countlines
 
     def __str__(self):
         log.debug("--Youtube Playlist Instantiated")
