@@ -9,7 +9,7 @@ class TestSpotifyMethods(unittest.TestCase):
         self.assertTrue(spotify.levenshtein("dog", "dog") == 0)
 
     def test_cleantitle(self):
-        print("this is a placeholder")
+        raise NotImplemented()
 
     def test_consecutive_groups(self):
         generator = spotify.consecutive_groups()
@@ -28,31 +28,28 @@ class TestSpotifyMethods(unittest.TestCase):
             extractor.process()
 
     def test_SpotifyProcessing_instantiation(self):
-        #test function
-        print("placeholder")
+        raise NotImplemented()
 
     def test_SpotifyProcessing_artist_song_first_pass(self):
-        print("placeholder")
+        raise NotImplemented()
 
     def test_SpotifyProcessing_artist_second_pass(self):
-        print("placeholder")
+        raise NotImplemented()
 
     def test_SpotifyProcessing_artist_song_second_pass(self):
-        print("placeholder")
+        raise NotImplemented()
 
     def test_SpotifyProcessing_all_songs(self):
-        print("placeholder")
+        raise NotImplemented()
 
     def test_SpotifyProcessing_all_albums(self):
-        print("placeholder")
+        raise NotImplemented()
 
     def test_clean(self):
-        #test function
-        print("placeholder")
+        raise NotImplemented()
 
     def test_most_common(self):
-        #test function
-        print("placeholder")
+        raise NotImplemented()
 
 
 if __name__ == '__main__':
