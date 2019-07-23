@@ -39,7 +39,7 @@ from younify import factory
 from younify import fingerprinter
 from younify import frames
 
-
+#Could these be put into the class as static members?
 processed = frames.ProcessedURLs()
 working = frames.WorkingURLs()
 failed = frames.FailedURLs()
