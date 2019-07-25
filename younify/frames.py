@@ -24,6 +24,7 @@ class ProcessingArray:
 
     def __init__(self):
         self.urls = []
+        self.path = None
 
     def add_url(self, url):
         if url not in self.urls:
@@ -45,40 +46,36 @@ class ProcessingArray:
     def retrieve_urls(self):
         return self.urls
 
+    def update_temp(self):
+        log.debug("Updating {} temp file.".format(type(self)))
+        file = open(self.path, "w+")
+        for URL in self.urls:
+            file.write(URL[-11:] + "\r")
+        file.close()
+
 
 class ProcessedURLs(ProcessingArray):
     def __init__(self):
         ProcessingArray.__init__(self)
+        self.path = temp_processing
         try:
-            with open(temp_processing, "w+") as f:
+            with open(self.path, "w+") as f:
                 for line in f:
                     self.add_url("https://www.youtube.com/watch?v="+line[:-1])
         except:
             log.warning("Processing array temp file could not be opened.")
 
-    def update_temp(self):
-        file = open(temp_processing, "w+")
-        for URL in self.urls:
-            file.write(URL[-11:] + "\r")
-        file.close()
-
 
 class WorkingURLs(ProcessingArray):
     def __init__(self):
         ProcessingArray.__init__(self)
+        self.path = temp_working
         try:
-            with open(temp_working, "r") as f:
+            with open(self.path, "r") as f:
                 for line in f:
                     self.add_url("https://www.youtube.com/watch?v="+line[:-1])
         except:
             log.warning("Working array temp file could not be opened.")
-
-    def update_temp(self):
-        log.debug("Updating Working URLs temp file.")
-        file = open(temp_working, "w+")
-        for URL in self.urls:
-            file.write(URL[-11:] + "\r")
-        file.close()
 
     def push_file_to_working(self, filename):
         array = find_urls_in_file(filename)
@@ -122,6 +119,7 @@ class WorkingURLs(ProcessingArray):
 class FailedURLs:
     def __init__(self):
         self.urls = []
+        self.path = temp_failed
 
     def add_url(self, url, error):
         if len(self.urls) == 0:
@@ -146,6 +144,13 @@ class FailedURLs:
 
     def print_sample(self):
         print(self.urls[0: 5])
+
+    def update_temp(self): #This needs rewriting in order to capture the error messages as well
+        log.debug("Updating FailedURLs temp file.")
+        file = open(self.path, "w+")
+        for URL in self.urls:
+            file.write(URL[-11:] + "\r")
+        file.close()
 
 
 def linecount(filename):

@@ -52,8 +52,9 @@ class VideoFactory:
         with youtube_dl.YoutubeDL(self.options) as ydl:
             try:
                 info_dict = ydl.extract_info(self.url, download=False)
+                log.debug("Populated metadata for {} succesfully.".format(self.url))
             except:
-                log.DEBUG("Populating metadata for %s." % self.url)
+                log.error("Populating metadata for {} failed".format(self.url))
             self.info_dict = info_dict
             self.duration = info_dict.get("duration")
             self.description = info_dict.get("description")
@@ -234,12 +235,20 @@ class YoutubeSong(Youtube):
                     self.download()
                 except:
                     log.warning("Song %s failed to download." % self.name)
+            elif self.playlist is not None:
+                if not self.playlist.downloaded:
+                    self.playlist.download()
+                else:
+                    raise NotImplemented #Needs to cut the playlist here for this particular song (if possible)
+
             else:
-                log.debug("Spotify methods failing, will do manual downloads here.")
+                log.critical("This object {} should not exist.".format(id(self)))
+                self.log()
+
                 # Handle failed and from playlist here
                 # Should be pushed back up to playlist object?
         # automatically pushed to playlist if success already
-        self.push_to_db()
+        self.write_out()
 
     def write_out(self):
         if alchemy.database_connected:
@@ -281,6 +290,7 @@ class YoutubePlaylist(Youtube):
         self.find_timestamps()
         self.songs = []
         self.pk = None
+        self.downloaded = False
 
     def log(self):
         log.debug("Type: %s" % type(self).__name__)
@@ -342,7 +352,7 @@ class YoutubePlaylist(Youtube):
         log.debug("Songs in playlist: {}".format(str(self.num_songs)))
 
     def process(self):
-        self.push_to_db()
+        self.write_out()
         failure = 0
         for song in self.timestamps:
             log.debug("Instantiating YoutubeSong object for {}".format(str(song)))
@@ -366,9 +376,7 @@ class YoutubePlaylist(Youtube):
             processed_file_path = filename[0:-5] + ".mp3"
         else:
             processed_file_path = filename[0:-4] + ".mp3"
-        result = subprocess.run(
-            ["C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe", "-y", "-i", filename, "-acodec", "libmp3lame",
-             "-ab",
+        result = subprocess.run(["C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe", "-y", "-i", filename, "-acodec", "libmp3lame", "-ab",
              "128k", processed_file_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if result.stderr:
             log.error(result.stderr)
@@ -379,6 +387,15 @@ class YoutubePlaylist(Youtube):
 
     def cut(self):
         raise NotImplemented()
+
+    def write_out(self):
+        if alchemy.database_connected:
+            self.push_to_db()
+        else:
+            self.push_to_file()
+
+    def push_to_file(self):
+        raise NotImplemented
 
     def push_to_db(self):
         playlist = alchemy.Playlist()
@@ -395,6 +412,13 @@ class YoutubePlaylist(Youtube):
         for song in self.songs:
             song.playlist_id = self.pk
             song.push_to_db()
+
+    def download(self):
+        try:
+            with youtube_dl.YoutubeDL(self.options) as ydl:
+                ydl.download([self.url])
+        except:
+            log.warning("Playlist at {} could not be downloaded.".format(id(self)))
 
 
 class YoutubeAudiobook(Youtube):
