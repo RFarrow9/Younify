@@ -241,6 +241,15 @@ class YoutubeSong(Youtube):
         # automatically pushed to playlist if success already
         self.push_to_db()
 
+    def write_out(self):
+        if alchemy.database_connected:
+            self.push_to_db()
+        else:
+            self.push_to_file()
+
+    def push_to_file(self):
+        raise NotImplemented
+
     def push_to_db(self):
         log.debug("Writing song to database: %s" %id(self))
         song = alchemy.Song()
@@ -287,6 +296,7 @@ class YoutubePlaylist(Youtube):
         regex_layer1 = r"[0-9][0-9]\:[0-9][0-9]\:[0-9][0-9]"
         regex_layer2 = r"[0-9][0-9]\:[0-9][0-9]"
         if self.timestamp_helper() == 2:
+            log.debug("Description for object {} was found to have 2 timestamps per line".format(id(self)))
             for line in self.description.splitlines():
                 if re.sub(regex_layer2, '', line) == 2:
                     splitline = re.split(regex_layer1, line)
@@ -295,6 +305,9 @@ class YoutubePlaylist(Youtube):
                 else:
                     desc_temp += line
             self.description = desc_temp
+        elif self.timestamp_helper() > 2:
+            log.error("Description for object {} was found to have more than 2 timestamps per line".format(id(self)))
+            raise NotImplemented
         self.num_songs = self.countmatches(regex_layer2)  # Counts the number of timestamps in the description, these dont overlap so this should work
         timestamps_layer1 = re.findall(regex_layer1, self.description)
         augmented_description = re.sub(regex_layer1, '', self.description)
@@ -307,11 +320,11 @@ class YoutubePlaylist(Youtube):
                     break
 
     def timestamp_helper(self):
-        """"
+        """""
         This returns the average number of timestamps per line that has a timestamp.
         In a few cases, this has a value significantly above 1, in these examples it appears
         that the description meta has two timestamps per song (a finish and an end)
-        """"
+        """""
         countlines = 0
         countregexes = 0
         ls = []

@@ -23,12 +23,15 @@ Base = declarative_base()
 session = sessionmaker()
 session.configure(bind=engine)
 log = motley.setup_logger(__name__)
-
+database_connected = False
 
 try:
     engine.connect()
+    database_connected = True
 except:
-    log.error("The database engine has failed to connect")
+    log.warning("The database engine has failed to connect")
+    log.info("Processing info will be written to local files, and attempts will be made at a later point to update database.")
+    database_connected = False
 
 
 def DropAllTables():
