@@ -18,6 +18,7 @@ log = motley.setup_logger(__name__)
 class ProcessingArray:
     def __new__(cls, *args, **kwargs):
         if cls is ProcessingArray:
+            log.error("Base class ProcessingArray can not be instantiated.")
             raise TypeError("base class may not be instantiated")
         return object.__new__(cls, *args, **kwargs)
 
