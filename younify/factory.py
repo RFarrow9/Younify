@@ -278,12 +278,23 @@ class YoutubePlaylist(Youtube):
         log.debug("URL : %s" % self.url)
 
     def find_timestamps(self):
-        if self.timestamp_helper() == 2:
-            #Remove all the right hand most timestamps
-
-
+        """""
+        This should find all the timestamps in the self.description and the song names.
+        This will populate the num_songs and timestamps attributes.
+        This should handle all known cases.
+        """""
+        desc_temp = ""
         regex_layer1 = r"[0-9][0-9]\:[0-9][0-9]\:[0-9][0-9]"
         regex_layer2 = r"[0-9][0-9]\:[0-9][0-9]"
+        if self.timestamp_helper() == 2:
+            for line in self.description.splitlines():
+                if re.sub(regex_layer2, '', line) == 2:
+                    splitline = re.split(regex_layer1, line)
+                    line_mod = splitline[0].join(splitline[1])
+                    desc_temp += line_mod
+                else:
+                    desc_temp += line
+            self.description = desc_temp
         self.num_songs = self.countmatches(regex_layer2)  # Counts the number of timestamps in the description, these dont overlap so this should work
         timestamps_layer1 = re.findall(regex_layer1, self.description)
         augmented_description = re.sub(regex_layer1, '', self.description)
@@ -296,6 +307,11 @@ class YoutubePlaylist(Youtube):
                     break
 
     def timestamp_helper(self):
+        """"
+        This returns the average number of timestamps per line that has a timestamp.
+        In a few cases, this has a value significantly above 1, in these examples it appears
+        that the description meta has two timestamps per song (a finish and an end)
+        """"
         countlines = 0
         countregexes = 0
         ls = []
