@@ -335,7 +335,7 @@ class YoutubePlaylist(Youtube):
         In a few cases, this has a value significantly above 1, in these examples it appears
         that the description meta has two timestamps per song (a finish and an end)
         """""
-        countlines = 0
+        countlines = 1
         countregexes = 0
         ls = []
         regex_layer = r"[0-9][0-9]\:[0-9][0-9]"
