@@ -15,6 +15,8 @@ Bring through the dates correctly.
 Should each user only be able to see their own information?
 Should we 'cache' information for users to shortcut computation? How often would this change?
 How would we define a user? Could we do it by unique spotify user??
+
+TODO: We really should use Django ORM
 """
 
 

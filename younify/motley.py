@@ -3,6 +3,7 @@ from datetime import date
 import socket
 import pathlib
 import glob
+import itertools
 
 """
 Behaviour: Take from the file the name/artist/album whatever metadata can be scraped and use this to find the song in spotify
@@ -149,6 +150,94 @@ class FolderHandler:
             archivedate = ""
         for file in self.files:
             os.rename(self.path / file, newfolder / archivedate / file)
+
+
+def levenshtein(seq1, seq2):
+    size_x = len(seq1) + 1
+    size_y = len(seq2) + 1
+    matrix = np.zeros((size_x, size_y))
+    for x in range(size_x):
+        matrix[x, 0] = x
+    for y in range(size_y):
+        matrix[0, y] = y
+    for x in range(1, size_x):
+        for y in range(1, size_y):
+            if seq1[x-1] == seq2[y-1]:
+                matrix[x, y] = min(
+                    matrix[x-1, y] + 1,
+                    matrix[x-1, y-1],
+                    matrix[x, y-1] + 1)
+            else:
+                matrix[x, y] = min(
+                    matrix[x-1, y] + 1,
+                    matrix[x-1, y-1] + 1,
+                    matrix[x, y-1] + 1)
+    return matrix[size_x - 1, size_y - 1]
+
+
+def matching(string):
+    if len(string) <= 4:
+        return 3
+    elif len(string) <= 6:
+        return 4
+    elif len(string) <= 9:
+        return 7
+    else:
+        return 7
+
+
+def split(strng, sep, pos):
+    strng = strng.split(sep)
+    return sep.join(strng[:pos]), sep.join(strng[pos:])
+
+
+def clean(string):
+    string = string.lower()
+    substitutions = {"original audio":"","hq": ""
+                     ,"official": "","video":""
+                     ,"music":"", ", ":" "
+                     , ",": " ","lyrics":""
+                     ,"& ": ""}
+    substrings = sorted(substitutions, key=len, reverse=True)
+    regex = re.compile('|'.join(map(re.escape, substrings)))
+    string = re.sub("[\(\[].*?[\)\]]", "", string)
+    return str.lstrip(str(regex.sub(lambda match: substitutions[match.group(0)], string)))
+
+
+def consecutive_groups(string="this is a test string"):
+    input = tuple(string.split())
+    for size in range(1, len(input)+1):
+        for index in range(len(input)+1-size):
+            yield input[index:index+size]
+
+
+def most_common(_list):
+#Check this handles nested lists correctly?
+    SL = sorted((x, i) for i, x in enumerate(_list))
+    groups = itertools.groupby(SL, key=operator.itemgetter(0))
+
+    def _auxfun(g):
+        item, iterable = g
+        count = 0
+        min_index = len(_list)
+        for _, where in iterable:
+          count += 1
+          min_index = min(min_index, where)
+        return count, -min_index
+    return max(groups, key=_auxfun)[0]
+
+
+def return_playlists():
+    client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
+    sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+    playlists = sp.user_playlists('robbo1992')
+    while playlists:
+        for i, playlist in enumerate(playlists['items']):
+            print("%4d %s %s" % (i + 1 + playlists['offset'], playlist['uri'], playlist['name']))
+            if playlists['next']:
+                playlists = sp.next(playlists)
+            else:
+                playlists = None
 
 
 log = setup_logger(__name__)

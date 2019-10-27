@@ -3,7 +3,7 @@ Shared imports are here, as well as all other parts of the younify program.
 """
 
 import logging, os, sys, eyed3, re, queue, time
-import ctypes, unittest, json #derulo
+import ctypes, unittest, json
 from datetime import datetime
 
 with open('c:\\config\\config.json') as f:
@@ -28,20 +28,10 @@ test_audio_file = config["filehandler_test"]["test_audio_file"]
 
 enclosure_queue = queue.Queue()
 fetch_threads = int(os.getenv('NUMBER_OF_PROCESSORS', 4))
-appid = "rftech.younify.1.1"
-ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)
 
-from younify import motley
-from younify import interface
-from younify import alchemy
-from younify import spotify
-from younify import factory
-from younify import fingerprinter
-from younify import frames
-
-#Could these be put into the class as static members?
-processed = frames.ProcessedURLs()
-working = frames.WorkingURLs()
-failed = frames.FailedURLs()
-
-
+# from younify import motley
+# from younify import alchemy
+# from younify import spotify
+# from younify import factory
+# from younify import fingerprinter
+# from younify import frames
