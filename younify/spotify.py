@@ -212,8 +212,8 @@ class SpotifyMatching:
                     log.debug("Method song_second_pass succeeded for %s." % self.name)
                     self.success = True
                 # handle cases where every 'song' appears just once - levenshtein back to original string (minus the artist)
-        log.debug("The method song_second_pass was called without a valid artist.")
-        self.success = False
+            log.debug("The method song_second_pass was called without a valid artist.")
+            self.success = False
 
     def album_assignment(self):
         """

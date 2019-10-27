@@ -304,16 +304,19 @@ class YoutubePlaylist(Youtube):
         """""
         desc_temp = ""
         regex_layer1 = r"[0-9][0-9]\:[0-9][0-9]\:[0-9][0-9]"
-        regex_layer2 = r"[0-9][0-9]\:[0-9][0-9]"
+        regex_layer2 = r"[0-9]\:[0-9][0-9]"
         if self.timestamp_helper() == 2:
             log.debug("Description for object {} was found to have 2 timestamps per line".format(id(self)))
             for line in self.description.splitlines():
-                if re.sub(regex_layer2, '', line) == 2:
-                    splitline = re.split(regex_layer1, line)
-                    line_mod = splitline[0].join(splitline[1])
-                    desc_temp += line_mod
+                if len(re.split(regex_layer2, line)) == 2:
+                    print(line)
+                if len(re.split(regex_layer2, line)) == 3:
+                    print("in here")
+                    splitline = re.split(regex_layer2, line)
+                    line_mod = splitline[0]#.join(splitline[1])
+                    desc_temp += line_mod + "\n"
                 else:
-                    desc_temp += line
+                    desc_temp += line + "\n"
             self.description = desc_temp
         elif self.timestamp_helper() > 2:
             log.error("Description for object {} was found to have more than 2 timestamps per line".format(id(self)))
@@ -337,14 +340,13 @@ class YoutubePlaylist(Youtube):
         """""
         countlines = 1
         countregexes = 0
-        ls = []
         regex_layer = r"[0-9][0-9]\:[0-9][0-9]"
         for line in self.description.splitlines():
-            if re.match(regex_layer, line) is not None:
+            if len(re.findall(regex_layer, line)) >= 1:
                 ls = re.findall(regex_layer, line)
                 countregexes += len(ls)
                 countlines += 1
-        return countregexes/countlines
+        return round(countregexes/countlines)
 
     def __str__(self):
         log.debug("--Youtube Playlist Instantiated")
@@ -386,7 +388,7 @@ class YoutubePlaylist(Youtube):
             raise e
 
     def cut(self):
-        raise NotImplemented()
+        raise NotImplementedError
 
     def write_out(self):
         if alchemy.database_connected:
@@ -395,7 +397,7 @@ class YoutubePlaylist(Youtube):
             self.push_to_file()
 
     def push_to_file(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     def push_to_db(self):
         playlist = alchemy.Playlist()
@@ -427,7 +429,7 @@ class YoutubeAudiobook(Youtube):
         self.type = "Audiobook"
 
     def process(self):
-        raise NotImplemented()
+        raise NotImplementedError
 
 
 class YoutubeAlbum(YoutubePlaylist):
@@ -437,7 +439,7 @@ class YoutubeAlbum(YoutubePlaylist):
         self.type = "Album"
 
     def process(self):
-        raise NotImplemented()
+        raise NotImplementedError
 
 
 class YoutubeOther(Youtube):
@@ -446,6 +448,11 @@ class YoutubeOther(Youtube):
         self.type = "Other"
 
     def process(self):
-        raise NotImplemented()
+        raise NotImplementedError
 
+
+if __name__ == "__main__":
+    url = "https://www.youtube.com/watch?v=qoo27n_MPjY"
+    runner = VideoFactory(url).classify()
+    #print(runner.timestamps)
 
