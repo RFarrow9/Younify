@@ -23,6 +23,6 @@ setup(
         "spotipy == 2.4.4",
         "SQLAlchemy == 1.2.19",
         "urllib3 == 1.24.2",
-        "youtube - dl == 2019.7.2"
+        "youtube - dl == 2019.7.2", 'logzero', 'youtube_dl'
     ],
 )
