@@ -36,3 +36,13 @@ youtube_options = {
             'quiet': True
         }
 
+
+#set up spotify things
+username = None
+scope = None
+client_id = None
+client_secret = None
+redirect_uri = None
+cache_path = None
+
+

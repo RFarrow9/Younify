@@ -30,8 +30,8 @@ class Spotify:
                 scope=scope,
                 client_id=client_id,
                 client_secret=client_secret,
-                redirect_uri=redirect_uri,
-                cache_path=cache_path
+                redirect_uri=redirect_uri
+                #cache_path=cache_path    ?
             )
 
         token = token_helper()

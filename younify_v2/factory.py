@@ -1,10 +1,11 @@
 from . import *
 from .motley import *
+from .spotify import *
 
 import subprocess
 import youtube_dl
 from dataclasses import field
-
+from abc import ABC
 
 """""
 
@@ -45,62 +46,6 @@ class VideoFactory:
         self.title = self.info_dict.get("title")
 
     def classify(self):
-        pass
-
-    def to_song(self):
-        return YoutubeSong(self.url, self.info_dict, self.name, None)
-
-    def to_playlist(self):
-        return YoutubePlaylist(self.url, self.info_dict)
-
-    def to_audiobook(self):
-        return YoutubeAudiobook(self.url, self.info_dict)
-
-    def to_album(self):
-        return YoutubeAlbum(self.url, self.info_dict)
-
-    def to_other(self):
-        return YoutubeOther(self.url, self.info_dict)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    def __init__(self, url):
-        log.debug("VideoFactory with URL of %s has been instantiated." % url)
-        self.url = url
-        self.info_dict = None
-        self.duration = None
-        self.name = None
-        self.description = None
-        self.options = {
-            'format': 'bestaudio/best',  # choice of quality
-            'extractaudio': True,  # only keep the audio
-            'noplaylist': True,  # only download single song, not playlist
-            'outtmpl': spotify_dir + '\%(title)s.%(ext)s',
-            'quiet': True
-        }
-        try:
-            log.debug("Populating metadata for %s." % url)
-            self.populate()
-        except:
-            log.error("Populating metadata for %s has failed." % url)
-            pass
-
-    def __repr__(self):
-        return self.url
-
-    def classify(self):
-    # For now, we treat everything like a song or playlist
         if self.description is not None:
             timestamps = self.countmatches(r"[0-9][0-9]\:[0-9][0-9]")
             if self.duration > 1200 or timestamps >= 5:
@@ -110,13 +55,6 @@ class VideoFactory:
         else:
             return
 
-    def countmatches(self, pattern):
-        if self.description is None:
-            log.warning("No description information found for %s" % id(self))
-            pass
-        else:
-            return re.subn(pattern, '', self.description)[1]
-
     def to_song(self):
         return YoutubeSong(self.url, self.info_dict, self.name, None)
 
@@ -133,48 +71,16 @@ class VideoFactory:
         return YoutubeOther(self.url, self.info_dict)
 
 
+@dataclass
 class Youtube(ABC):
     """"This is an abstract class, and only contains methods to be inherited"""
-    def __init__(self, url, info_dict):
-        self.url = url
-        self.info_dict = info_dict
-        self.options = {
-            'format': 'bestaudio/best',
-            'extractaudio': True,
-            'noplaylist': True,
-            'progress_hooks': [self.hook],
-            'outtmpl': spotify_dir + '\%(title)s.%(ext)s',
-            'quiet': True
-        }
-        self.name = None
-        self.description = None
-        self.id = None
-        self.uploader = None
-        self.thumbnail = None
-        self.duration = None
-        self.yt_track = None
-        self.yt_artist = None
-        if self.info_dict is not None:
-            self.name = self.info_dict.get("title")
-            self.description = self.info_dict.get("description")
-            self.id = self.info_dict.get("id")
-            self.uploader = self.info_dict.get("uploader")
-            self.thumbnail = self.info_dict.get("thumbnail")
-            self.duration = self.info_dict.get("duration")
-            self.yt_track = self.info_dict.get("track")
-            self.yt_artist = self.info_dict.get("artist")
-
-    def __str__(self):
-        return "type: " + type(self).__name__ + "\n" + "url: " + self.url
-
-    def print_dict(self):
-        print(self.info_dict)
-
-    def print_desc(self):
-        print(self.description)
-
-    def countmatches(self, pattern):
-        return re.subn(pattern, '', self.description)[1]
+    url: str
+    info_dict: dict = field(default_factory=dict)
+    duration: int = None
+    title: str = None
+    description: str = None
+    options: dict = youtube_options
+    sp: Spotify = Spotify()
 
     def download(self):
         with youtube_dl.YoutubeDL(self.options) as ydl:
@@ -191,25 +97,11 @@ class Youtube(ABC):
         raise TypeError("process cannot be run from base class, override the method")
 
 
+@dataclass
 class YoutubeSong(Youtube):
-    def __init__(self, url, info_dict, name, playlist=None):
-        super().__init__(url, info_dict)
-        if url is None: # Then is from playlist
-            self.name = name
-        else:
-            self.name = self.info_dict.get("title")
-        self.spotify = spotify.SpotifyMatching(self.name)
-        self.success = None
-        self.filename = None
-        self.raw_filename = None
-        self.type = "Song"
-        """Attributes specific to songs"""
-        self.found = None
-        self.song_id = None
-        self.artist_id = None
-        self.artist = None
-        self.title = None
-        self.playlist = playlist
+    song_name: str = None
+    artist_name: str = None
+    album_name: str = None
 
     def log(self):
         log.debug("Type: %s" % type(self).__name__)
@@ -294,9 +186,6 @@ class YoutubeSong(Youtube):
             self.push_to_db()
         else:
             self.push_to_file()
-
-    def push_to_file(self):
-        raise NotImplemented
 
     def push_to_db(self):
         log.debug("Writing song to database: %s" %id(self))
