@@ -181,12 +181,6 @@ class YoutubeSong(Youtube):
         # automatically pushed to playlist if success already
         self.write_out()
 
-    def write_out(self):
-        if alchemy.database_connected:
-            self.push_to_db()
-        else:
-            self.push_to_file()
-
     def push_to_db(self):
         log.debug("Writing song to database: %s" %id(self))
         song = alchemy.Song()
@@ -207,22 +201,19 @@ class YoutubeSong(Youtube):
 
 
 class YoutubePlaylist(Youtube):
-    def __init__(self, url, info_dict):
-        super().__init__(url, info_dict)
-        __tablename__ = "Playlists"
-        self.type = "Playlist"
-        """Attributes specific to playlists"""
-        self.timestamps = []
-        self.url = url
-        self.num_songs = None
-        self.find_timestamps()
-        self.songs = []
-        self.pk = None
-        self.downloaded = False
+    timestamps: list = field(default_factory=list)
+    downloaded: bool = False
 
-    def log(self):
-        log.debug("Type: %s" % type(self).__name__)
-        log.debug("URL : %s" % self.url)
+    def __post_init__(self):
+        self.get_timestamps()
+
+    @property
+    def num_songs(self):
+        return len(self.timestamps + 1)
+
+    def get_timestamps(self):
+        """This breaks apart the playlist into its timestamps"""
+        pass
 
     def find_timestamps(self):
         """""
