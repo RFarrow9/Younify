@@ -38,11 +38,9 @@ youtube_options = {
 
 
 #set up spotify things
-username = "robbo1992"
-scope = "user-library-read playlist-modify-private playlist-modify"
+username = config["spotify"]["username"]
+scope = config["spotify"]["scope"]
 client_id = config["spotify"]["client_id"]
-client_secret = config["spotify"]["secret_id"]
-redirect_uri = "http://localhost:8080"
-cache_path = None
-
+client_secret = config["spotify"]["client_secret"]
+redirect_uri = config["spotify"]["redirect_uri"]
 

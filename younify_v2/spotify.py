@@ -19,7 +19,7 @@ class Spotify:
     sp: object = None
 
     def __post_init__(self):
-        pass
+        self.create_token()
 
     def create_token(self):
         token = None
@@ -31,7 +31,6 @@ class Spotify:
                 client_id=client_id,
                 client_secret=client_secret,
                 redirect_uri=redirect_uri
-                #cache_path=cache_path    ?
             )
 
         token = token_helper()
