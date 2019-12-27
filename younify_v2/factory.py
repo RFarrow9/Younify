@@ -1,9 +1,9 @@
 from . import *
-from .motley import *
 from .spotify import *
 
 import subprocess
 import youtube_dl
+from typing import Dict
 from dataclasses import field
 from abc import ABC
 import re
@@ -20,22 +20,24 @@ log = setup_logger(__name__)
 @dataclass
 class VideoFactory:
     url: str
-    info_dict: dict = field(default_factory=dict)
+    info_dict: Dict = field(default_factory=dict)
     duration: int = None
     title: str = None
     description: str = None
-    options: dict = youtube_options
+    options: Dict = field(default_factory=dict)
 
     def __post_init__(self):
         self.get_info_dict()
         self.expand_info_dict()
-        self.classify()
+
+    def assign_defaults(self):
+        self.options = youtube_options
 
     def get_info_dict(self) -> None:
         with youtube_dl.YoutubeDL(self.options) as ydl:
             try:
                 self.info_dict = ydl.extract_info(self.url, download=False)
-                log.debug("Populated metadata for {} succesfully.".format(self.url))
+                log.debug("Populated metadata for {} successfully.".format(self.url))
                 # TODO make the error handling here better
             except:
                 log.error("Populating metadata for {} failed".format(self.url))
@@ -56,8 +58,15 @@ class VideoFactory:
         else:
             return
 
+    def countmatches(self, pattern):
+        if self.description is None:
+            log.warning("No description information found for %s" % id(self))
+            pass
+        else:
+            return re.subn(pattern, '', self.description)[1]
+
     def to_song(self):
-        return YoutubeSong(self.url, self.info_dict, self.name, None)
+        return YoutubeSong(self.url, self.info_dict, self.title, None)
 
     def to_playlist(self):
         return YoutubePlaylist(self.url, self.info_dict)
@@ -73,15 +82,21 @@ class VideoFactory:
 
 
 @dataclass
-class Youtube(ABC):
+class YoutubeVideos(ABC):
     """"This is an abstract class, and only contains methods to be inherited"""
     url: str
-    info_dict: dict = field(default_factory=dict)
+    info_dict: Dict = field(default_factory=dict)
     duration: int = None
     title: str = None
     description: str = None
-    options: dict = youtube_options
-    sp: Spotify = Spotify()
+    options: Dict = field(default_factory=dict)
+    sp: Spotify = Spotify
+
+    def __post_init__(self):
+        self.assign_defaults()
+
+    def assign_defaults(self):
+        self.options = youtube_options
 
     def download(self):
         with youtube_dl.YoutubeDL(self.options) as ydl:
@@ -99,7 +114,7 @@ class Youtube(ABC):
 
 
 @dataclass
-class YoutubeSong(Youtube):
+class YoutubeSong(YoutubeVideos):
     song_name: str = None
     artist_name: str = None
     album_name: str = None
@@ -201,7 +216,7 @@ class YoutubeSong(Youtube):
         s.commit()
 
 
-class YoutubePlaylist(Youtube):
+class YoutubePlaylist(YoutubeVideos):
     timestamps: list = field(default_factory=list)
     downloaded: bool = False
 
@@ -343,9 +358,9 @@ class YoutubePlaylist(Youtube):
             log.warning("Playlist at {} could not be downloaded.".format(id(self)))
 
 
-class YoutubeAudiobook(Youtube):
+class YoutubeAudiobook(YoutubeVideos):
     def __init__(self, url, info_dict):
-        Youtube.__init__(self, url, info_dict)
+        YoutubeVideos.__init__(self, url, info_dict)
         self.type = "Audiobook"
 
     def process(self):
@@ -355,16 +370,16 @@ class YoutubeAudiobook(Youtube):
 class YoutubeAlbum(YoutubePlaylist):
     """This should explicitly search spotify for the album, different to playlist"""
     def __init__(self, url, info_dict):
-        Youtube.__init__(self, url, info_dict)
+        YoutubeVideos.__init__(self, url, info_dict)
         self.type = "Album"
 
     def process(self):
         raise NotImplementedError
 
 
-class YoutubeOther(Youtube):
+class YoutubeOther(YoutubeVideos):
     def __init__(self, url, info_dict):
-        Youtube.__init__(self, url, info_dict)
+        YoutubeVideos.__init__(self, url, info_dict)
         self.type = "Other"
 
     def process(self):

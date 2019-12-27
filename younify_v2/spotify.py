@@ -1,5 +1,5 @@
 from . import *
-from .motley import singleton
+from singleton_decorator import singleton
 
 import spotipy
 import spotipy.util
