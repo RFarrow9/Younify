@@ -1,5 +1,5 @@
 from . import *
-from .motley import *
+from .motley import singleton
 
 import spotipy
 import spotipy.util
@@ -16,7 +16,7 @@ log = setup_logger(__name__)
 @singleton
 @dataclass
 class Spotify:
-    sp: object
+    sp: object = None
 
     def __post_init__(self):
         pass

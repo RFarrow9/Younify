@@ -48,3 +48,6 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+/younify_v2/resources/config.ini
+/younify_v2/resources/log.log
+

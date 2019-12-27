@@ -15,7 +15,7 @@ config = configparser.ConfigParser()
 config.read("resources/config.ini")
 
 # Do this better in future, needs an os agnostic method
-log_location = "C:\\Users\\robfa\\PycharmProjects\\Younify\\younify_v2\\resources\\log.log"
+log_location = "C:\\Users\\robf\\Documents\\Git\\Younify\\younify_v2\\resources\\log.log"
 if (logger := config['Logging']['log_location']) != "None":
     log_location = logger
 
@@ -38,11 +38,11 @@ youtube_options = {
 
 
 #set up spotify things
-username = None
-scope = None
-client_id = None
-client_secret = None
-redirect_uri = None
+username = "robbo1992"
+scope = "user-library-read playlist-modify-private playlist-modify"
+client_id = config["spotify"]["client_id"]
+client_secret = config["spotify"]["secret_id"]
+redirect_uri = "http://localhost:8080"
 cache_path = None
 
 
