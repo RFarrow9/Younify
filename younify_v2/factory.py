@@ -52,8 +52,10 @@ class VideoFactory:
         if self.description is not None:
             timestamps = self.countmatches(r"[0-9][0-9]\:[0-9][0-9]")
             if self.duration > 1200 or timestamps >= 5:
+                log.info(f"Video classified as playlist.")
                 return self.to_playlist()
             else:
+                log.info(f"Video classified as song")
                 return self.to_song()
         else:
             return
@@ -90,7 +92,7 @@ class YoutubeVideos(ABC):
     title: str = None
     description: str = None
     options: Dict = field(default_factory=dict)
-    sp: Spotify = Spotify
+    sp: Spotify = Spotify()
 
     def __post_init__(self):
         self.assign_defaults()
@@ -196,24 +198,6 @@ class YoutubeSong(YoutubeVideos):
                 # Should be pushed back up to playlist object?
         # automatically pushed to playlist if success already
         self.write_out()
-
-    def push_to_db(self):
-        log.debug("Writing song to database: %s" %id(self))
-        song = alchemy.Song()
-        if self.playlist is not None:
-            song.playlist_id = self.playlist.pk
-        else:
-            song.playlist_id = None
-        song.title = self.name
-        song.artist = self.artist
-        song.url = self.url
-        song.found = self.found
-        song.artist_id = self.artist_id
-        song.song_id = self.song_id
-        song.user_id = "1" # Hardcoding this foreign key for the timebeing
-        s = alchemy.session()
-        s.add(song)
-        s.commit()
 
 
 class YoutubePlaylist(YoutubeVideos):
