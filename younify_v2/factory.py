@@ -7,6 +7,7 @@ from typing import Dict
 from dataclasses import field
 from abc import ABC
 import re
+import eyed3
 
 """""
 
@@ -117,16 +118,29 @@ class YoutubeVideos(ABC):
 
 @dataclass
 class YoutubeSong(YoutubeVideos):
+    """
+    1. Find the artist from the title of the video
+    
+
+    """
     song_name: str = None
     artist_name: str = None
     album_name: str = None
+
+    def __post_init__(self):
+        log.debug(f"Instantiated song object.")
+        self.main()
+
+    def main(self):
+        self.populate_metadata()
+
 
     def log(self):
         log.debug("Type: %s" % type(self).__name__)
         log.debug("URL : %s" % self.url)
 
     def populate_metadata(self):
-        self.found = self.spotify.process()
+        self.found = self.sp.process()
         self.song_id, self.artist_id = self.spotify.return_song_artist()
 
     def hook(self, d):
