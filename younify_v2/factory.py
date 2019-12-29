@@ -117,6 +117,10 @@ class YoutubeVideos(ABC):
     def push_to_db(self):
         raise TypeError("process cannot be run from base class, override the method")
 
+    @property
+    def serialised(self):
+        return f"{self.url}|\"{self.title}\"|\"{self.description}\""
+
 
 @dataclass
 class YoutubeSong(YoutubeVideos):

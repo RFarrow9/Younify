@@ -37,11 +37,5 @@ def extract_links_from_file(input, output):
             write_file.write(f"{url}\n")
 
 
-def enrich_links(input, output):
-    with open(input, "r", encoding="utf-8") as file:
-        for line in file:
-
-
-
 if __name__ == "__main__":
     extract_links_from_file("./resources/bookmarks.html", "./resources/output")
