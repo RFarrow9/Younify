@@ -29,15 +29,16 @@ class Pipe:
     def main(self):
         self.get_urls_from_file("./resources/output")
         self.classify_urls()
-        self.serialise_objects_to_file()
+        self.serialise_objects("./resources/output_enriched")
 
     def get_urls(self):
         self.unclassified.extend(["https://www.youtube.com/watch?v=hqbS7O9qIXE"])
 
     def get_urls_from_file(self, input):
         with open(input, "r", encoding="utf-8") as file:
-            for line in file:
-                self.unclassified.extend([f"https://www.youtube.com/watch?v={line}"])
+            head = [next(file) for x in range(10)]
+        for url in head:
+            self.unclassified.extend([f"https://www.youtube.com/watch?v={url[:-1]}"])
 
     def classify_urls(self):
         for url in self.unclassified:

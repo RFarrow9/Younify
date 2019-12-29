@@ -71,10 +71,10 @@ class VideoFactory:
             return re.subn(pattern, '', self.description)[1]
 
     def to_song(self):
-        return YoutubeSong(self.url, self.info_dict, self.title, None)
+        return YoutubeSong(url=self.url, info_dict=self.info_dict, title=self.title)
 
     def to_playlist(self):
-        return YoutubePlaylist(self.url, self.info_dict)
+        return YoutubePlaylist(url=self.url, info_dict=self.info_dict, title=self.title)
 
     def to_audiobook(self):
         return YoutubeAudiobook(self.url, self.info_dict)
@@ -119,7 +119,7 @@ class YoutubeVideos(ABC):
 
     @property
     def serialised(self):
-        return f"{self.url}|\"{self.title}\"|\"{self.description}\""
+        return f"{self.url}|\"{self.title}\"|\"{self.description}\"\n"
 
 
 @dataclass
