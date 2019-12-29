@@ -7,7 +7,7 @@ from typing import Dict
 from dataclasses import field
 from abc import ABC
 import re
-import eyed3
+#import eyed3
 
 """""
 
@@ -26,6 +26,7 @@ class VideoFactory:
     title: str = None
     description: str = None
     options: Dict = field(default_factory=dict)
+    error: bool = False
 
     def __post_init__(self):
         self.get_info_dict()
@@ -42,7 +43,7 @@ class VideoFactory:
                 # TODO make the error handling here better
             except:
                 log.error("Populating metadata for {} failed".format(self.url))
-                raise Exception
+                self.error = True
 
     def expand_info_dict(self):
         self.duration = self.info_dict.get("duration")
@@ -50,16 +51,17 @@ class VideoFactory:
         self.title = self.info_dict.get("title")
 
     def classify(self):
-        if self.description is not None:
-            timestamps = self.countmatches(r"[0-9][0-9]\:[0-9][0-9]")
-            if self.duration > 1200 or timestamps >= 5:
-                log.info(f"Video classified as playlist.")
-                return self.to_playlist()
+        if not self.error:
+            if self.description is not None:
+                timestamps = self.countmatches(r"[0-9][0-9]\:[0-9][0-9]")
+                if self.duration > 1200 or timestamps >= 5:
+                    log.info(f"Video classified as playlist.")
+                    return self.to_playlist()
+                else:
+                    log.info(f"Video classified as song")
+                    return self.to_song()
             else:
-                log.info(f"Video classified as song")
-                return self.to_song()
-        else:
-            return
+                return
 
     def countmatches(self, pattern):
         if self.description is None:
@@ -120,7 +122,7 @@ class YoutubeVideos(ABC):
 class YoutubeSong(YoutubeVideos):
     """
     1. Find the artist from the title of the video
-    
+
 
     """
     song_name: str = None
@@ -129,11 +131,10 @@ class YoutubeSong(YoutubeVideos):
 
     def __post_init__(self):
         log.debug(f"Instantiated song object.")
-        self.main()
+        #self.main()
 
     def main(self):
         self.populate_metadata()
-
 
     def log(self):
         log.debug("Type: %s" % type(self).__name__)

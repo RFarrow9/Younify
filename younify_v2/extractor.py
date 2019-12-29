@@ -1,3 +1,5 @@
+from .factory import *
+
 """
 
 This module handles taking an external file and parsing out youtube links.
@@ -31,9 +33,14 @@ def extract_links_from_file(input, output):
             count += inner_count
             matches.extend(inner_matches)
     with open(output, "w+") as write_file:
-        write_file.write(f"Total matches found: {count}\n")
         for url in matches:
             write_file.write(f"{url}\n")
+
+
+def enrich_links(input, output):
+    with open(input, "r", encoding="utf-8") as file:
+        for line in file:
+
 
 
 if __name__ == "__main__":

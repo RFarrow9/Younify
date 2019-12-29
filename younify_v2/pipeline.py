@@ -25,11 +25,16 @@ class Pipe:
     complete: List[YoutubeVideos] = field(default_factory=list)
 
     def main(self):
-        self.get_urls()
+        self.get_urls_from_file("./resources/output")
         self.classify_urls()
 
     def get_urls(self):
         self.unclassified.extend(["https://www.youtube.com/watch?v=hqbS7O9qIXE"])
+
+    def get_urls_from_file(self, input):
+        with open(input, "r", encoding="utf-8") as file:
+            for line in file:
+                self.unclassified.extend([f"https://www.youtube.com/watch?v={line}"])
 
     def classify_urls(self):
         for url in self.unclassified:
