@@ -71,10 +71,10 @@ class VideoFactory:
             return re.subn(pattern, '', self.description)[1]
 
     def to_song(self):
-        return YoutubeSong(url=self.url, info_dict=self.info_dict, title=self.title)
+        return YoutubeSong(url=self.url, info_dict=self.info_dict)
 
     def to_playlist(self):
-        return YoutubePlaylist(url=self.url, info_dict=self.info_dict, title=self.title)
+        return YoutubePlaylist(url=self.url, info_dict=self.info_dict)
 
     def to_audiobook(self):
         return YoutubeAudiobook(self.url, self.info_dict)
@@ -98,7 +98,13 @@ class YoutubeVideos(ABC):
     sp: Spotify = Spotify()
 
     def __post_init__(self):
+        self.expand_info_dict()
         self.assign_defaults()
+
+    def expand_info_dict(self):
+        self.duration = self.info_dict.get("duration")
+        self.description = self.info_dict.get("description").replace("\n", " ").replace("\r", "")
+        self.title = self.info_dict.get("title")
 
     def assign_defaults(self):
         self.options = youtube_options
@@ -135,7 +141,7 @@ class YoutubeSong(YoutubeVideos):
 
     def __post_init__(self):
         log.debug(f"Instantiated song object.")
-        #self.main()
+        self.expand_info_dict()
 
     def main(self):
         self.populate_metadata()
@@ -225,6 +231,7 @@ class YoutubePlaylist(YoutubeVideos):
 
     def __post_init__(self):
         self.get_timestamps()
+        self.expand_info_dict()
 
     @property
     def num_songs(self):

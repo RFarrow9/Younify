@@ -15,7 +15,7 @@ This also instantiates the spotify connection.
 """""
 
 log = setup_logger(__name__)
-
+limit = None
 
 @singleton
 @dataclass
@@ -29,25 +29,34 @@ class Pipe:
     def main(self):
         self.get_urls_from_file("./resources/output")
         self.classify_urls()
-        self.serialise_objects("./resources/output_enriched")
+        self.serialise_objects("./resources/output_enriched.csv")
 
     def get_urls(self):
         self.unclassified.extend(["https://www.youtube.com/watch?v=hqbS7O9qIXE"])
 
     def get_urls_from_file(self, input):
-        with open(input, "r", encoding="utf-8") as file:
-            head = [next(file) for x in range(10)]
+        head = []
+        if limit:
+            with open(input, "r", encoding="utf-8") as file:
+                head = [next(file) for x in range(limit)]
+        else:
+            with open(input, "r", encoding="utf-8") as file:
+                for line in file:
+                    head.extend([line])
         for url in head:
             self.unclassified.extend([f"https://www.youtube.com/watch?v={url[:-1]}"])
 
     def classify_urls(self):
         for url in self.unclassified:
-            self.classified.extend([VideoFactory(url).classify()])
+            object = VideoFactory(url).classify()
+            if object is not None:
+                self.classified.extend([object])
 
     def serialise_objects(self, output):
         with open(output, "w+", encoding="utf-8") as write_file:
             for url in self.classified:
                 write_file.write(url.serialised)
+
 
 if __name__ == "__main__":
     pipe = Pipe()
