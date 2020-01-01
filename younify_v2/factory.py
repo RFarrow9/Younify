@@ -103,8 +103,8 @@ class YoutubeVideos(ABC):
 
     def expand_info_dict(self):
         self.duration = self.info_dict.get("duration")
-        self.description = self.info_dict.get("description").replace("\n", " ").replace("\r", "")
-        self.title = self.info_dict.get("title")
+        self.description = self.info_dict.get("description").replace("\n", " ").replace("\r", "").replace("\"", "\"\" ")
+        self.title = self.info_dict.get("title").replace("\"", "\"\" ")
 
     def assign_defaults(self):
         self.options = youtube_options
@@ -125,7 +125,7 @@ class YoutubeVideos(ABC):
 
     @property
     def serialised(self):
-        return f"{self.url}|\"{self.title}\"|\"{self.description}\"\n"
+        return f"\"{self.url}\",\"{self.title}\",\"{self.description}\"\n"
 
 
 @dataclass

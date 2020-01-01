@@ -15,7 +15,7 @@ config = configparser.ConfigParser()
 config.read("resources/config.ini")
 
 # Do this better in future, needs an os agnostic method
-log_location = "C:\\Users\\robf\\Documents\\Git\\Younify\\younify_v2\\resources\\log.log"
+log_location = ".\\resources\\log.log"
 if (logger := config['Logging']['log_location']) != "None":
     log_location = logger
 
