@@ -30,9 +30,9 @@ class Pipe:
         self.get_urls_from_file("./resources/output")
         self.classify_urls()
         self.serialise_objects("./resources/output_enriched.csv")
-        self.match_to_spotify()
+        #self.match_to_spotify()
 
-    def get_urls(self):
+    def get_url(self):
         self.unclassified.extend(["https://www.youtube.com/watch?v=hqbS7O9qIXE"])
 
     def get_urls_from_file(self, input):
@@ -56,7 +56,7 @@ class Pipe:
     def serialise_objects(self, output):
         """Produces a csv output of all the classified urls"""
         with open(output, "w+", encoding="utf-8") as write_file:
-            write_file.write("url, type, length, title, description")
+            write_file.write("url, type, length, title, description\n")
             for url in self.classified:
                 write_file.write(url.serialised)
 
