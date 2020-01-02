@@ -8,6 +8,7 @@ from dataclasses import field
 from abc import ABC
 import re
 #import eyed3
+import os
 
 """""
 
@@ -96,10 +97,15 @@ class YoutubeVideos(ABC):
     description: str = None
     options: Dict = field(default_factory=dict)
     sp: Spotify = Spotify()
+    type: str = None
 
     def __post_init__(self):
         self.expand_info_dict()
         self.assign_defaults()
+
+    @property
+    def serialised(self):
+        return f"\"{self.url}\",\"{self.type}\",\"{self.title}\",\"{self.description}\"\n"
 
     def expand_info_dict(self):
         self.duration = self.info_dict.get("duration")
@@ -117,15 +123,12 @@ class YoutubeVideos(ABC):
         if d['status'] == 'finished':
             self.process()
 
-    def process(self):
+    def match_to_spotify(self):
         raise TypeError("process cannot be run from base class, override the method")
 
     def push_to_db(self):
         raise TypeError("process cannot be run from base class, override the method")
 
-    @property
-    def serialised(self):
-        return f"\"{self.url}\",\"{self.title}\",\"{self.description}\"\n"
 
 
 @dataclass
@@ -135,6 +138,7 @@ class YoutubeSong(YoutubeVideos):
 
 
     """
+    type: str = "Song"
     song_name: str = None
     artist_name: str = None
     album_name: str = None
@@ -224,8 +228,14 @@ class YoutubeSong(YoutubeVideos):
         # automatically pushed to playlist if success already
         self.write_out()
 
+    def match_to_spotify(self):
+        # 1. Try identify the artist from the title
+        # 2. Try identify the artist from the description
+        # 3.
+
 
 class YoutubePlaylist(YoutubeVideos):
+    type: str = "Playlist"
     timestamps: list = field(default_factory=list)
     downloaded: bool = False
 
