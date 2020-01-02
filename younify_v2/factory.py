@@ -11,8 +11,16 @@ import re
 import os
 
 """""
+This class has the VideoFactory, and various types of videos in Youtube. The video factory is used to designate the type of object
+for the rest of program. This will pull down a dictionary of metadata of the video (length, title, description etc) which can be
+used in order to designate the object.
 
+At the moment this designation is done purely on duration, but in future it should be possible to generate a simple machine learning 
+model using xgboost that can classify videos with high accuracy.
 
+These are either; songs, playlists, albums, audiobook or other.
+
+These all inherit from the Abstract base class of videos.
 
 """""
 
@@ -208,7 +216,6 @@ class YoutubeSong(YoutubeVideos):
         self.write_out()
 
     def match_to_spotify(self):
-        pass
         # 1. Try identify the artist from the title
         # 2. Try identify the artist from the description
         # 3.

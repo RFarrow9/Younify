@@ -62,7 +62,9 @@ class Pipe:
 
     def match_to_spotify(self):
         for url in self.classified:
-            url.match_to_spotify()
+            """We only do this with songs, as albums and playlists should be expanded to songs"""
+            if url.type == "Song":
+                url.match_to_spotify()
 
 
 if __name__ == "__main__":

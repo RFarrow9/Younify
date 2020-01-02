@@ -6,6 +6,7 @@ from sklearn.svm import LinearSVC
 from sklearn.feature_extraction.stop_words import ENGLISH_STOP_WORDS
 from sklearn.metrics import accuracy_score
 from nltk.corpus import stopwords
+import nltk
 import string
 import re
 import pandas as pd
@@ -13,22 +14,24 @@ import spacy
 from spacy.lang.en import English
 
 """"Assume that we are using english dictionaries"""
+
+nltk.download('stopwords')
+nlp = spacy.load('en_core_web_sm')
 parser = English()
-spacy.load('en')
 stopwords = stopwords.words('english')
 
-nlp = spacy.load('en_core_web_sm')
 punctuations = string.punctuation
 
-STOPLIST = set(stopwords.words('english') + list(ENGLISH_STOP_WORDS))
+STOPLIST = set(stopwords + list(ENGLISH_STOP_WORDS))
 SYMBOLS = " ".join(string.punctuation).split(" ") + ["-", "...", "”", "”"]
 
 
-df = pd.read_csv("./resources/output_enriched_labelled.csv")
+df = pd.read_csv("./resources/output_enriched.csv")
 
 train, test = train_test_split(df, test_size=0.33, random_state=42)
 
-# Define function to cleanup text by removing personal pronouns, stopwords, and puncuation
+
+# Define function to cleanup text by removing personal pronouns, stopwords, and punctuation
 def cleanup_text(docs, logging=False):
     texts = []
     counter = 1
