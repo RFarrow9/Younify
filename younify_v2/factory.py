@@ -105,7 +105,7 @@ class YoutubeVideos(ABC):
 
     @property
     def serialised(self):
-        return f"\"{self.url}\",\"{self.type}\",\"{self.title}\",\"{self.description}\"\n"
+        return f"\"{self.url}\",\"{self.type}\",\"{self.duration}\",\"{self.title}\",\"{self.description}\"\n"
 
     def expand_info_dict(self):
         self.duration = self.info_dict.get("duration")
@@ -353,22 +353,6 @@ class YoutubePlaylist(YoutubeVideos):
 
     def push_to_file(self):
         raise NotImplementedError
-
-    def push_to_db(self):
-        playlist = alchemy.Playlist()
-        playlist.songs = self.songs
-        playlist.url = self.url
-        playlist.user_id = "1" # Hardcoding the foreign key for the timebeing
-        playlist.song_count = self.num_songs
-        playlist.title = self.name
-        s = alchemy.session()
-        s.add(playlist)
-        s.commit()
-        s.refresh(playlist) # is this neccessary?
-        self.pk = playlist.id
-        for song in self.songs:
-            song.playlist_id = self.pk
-            song.push_to_db()
 
     def download(self):
         try:

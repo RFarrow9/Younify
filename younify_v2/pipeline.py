@@ -56,6 +56,7 @@ class Pipe:
     def serialise_objects(self, output):
         """Produces a csv output of all the classified urls"""
         with open(output, "w+", encoding="utf-8") as write_file:
+            write_file.write("url, type, length, title, description")
             for url in self.classified:
                 write_file.write(url.serialised)
 
