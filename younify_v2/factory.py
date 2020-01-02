@@ -164,13 +164,6 @@ class YoutubeSong(YoutubeVideos):
             self.raw_filename = d['filename']
             self.convert()
 
-    def edit_tags(self, file_path):
-        tag_file = eyed3.load(file_path)
-        tag_file.tag.artist = self.artist
-        tag_file.tag.title = self.title
-        tag_file.tag.album = self.album # needs matching
-        tag_file.tag.save()
-
     def convert(self):
             if self.raw_filename[-4:] == "webm":
                 self.filename = self.raw_filename[0:-5] + ".mp3"
@@ -190,20 +183,6 @@ class YoutubeSong(YoutubeVideos):
                 os.remove(self.raw_filename)
             except Exception as e:
                 raise e
-
-    def assign_metadata(self):
-        """
-        This would be better using a with statement, which would close the file automatically not explicitly.
-        However doing this seems to result in an error, come back to this one later
-
-        At the moment this only assigns the artwork for files.
-        """
-        eyed3file = eyed3.load(self.filename)
-        image = open(artwork, "rb")
-        imagestream = image.read()
-        eyed3file.tag.images.set(3, imagestream, "image/jpeg")
-        eyed3file.tag.save()
-        image.close()
 
     def process(self):
         self.success = self.spotify.process()
@@ -229,6 +208,7 @@ class YoutubeSong(YoutubeVideos):
         self.write_out()
 
     def match_to_spotify(self):
+        pass
         # 1. Try identify the artist from the title
         # 2. Try identify the artist from the description
         # 3.
@@ -322,7 +302,8 @@ class YoutubePlaylist(YoutubeVideos):
             self.download()
             self.cut()
 
-    def hook(self, d):
+    def hook\
+                    (self, d):
         """Method override is only temporary, this should be removed in future, but keeps it working for now"""
         if d['status'] == 'finished':
             self.convert(d['filename'])
@@ -344,12 +325,6 @@ class YoutubePlaylist(YoutubeVideos):
 
     def cut(self):
         raise NotImplementedError
-
-    def write_out(self):
-        if alchemy.database_connected:
-            self.push_to_db()
-        else:
-            self.push_to_file()
 
     def push_to_file(self):
         raise NotImplementedError
