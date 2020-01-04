@@ -6,6 +6,7 @@ from sklearn.svm import LinearSVC
 from sklearn.feature_extraction.stop_words import ENGLISH_STOP_WORDS
 from sklearn.metrics import accuracy_score
 from nltk.corpus import stopwords
+import nltk
 import string
 import re
 import pandas as pd
@@ -13,18 +14,18 @@ import spacy
 from spacy.lang.en import English
 
 """"Assume that we are using english dictionaries"""
+nltk.download('stopwords')
 parser = English()
-spacy.load('en')
 stopwords = stopwords.words('english')
 
 nlp = spacy.load('en_core_web_sm')
 punctuations = string.punctuation
 
-STOPLIST = set(stopwords.words('english') + list(ENGLISH_STOP_WORDS))
+STOPLIST = set(stopwords + list(ENGLISH_STOP_WORDS))
 SYMBOLS = " ".join(string.punctuation).split(" ") + ["-", "...", "”", "”"]
 
 
-df = pd.read_csv("./resources/output_enriched_labelled.csv")
+df = pd.read_csv("./resources/output_enriched_unlabelled.csv")
 
 train, test = train_test_split(df, test_size=0.33, random_state=42)
 
@@ -91,7 +92,7 @@ if __name__ == "__main__":
     pipe = Pipeline([('cleanText', CleanTextTransformer()), ('vectorizer', vectorizer), ('clf', clf)])
 
     # data
-    train1 = train['Title'].tolist()
+    train1 = train['title'].tolist()
     labelsTrain1 = train['Conference'].tolist()
 
     test1 = test['Title'].tolist()
