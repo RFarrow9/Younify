@@ -35,6 +35,11 @@ def extract_links_from_file(input, output):
     with open(output, "w+") as write_file:
         for url in matches:
             write_file.write(f"{url}\n")
+    with open(output, "r") as read:
+        lines = 0
+        for url in read:
+            lines += 1
+    print(f"Found {lines} unique urls")
 
 
 if __name__ == "__main__":
