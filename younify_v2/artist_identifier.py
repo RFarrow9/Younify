@@ -87,6 +87,16 @@ class CleanTextTransformer(TransformerMixin):
 
 
 if __name__ == "__main__":
+    import spacy
+    from spacy import displacy
+    from collections import Counter
+    import en_core_web_sm
+
+    nlp = en_core_web_sm.load()
+    doc = nlp('Infected Mushroom - Nothing to Say [HQ Audio]')
+    print([(X.text, X.label_) for X in doc.ents])
+    exit()
+
     vectorizer = CountVectorizer(tokenizer=tokenizeText, ngram_range=(1,1))
     clf = LinearSVC()
     pipe = Pipeline([('cleanText', CleanTextTransformer()), ('vectorizer', vectorizer), ('clf', clf)])
