@@ -43,7 +43,8 @@ class Pipe:
         else:
             with open(input, "r", encoding="utf-8") as file:
                 for line in file:
-                    head.extend([line])
+                    if line not in head:
+                        head.extend([line])
         for url in head:
             self.unclassified.extend([f"https://www.youtube.com/watch?v={url[:-1]}"])
 
