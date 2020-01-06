@@ -221,12 +221,14 @@ class YoutubeSong(YoutubeVideos):
         # 3.
 
 
+@dataclass
 class YoutubePlaylist(YoutubeVideos):
     type: str = "Playlist"
     timestamps: list = field(default_factory=list)
     downloaded: bool = False
 
     def __post_init__(self):
+        log.debug(f"Instantiated playlist object.")
         self.get_timestamps()
         self.expand_info_dict()
 
@@ -309,8 +311,7 @@ class YoutubePlaylist(YoutubeVideos):
             self.download()
             self.cut()
 
-    def hook\
-                    (self, d):
+    def hook(self, d):
         """Method override is only temporary, this should be removed in future, but keeps it working for now"""
         if d['status'] == 'finished':
             self.convert(d['filename'])
@@ -344,6 +345,7 @@ class YoutubePlaylist(YoutubeVideos):
             log.warning("Playlist at {} could not be downloaded.".format(id(self)))
 
 
+@dataclass
 class YoutubeAudiobook(YoutubeVideos):
     def __init__(self, url, info_dict):
         YoutubeVideos.__init__(self, url, info_dict)
@@ -353,6 +355,7 @@ class YoutubeAudiobook(YoutubeVideos):
         raise NotImplementedError
 
 
+@dataclass
 class YoutubeAlbum(YoutubePlaylist):
     """This should explicitly search spotify for the album, different to playlist"""
     def __init__(self, url, info_dict):
@@ -363,6 +366,7 @@ class YoutubeAlbum(YoutubePlaylist):
         raise NotImplementedError
 
 
+@dataclass
 class YoutubeOther(YoutubeVideos):
     def __init__(self, url, info_dict):
         YoutubeVideos.__init__(self, url, info_dict)

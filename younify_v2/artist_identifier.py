@@ -14,24 +14,22 @@ import spacy
 from spacy.lang.en import English
 
 """"Assume that we are using english dictionaries"""
-
 nltk.download('stopwords')
-nlp = spacy.load('en_core_web_sm')
 parser = English()
 stopwords = stopwords.words('english')
 
+nlp = spacy.load('en_core_web_sm')
 punctuations = string.punctuation
 
 STOPLIST = set(stopwords + list(ENGLISH_STOP_WORDS))
 SYMBOLS = " ".join(string.punctuation).split(" ") + ["-", "...", "”", "”"]
 
 
-df = pd.read_csv("./resources/output_enriched.csv")
+df = pd.read_csv("./resources/output_enriched_unlabelled.csv")
 
 train, test = train_test_split(df, test_size=0.33, random_state=42)
 
-
-# Define function to cleanup text by removing personal pronouns, stopwords, and punctuation
+# Define function to cleanup text by removing personal pronouns, stopwords, and puncuation
 def cleanup_text(docs, logging=False):
     texts = []
     counter = 1
@@ -89,12 +87,22 @@ class CleanTextTransformer(TransformerMixin):
 
 
 if __name__ == "__main__":
+    import spacy
+    from spacy import displacy
+    from collections import Counter
+    import en_core_web_sm
+
+    nlp = en_core_web_sm.load()
+    doc = nlp('Infected Mushroom - Nothing to Say [HQ Audio]')
+    print([(X.text, X.label_) for X in doc.ents])
+    exit()
+
     vectorizer = CountVectorizer(tokenizer=tokenizeText, ngram_range=(1,1))
     clf = LinearSVC()
     pipe = Pipeline([('cleanText', CleanTextTransformer()), ('vectorizer', vectorizer), ('clf', clf)])
 
     # data
-    train1 = train['Title'].tolist()
+    train1 = train['title'].tolist()
     labelsTrain1 = train['Conference'].tolist()
 
     test1 = test['Title'].tolist()

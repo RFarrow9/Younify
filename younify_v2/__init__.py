@@ -16,8 +16,8 @@ config.read("resources/config.ini")
 
 # Do this better in future, needs an os agnostic method
 log_location = ".\\resources\\log.log"
-if (logger := config['Logging']['log_location']) != "None":
-    log_location = logger
+if config['Logging']['log_location'] != "None":
+    log_location = config['Logging']['log_location']
 
 
 def setup_logger(__name__: str, file_path: str = log_location, level: int = 10) -> logzero.logger:
