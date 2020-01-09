@@ -10,7 +10,7 @@ Younify
 <a name="what-is"></a>
 ## <img src="younify/resources/Yin_yang.svg" alt="Logo" width="20"/> What is Younify?
 
-Younify is a tool currently in early stages of development that hopefully will allow for youtube music videos/playlists to be looked up automatically in Spotify.
+Younify is a tool currently in early stages of development that using machine learning, will allow for youtube music videos/playlists to be looked up automatically in Spotify.
 
 This is being developed in order to learn technologies that are used in creating a full end-to-end solution. The code is written in an attempt to adhere to best 
 practices for object-orientated programming, and utilising design patterns where possible. The emphasis is on writing good code, with refactoring taking place often
