@@ -3,7 +3,7 @@ from .spotify import *
 
 import subprocess
 import youtube_dl
-from typing import Dict
+from typing import Dict, List
 from dataclasses import field
 from abc import ABC
 import re
@@ -153,7 +153,7 @@ class YoutubeSong(YoutubeVideos):
 
     def __post_init__(self):
         log.debug(f"Instantiated song object.")
-        self.expand_info_dict()
+        self.info_dict()
 
     def main(self):
         self.populate_metadata()
@@ -216,10 +216,13 @@ class YoutubeSong(YoutubeVideos):
         self.write_out()
 
     def match_to_spotify(self):
+        self.identify_artist()
         # 1. Try identify the artist from the title
         # 2. Try identify the artist from the description
         # 3.
 
+    def identify_artist(self) -> None:
+        pass
 
 @dataclass
 class YoutubePlaylist(YoutubeVideos):
@@ -343,6 +346,9 @@ class YoutubePlaylist(YoutubeVideos):
                 ydl.download([self.url])
         except:
             log.warning("Playlist at {} could not be downloaded.".format(id(self)))
+
+    def expand_playlist_to_songs(self) -> List[YoutubeSong]:
+        pass
 
 
 @dataclass

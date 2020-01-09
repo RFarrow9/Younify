@@ -26,13 +26,15 @@ class Pipe:
     errored: List[Tuple] = field(default_factory=tuple)
     complete: List[YoutubeVideos] = field(default_factory=list)
 
-    def main(self):
+    def main(self) -> None:
+        """docstring"""
         self.get_urls_from_file("./resources/output")
         self.classify_urls()
         self.serialise_objects("./resources/output_enriched.csv")
         #self.match_to_spotify()
 
-    def get_url(self):
+    def get_url(self) -> None:
+        """docstring"""
         self.unclassified.extend(["https://www.youtube.com/watch?v=hqbS7O9qIXE"])
 
     def get_urls_from_file(self, input):
@@ -60,6 +62,12 @@ class Pipe:
             write_file.write("url, type, length, title, description\n")
             for url in self.classified:
                 write_file.write(url.serialised)
+
+    def expand_playlists(self) -> None:
+        additional_songs = []
+        for url in self.classified:
+            if url.type == "Playlist":
+                additional_songs.extend([url.expand_playlist_to_songs()])
 
     def match_to_spotify(self):
         for url in self.classified:
