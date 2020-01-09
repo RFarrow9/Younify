@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Dict
+from typing import Dict, List, Optional
 from singleton_decorator import singleton
 
 """""
@@ -28,8 +28,11 @@ class CacheLayer:
     def put_cache_in_file(self):
         pass
 
-    def get_artist_cache(self) -> bool:
-        return True
+    def get_artist(self, artist) -> Optional[List[str]]:
+        try:
+            return self.cache[artist]
+        except KeyError:
+            return None
 
-    def put_artist_cache(self) -> None:
+    def put_artist(self) -> None:
         pass

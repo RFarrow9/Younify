@@ -1,5 +1,6 @@
 from . import *
 from .spotify import *
+from .cacher import CacheLayer
 
 import subprocess
 import youtube_dl
@@ -106,6 +107,7 @@ class YoutubeVideos(ABC):
     options: Dict = field(default_factory=dict)
     sp: Spotify = Spotify()
     type: str = None
+    cache: CacheLayer = CacheLayer()
 
     def __post_init__(self):
         self.expand_info_dict()
@@ -217,6 +219,17 @@ class YoutubeSong(YoutubeVideos):
 
     def match_to_spotify(self):
         self.identify_artist()
+        artist_from_cache = self.cache.get_artist(self.artist_name)
+        if artist_from_cache is None:
+            potential_songs = self.sp.get_artist_songs()
+            self.cache.put_artist(potential_songs)
+        else:
+            potential_songs = artist_from_cache[songs]
+        #now we have the list
+        # levenshtein check against each entry? But what are we checking?
+
+
+
         # 1. Try identify the artist from the title
         # 2. Try identify the artist from the description
         # 3.
