@@ -155,7 +155,7 @@ class YoutubeSong(YoutubeVideos):
 
     def __post_init__(self):
         log.debug(f"Instantiated song object.")
-        self.info_dict()
+        #self.info_dict()
 
     def main(self):
         self.populate_metadata()

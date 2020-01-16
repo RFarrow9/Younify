@@ -17,6 +17,7 @@ This also instantiates the spotify connection.
 log = setup_logger(__name__)
 limit = None
 
+
 @singleton
 @dataclass
 class Pipe:
@@ -52,7 +53,7 @@ class Pipe:
 
     def classify_urls(self):
         for url in self.unclassified:
-            object = VideoFactory(url).classify()
+            object = VideoFactory(url).classify() 
             if object is not None:
                 self.classified.extend([object])
 
