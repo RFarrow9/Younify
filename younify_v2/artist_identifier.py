@@ -29,7 +29,7 @@ df = pd.read_csv("./resources/output_enriched_unlabelled.csv")
 
 train, test = train_test_split(df, test_size=0.33, random_state=42)
 
-# Define function to cleanup text by removing personal pronouns, stopwords, and puncuation
+# Define function to cleanup text by removing personal pronouns, stopwords, and punctuation
 def cleanup_text(docs, logging=False):
     texts = []
     counter = 1
@@ -85,49 +85,63 @@ class CleanTextTransformer(TransformerMixin):
     def get_params(self, deep=True):
         return {}
 
+    def test():
+        import spacy
+        from spacy import displacy
+        from collections import Counter
+        import en_core_web_sm
+
+        nlp = en_core_web_sm.load()
+        doc = nlp('Infected Mushroom - Nothing to Say [HQ Audio]')
+        print([(X.text, X.label_) for X in doc.ents])
+        exit()
+
+        vectorizer = CountVectorizer(tokenizer=tokenizeText, ngram_range=(1, 1))
+        clf = LinearSVC()
+        pipe = Pipeline([('cleanText', CleanTextTransformer()), ('vectorizer', vectorizer), ('clf', clf)])
+
+        # data
+        train1 = train['title'].tolist()
+        labelsTrain1 = train['Conference'].tolist()
+
+        test1 = test['Title'].tolist()
+        labelsTest1 = test['Conference'].tolist()
+        # train
+        pipe.fit(train1, labelsTrain1)
+
+        # test
+        preds = pipe.predict(test1)
+        print("accuracy:", accuracy_score(labelsTest1, preds))
+        print("Top 10 features used to predict: ")
+
+        printNMostInformative(vectorizer, clf, 10)
+
+        pipe = Pipeline([('cleanText', CleanTextTransformer()), ('vectorizer', vectorizer)])
+        transform = pipe.fit_transform(train1, labelsTrain1)
+        vocab = vectorizer.get_feature_names()
+
+        for i in range(len(train1)):
+            s = ""
+            indexIntoVocab = transform.indices[transform.indptr[i]:transform.indptr[i + 1]]
+            numOccurences = transform.data[transform.indptr[i]:transform.indptr[i + 1]]
+            for idx, num in zip(indexIntoVocab, numOccurences):
+                s += str((vocab[idx], num))
+
+                from sklearn import metrics
+
+        print(metrics.classification_report(labelsTest1, preds, target_names=df['Conference'].unique()))
+
+
+def main():
+    print(identify_artist("Chet Faker - I'm Into You (# Hashtag Remix)"))
+
+
+def identify_artist():
+    df = pd.read_csv("./resources/output_enriched_unlabelled.csv")
+    # So we need to use a elmo
+    # https://towardsdatascience.com/named-entity-recognition-ner-meeting-industrys-requirement-by-applying-state-of-the-art-deep-698d2b3b4ede
+
 
 if __name__ == "__main__":
-    import spacy
-    from spacy import displacy
-    from collections import Counter
-    import en_core_web_sm
+    main()
 
-    nlp = en_core_web_sm.load()
-    doc = nlp('Infected Mushroom - Nothing to Say [HQ Audio]')
-    print([(X.text, X.label_) for X in doc.ents])
-    exit()
-
-    vectorizer = CountVectorizer(tokenizer=tokenizeText, ngram_range=(1,1))
-    clf = LinearSVC()
-    pipe = Pipeline([('cleanText', CleanTextTransformer()), ('vectorizer', vectorizer), ('clf', clf)])
-
-    # data
-    train1 = train['title'].tolist()
-    labelsTrain1 = train['Conference'].tolist()
-
-    test1 = test['Title'].tolist()
-    labelsTest1 = test['Conference'].tolist()
-    # train
-    pipe.fit(train1, labelsTrain1)
-
-    # test
-    preds = pipe.predict(test1)
-    print("accuracy:", accuracy_score(labelsTest1, preds))
-    print("Top 10 features used to predict: ")
-
-    printNMostInformative(vectorizer, clf, 10)
-
-    pipe = Pipeline([('cleanText', CleanTextTransformer()), ('vectorizer', vectorizer)])
-    transform = pipe.fit_transform(train1, labelsTrain1)
-    vocab = vectorizer.get_feature_names()
-
-    for i in range(len(train1)):
-        s = ""
-        indexIntoVocab = transform.indices[transform.indptr[i]:transform.indptr[i+1]]
-        numOccurences = transform.data[transform.indptr[i]:transform.indptr[i+1]]
-        for idx, num in zip(indexIntoVocab, numOccurences):
-            s += str((vocab[idx], num))
-
-            from sklearn import metrics
-
-    print(metrics.classification_report(labelsTest1, preds, target_names=df['Conference'].unique()))

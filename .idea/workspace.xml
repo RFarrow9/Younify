@@ -2,16 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="80a05435-883f-4a11-8ee7-cb7bdf06f909" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Younify.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Younify.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/robfa.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/other.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/younify_v2/factory.py" beforeDir="false" afterPath="$PROJECT_DIR$/younify_v2/factory.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/younify_v2/pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/younify_v2/pipeline.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/younify_v2/artist_identifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/younify_v2/artist_identifier.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -27,7 +19,7 @@
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/younify_v2/pipeline.py" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/younify_v2/artist_identifier.py" />
     <property name="settings.editor.selected.configurable" value="vcs.Git" />
   </component>
   <component name="RunDashboard">
@@ -42,7 +34,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.Runner">
+  <component name="RunManager" selected="Python.artist_identifier">
     <configuration name="Runner" type="PythonConfigurationType" factoryName="Python">
       <module name="Younify" />
       <option name="INTERPRETER_OPTIONS" value="-m younify_v2.pipeline" />
@@ -57,6 +49,28 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/younify_v2/pipeline.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="artist_identifier" type="PythonConfigurationType" factoryName="Python">
+      <module name="Younify" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\robfa\PycharmProjects\Younify\venv\Scripts\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/younify_v2" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/younify_v2/artist_identifier.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -91,6 +105,7 @@
     <list>
       <item itemvalue="Django server.Younify" />
       <item itemvalue="Python.Runner" />
+      <item itemvalue="Python.artist_identifier" />
     </list>
   </component>
   <component name="SvnConfiguration">
@@ -104,7 +119,16 @@
       <option name="presentableId" value="Default" />
       <updated>1579207071904</updated>
       <workItem from="1579207074799" duration="398000" />
+      <workItem from="1579207483506" duration="2303000" />
     </task>
+    <task id="LOCAL-00001" summary="minor amendments">
+      <created>1579207735344</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1579207735344</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -115,13 +139,20 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
     </option>
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="minor amendments" />
+    <option name="LAST_COMMIT_MESSAGE" value="minor amendments" />
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Younify$artist_identifier.coverage" NAME="artist_identifier Coverage Results" MODIFIED="1579207980596" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/younify_v2" />
     <SUITE FILE_PATH="coverage/Younify$Runner.coverage" NAME="Runner Coverage Results" MODIFIED="1579207431675" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/younify_v2" />
   </component>
 </project>
