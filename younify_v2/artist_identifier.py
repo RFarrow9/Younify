@@ -9,6 +9,7 @@ from nltk.corpus import stopwords
 import nltk
 import string
 import re
+from typing import *
 import pandas as pd
 import spacy
 from spacy.lang.en import English
@@ -28,6 +29,7 @@ SYMBOLS = " ".join(string.punctuation).split(" ") + ["-", "...", "”", "”"]
 df = pd.read_csv("./resources/output_enriched_unlabelled.csv")
 
 train, test = train_test_split(df, test_size=0.33, random_state=42)
+
 
 # Define function to cleanup text by removing personal pronouns, stopwords, and punctuation
 def cleanup_text(docs, logging=False):
@@ -133,13 +135,28 @@ class CleanTextTransformer(TransformerMixin):
 
 
 def main():
-    print(identify_artist("Chet Faker - I'm Into You (# Hashtag Remix)"))
+    tag_data()
+    #print(identify_artist("Chet Faker - I'm Into You (# Hashtag Remix)"))
 
 
-def identify_artist():
-    df = pd.read_csv("./resources/output_enriched_unlabelled.csv")
-    # So we need to use a elmo
-    # https://towardsdatascience.com/named-entity-recognition-ner-meeting-industrys-requirement-by-applying-state-of-the-art-deep-698d2b3b4ede
+def tag_data():
+    print("1")
+    data = pd.read_csv("./resources/output_enriched_unlabelled_v0.csv")
+    data_titles = data['title'].dropna()
+    text = nltk.word_tokenize(data_titles[8])
+    print(nltk.pos_tag(text))
+
+
+
+
+def identify_artist(title: str) -> str:
+
+    # data_titles = data['title'].dropna()
+    # data_artists = data['artist'].dropna()
+    # print(data)
+    # # So we need to use a elmo
+    # # https://towardsdatascience.com/named-entity-recognition-ner-meeting-industrys-requirement-by-applying-state-of-the-art-deep-698d2b3b4ede
+    return "test"
 
 
 if __name__ == "__main__":
