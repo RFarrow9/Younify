@@ -32,7 +32,12 @@ resource "aws_s3_bucket" "website_redirect" {
 }
 
 resource "aws_s3_bucket" "engineering" {
-  bucket = "younify_engineering"
+  bucket = "younify-engineering"
   acl = "private"
   tags = var.tags
 }
+
+//data "archive_file" "test_deployment_zipped" {
+//  output_path = ""
+//  type = ""
+//}
