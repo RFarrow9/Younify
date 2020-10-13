@@ -37,7 +37,15 @@ resource "aws_s3_bucket" "engineering" {
   tags = var.tags
 }
 
-//data "archive_file" "test_deployment_zipped" {
-//  output_path = ""
-//  type = ""
-//}
+data "archive_file" "test_deployment_zipped" {
+  output_path = "./temp/test_lambda.zip"
+  source_file = var.lambda_test_function
+  type = "zip"
+}
+
+resource "aws_s3_bucket_object" "test_function" {
+  bucket = aws_s3_bucket.engineering.bucket
+  key = "lamdbas/test_function.zip"
+  source = data.archive_file.test_deployment_zipped.output_path
+  etag = data.archive_file.test_deployment_zipped.output_md5
+}

@@ -26,14 +26,18 @@ module "objects" {
   domain = local.domain
   full_domain = local.full_domain
   tags = var.tags
+  lambda_test_function = var.lambda_test_function
 }
 
 module "lambda" {
   source = "./modules/lambda"
+  test_lambda_function_bucket = module.objects.test_lambda_function_bucket
+  test_lambda_function_key = module.objects.test_lambda_function_key
+  lambda_execution_role = module.security.lambda_execution_role
 }
 
 module "gateway" {
-  source = "./modules/lambda"
+  source = "./modules/gateway"
 }
 
 module "website" {
@@ -47,4 +51,8 @@ module "website" {
 
 module "monitoring" {
   source = "./modules/monitoring"
+}
+
+module "security" {
+  source = "./modules/security"
 }

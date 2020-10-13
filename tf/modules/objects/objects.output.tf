@@ -10,3 +10,13 @@ output "domains" {
   value = local.domains
   description = "full list of domains being used"
 }
+
+output "test_lambda_function_bucket" {
+  value = aws_s3_bucket_object.test_function.bucket
+  description = ""
+}
+
+output "test_lambda_function_key" {
+  value = aws_s3_bucket_object.test_function.key
+  description = ""
+}
