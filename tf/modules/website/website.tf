@@ -109,4 +109,5 @@ data "aws_acm_certificate" "ssl" {
   provider = aws.us-east-1
   domain   = var.full_domain
   statuses = ["ISSUED"]
+  most_recent = false
 }
