@@ -1,4 +1,5 @@
-from spotify import *
+#from app import spotify
+from .spotify import *
 
 import subprocess
 import youtube_dl
@@ -26,7 +27,7 @@ log = setup_logger(__name__)
 
 
 @dataclass
-class VideoFactory:
+class VideoFactor:
     url: str
     info_dict: Dict = field(default_factory=dict)
     duration: int = None
@@ -104,7 +105,7 @@ class YoutubeVideos(ABC):
     options: Dict = field(default_factory=dict)
     sp: Spotify = Spotify()
     type: str = None
-    cache: CacheLayer = CacheLayer()
+    #cache: CacheLayer = CacheLayer()
 
     def __post_init__(self):
         self.expand_info_dict()
@@ -390,9 +391,3 @@ class YoutubeOther(YoutubeVideos):
 
     def process(self):
         raise NotImplementedError
-
-
-if __name__ == "__main__":
-    url = "https://www.youtube.com/watch?v=qoo27n_MPjY"
-    runner = VideoFactory(url).classify()
-    #print(runner.timestamps)

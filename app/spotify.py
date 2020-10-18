@@ -1,5 +1,8 @@
 import spotipy
+from . import *
 import spotipy.util
+
+from singleton_decorator import singleton
 
 """""
 
