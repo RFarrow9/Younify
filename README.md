@@ -10,30 +10,16 @@ Younify
 <a name="what-is"></a>
 ## <img src="younify/resources/Yin_yang.svg" alt="Logo" width="20"/> What is Younify?
 
-Younify is a tool currently in early stages of development that using machine learning, will allow for youtube music videos/playlists to be looked up automatically in Spotify.
-
-This is being developed in order to learn technologies that are used in creating a full end-to-end solution. The code is written in an attempt to adhere to best 
-practices for object-orientated programming, and utilising design patterns where possible. The emphasis is on writing good code, with refactoring taking place often
-when better ways of doing things are found.
-
-The eventual end solution being a simple button that can integrate in a browser of your choice, that when clicked will go grab the track from the youtube video tab
- you're on and find it in spotify if it exists, and if it doesn't, it'll grab the file, download, add metadata, convert, and put it in your local files for you for 
- use in spotify or media player of your choice.
- 
- Currently there is a website, however this is relatively raw and undeveloped:
- https://younify.azurewebsites.net/
+Younify will be a tool that allows for youtube videos to be searched within spotify in 
+order to add to your library.
  
 <a name="tech"></a>
 ## <img src="younify/resources/Yin_yang.svg" alt="Logo" width="20"/> Technologies
-* Azure
-* Object-orientated programming
-* Object-Relational mapping (SQL Alchemy)
+* Terraform
+* AWS
+* Lambda
 * Python
-* JSON
-* Multithreading
-* API Interaction
-* GUI Creation (QtPy)
-* Github (obviously!)
+* API Gateway
 
 <a name="prog"></a>
 ## <img src="younify/resources/Yin_yang.svg" alt="Logo" width="20"/> Progress

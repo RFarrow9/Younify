@@ -32,6 +32,6 @@ fetch_threads = int(os.getenv('NUMBER_OF_PROCESSORS', 4))
 # from younify import motley
 # from younify import alchemy
 # from younify import spotify
-# from younify import factory
+# from younify import app
 # from younify import fingerprinter
 # from younify import frames

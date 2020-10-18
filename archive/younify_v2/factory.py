@@ -1,5 +1,4 @@
-from . import *
-from .spotify import *
+from artifacts.factory.spotify import *
 from .cacher import CacheLayer
 
 import subprocess
@@ -12,7 +11,7 @@ import re
 import os
 
 """""
-This class has the VideoFactory, and various types of videos in Youtube. The video factory is used to designate the type of object
+This class has the VideoFactory, and various types of videos in Youtube. The video app is used to designate the type of object
 for the rest of program. This will pull down a dictionary of metadata of the video (length, title, description etc) which can be
 used in order to designate the object.
 

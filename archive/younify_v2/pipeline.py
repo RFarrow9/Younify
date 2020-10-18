@@ -1,5 +1,4 @@
-from . import setup_logger
-from .spotify import *
+from artifacts.factory.spotify import *
 from .factory import YoutubeVideos, VideoFactory
 
 from singleton_decorator import singleton

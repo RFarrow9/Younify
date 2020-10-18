@@ -1,6 +1,3 @@
-from . import *
-from singleton_decorator import singleton
-
 import spotipy
 import spotipy.util
 
