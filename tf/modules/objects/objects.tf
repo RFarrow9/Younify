@@ -39,7 +39,7 @@ resource "aws_s3_bucket" "engineering" {
 
 data "archive_file" "test_deployment_zipped" {
   output_path = "./temp/test_lambda.zip"
-  source_file = var.lambda_test_function
+  source_file = var.app_lambdas
   type = "zip"
 }
 

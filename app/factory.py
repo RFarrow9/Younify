@@ -27,7 +27,7 @@ log = setup_logger(__name__)
 
 
 @dataclass
-class VideoFactor:
+class VideoFactory:
     url: str
     info_dict: Dict = field(default_factory=dict)
     duration: int = None

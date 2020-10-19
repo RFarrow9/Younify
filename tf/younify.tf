@@ -26,7 +26,7 @@ module "objects" {
   domain = local.domain
   full_domain = local.full_domain
   tags = var.tags
-  lambda_test_function = var.lambda_test_function
+  app_lambdas = var.app_lambdas
 }
 
 module "lambda" {

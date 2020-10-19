@@ -14,7 +14,7 @@ variable "tags" {
 }
 
 ## ARTIFACTS
-variable "lambda_test_function" {
+variable "app_lambdas" {
   type = string
   description = "lambda test function for deployment"
 }

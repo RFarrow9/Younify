@@ -36,25 +36,26 @@ class Spotify:
     sp: object = None
 
     def __post_init__(self):
-        self.create_token()
+        #self.create_token()
+        pass
 
     def create_token(self):
         token = None
 
         def token_helper():
             return spotipy.util.prompt_for_user_token(
-                username=username,
-                scope=scope,
-                client_id=client_id,
-                client_secret=client_secret,
-                redirect_uri=redirect_uri
+                username="",
+                scope="",
+                client_id="",
+                client_secret="",
+                redirect_uri=""
             )
 
         token = token_helper()
         if token:
-            log.info(f"Spotify token successfully generated for user: {username}.")
+            log.info(f"Spotify token successfully generated for user: .")
         else:
-            log.error(f"Failure during spotify token generation for user: {username}.")
+            log.error(f"Failure during spotify token generation for user: .")
 
     def all_songs(self, artist):
         log.debug("Called all_songs for %s." % artist)
