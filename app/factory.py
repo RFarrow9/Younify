@@ -39,6 +39,7 @@ class VideoFactory:
     def __post_init__(self):
         self.get_info_dict()
         self.expand_info_dict()
+        #self.classify()
 
     def assign_defaults(self):
         self.options = youtube_options
@@ -64,10 +65,10 @@ class VideoFactory:
                 timestamps = self.countmatches(r"[0-9][0-9]\:[0-9][0-9]")
                 if self.duration > 1200 or timestamps >= 5:
                     log.info(f"Video classified as playlist.")
-                    return self.to_playlist()
+                    return self._to_playlist()
                 else:
                     log.info(f"Video classified as song")
-                    return self.to_song()
+                    return self._to_song()
             else:
                 return
 
@@ -78,16 +79,16 @@ class VideoFactory:
         else:
             return re.subn(pattern, '', self.description)[1]
 
-    def to_song(self):
+    def _to_song(self):
         return YoutubeSong(url=self.url, info_dict=self.info_dict)
 
-    def to_playlist(self):
+    def _to_playlist(self):
         return YoutubePlaylist(url=self.url, info_dict=self.info_dict)
 
-    def to_audiobook(self):
+    def _to_audiobook(self):
         return YoutubeAudiobook(self.url, self.info_dict)
 
-    def to_album(self):
+    def _to_album(self):
         return YoutubeAlbum(self.url, self.info_dict)
 
     def to_other(self):

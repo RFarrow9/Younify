@@ -10,8 +10,11 @@ def test_that():
     assert True
 
 
-def test_1():
-    url = "https://www.youtube.com/watch?v=qoo27n_MPjY"
-    runner = factory.VideoFactory(url).classify()
-    # print(runner.timestamps)
-    assert True
+def test_videofactory_instantiates_playlist():
+    runner = factory.VideoFactory("https://www.youtube.com/watch?v=qoo27n_MPjY").classify()
+    assert isinstance(runner, factory.YoutubePlaylist)
+
+
+def test_videofactory_instantiates_song():
+    runner = factory.VideoFactory("https://www.youtube.com/watch?v=IJ8i49EqgYI").classify()
+    assert isinstance(runner, factory.YoutubeSong)
