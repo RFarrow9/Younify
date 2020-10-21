@@ -37,29 +37,30 @@ class VideoFactory:
     error: bool = False
 
     def __post_init__(self):
+        """"""
         self.get_info_dict()
         self.expand_info_dict()
-        #self.classify()
 
-    def assign_defaults(self):
+    def assign_defaults(self) -> None:
         self.options = youtube_options
 
     def get_info_dict(self) -> None:
         with youtube_dl.YoutubeDL(self.options) as ydl:
             try:
                 self.info_dict = ydl.extract_info(self.url, download=False)
-                log.debug("Populated metadata for {} successfully.".format(self.url))
+                log.debug(f"Populated metadata for {self.url} successfully.")
                 # TODO make the error handling here better
             except:
-                log.error("Populating metadata for {} failed".format(self.url))
+                log.error(f"Populating metadata for {self.url} failed")
                 self.error = True
 
-    def expand_info_dict(self):
+    def expand_info_dict(self) -> None:
         self.duration = self.info_dict.get("duration")
         self.description = self.info_dict.get("description")
         self.title = self.info_dict.get("title")
 
-    def classify(self):
+    def classify(self) -> object:
+        """"""
         if not self.error:
             if self.description is not None:
                 timestamps = self.countmatches(r"[0-9][0-9]\:[0-9][0-9]")
@@ -72,7 +73,8 @@ class VideoFactory:
             else:
                 return
 
-    def countmatches(self, pattern):
+    def countmatches(self, pattern) -> int:
+        """"""
         if self.description is None:
             log.warning("No description information found for %s" % id(self))
             pass
@@ -106,7 +108,6 @@ class YoutubeVideos(ABC):
     options: Dict = field(default_factory=dict)
     sp: Spotify = Spotify()
     type: str = None
-    #cache: CacheLayer = CacheLayer()
 
     def __post_init__(self):
         self.expand_info_dict()
@@ -116,12 +117,14 @@ class YoutubeVideos(ABC):
     def serialised(self):
         return f"\"{self.url}\",\"{self.type}\",\"{self.duration}\",\"{self.title}\",\"{self.description}\"\n"
 
-    def expand_info_dict(self):
+    def expand_info_dict(self) -> None:
+        """"""
         self.duration = self.info_dict.get("duration")
         self.description = self.info_dict.get("description").replace("\n", " ").replace("\r", "").replace("\"", "\"\" ")
         self.title = self.info_dict.get("title").replace("\"", "\"\" ")
 
-    def assign_defaults(self):
+    def assign_defaults(self) -> None:
+        """"""
         self.options = youtube_options
 
     def download(self):
@@ -137,7 +140,6 @@ class YoutubeVideos(ABC):
 
     def push_to_db(self):
         raise TypeError("process cannot be run from base class, override the method")
-
 
 
 @dataclass
