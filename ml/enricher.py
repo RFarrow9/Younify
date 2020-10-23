@@ -1,4 +1,4 @@
-from app.factory import VideoFactory
+
 
 """
 This helper script will parse an extracted bookmark file, and generate a unique list of youtube URLs and metadata.
@@ -40,15 +40,5 @@ def extract_links_from_file(input, output):
     print(f"Found {lines} unique urls")
 
 
-def enrich_links(input, output):
-    """"""
-    with open(input, "r", encoding="utf-8") as file:
-        for line in file:
-            VideoFactory(f"https://www.youtube.com/watch?v={line}").classify()
-
-
 if __name__ == "__main__":
-    input = "../temp/bookmarks.html"
-    output = "../temp/raw_links"
-    extract_links_from_file(input, output)
-    enrich_links(output, output + "_enriched")
+    extract_links_from_file("../temp/bookmarks.html", "../temp/output")
