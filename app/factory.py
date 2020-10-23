@@ -102,26 +102,29 @@ class YoutubeVideos(ABC):
     """"This is an abstract class, and only contains methods to be inherited"""
     url: str
     info_dict: Dict = field(default_factory=dict)
-    duration: int = None
-    title: str = None
-    description: str = None
     options: Dict = field(default_factory=dict)
     sp: Spotify = Spotify()
     type: str = None
 
     def __post_init__(self):
-        self.expand_info_dict()
+        #self.expand_info_dict()
         self.assign_defaults()
 
     @property
     def serialised(self):
         return f"\"{self.url}\",\"{self.type}\",\"{self.duration}\",\"{self.title}\",\"{self.description}\"\n"
 
-    def expand_info_dict(self) -> None:
-        """"""
-        self.duration = self.info_dict.get("duration")
-        self.description = self.info_dict.get("description").replace("\n", " ").replace("\r", "").replace("\"", "\"\" ")
-        self.title = self.info_dict.get("title").replace("\"", "\"\" ")
+    @property
+    def duration(self):
+        return self.info_dict.get("duration")
+
+    @property
+    def description(self):
+        return self.info_dict.get("description").replace("\n", " ").replace("\r", "").replace("\"", "\"\" ").replace("|", "")
+
+    @property
+    def title(self):
+        return self.info_dict.get("title").replace("\"", "\"\" ").replace("|", "")
 
     def assign_defaults(self) -> None:
         """"""
@@ -247,7 +250,7 @@ class YoutubePlaylist(YoutubeVideos):
     def __post_init__(self):
         log.debug(f"Instantiated playlist object.")
         self.get_timestamps()
-        self.expand_info_dict()
+        #self.expand_info_dict()
 
     @property
     def num_songs(self):
