@@ -1,4 +1,5 @@
 from app.factory import VideoFactory, YoutubeVideos
+import pandas as pd
 
 """
 This helper script will parse an extracted bookmark file, and generate a unique list of youtube URLs and metadata.
@@ -49,6 +50,9 @@ def enrich_links(input, output):
                 if isinstance(vid, YoutubeVideos):
                     output_file.write(f"{vid.url}|{vid.type}|{vid.duration}|{vid.title}|{vid.description}\n")
                     output_file.flush()
+
+def derive_features(input, output):
+    pd.read_csv(input, sep='|')
 
 
 if __name__ == "__main__":
