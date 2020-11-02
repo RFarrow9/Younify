@@ -1,8 +1,10 @@
 import spotipy
 from . import *
 import spotipy.util
+import os
 
 from singleton_decorator import singleton
+from spotipy import oauth2
 
 """""
 
@@ -32,57 +34,19 @@ log = setup_logger(__name__)
 
 @singleton
 @dataclass
-class Spotify:
+class SpotifySingleton:
     sp: object = None
 
-    def __post_init__(self):
-        #self.create_token()
-        pass
+    def set_sp(self):
+        """Gets the spotipy handler"""
+        credentials = oauth2.SpotifyClientCredentials(
+            client_id=os.getenv("SPOTIPY_CLIENT_ID"),
+            client_secret=os.getenv("SPOTIPY_CLIENT_SECRET"))
+        token = credentials.get_access_token()
+        self.sp = spotipy.Spotify(auth=token)
 
-    def create_token(self):
-        token = None
-
-        def token_helper():
-            return spotipy.util.prompt_for_user_token(
-                username="",
-                scope="",
-                client_id="",
-                client_secret="",
-                redirect_uri=""
-            )
-
-        token = token_helper()
-        if token:
-            log.info(f"Spotify token successfully generated for user: .")
-        else:
-            log.error(f"Failure during spotify token generation for user: .")
-
-    def all_songs(self, artist):
-        log.debug("Called all_songs for %s." % artist)
-        songs = []
-        albums = self.all_albums(artist)
-        for album in albums:
-            results = self.album_tracks(album['uri'])
-            for item in results:
-                songs.extend(item['name'])
-        for song in songs:
-            print(song)
-        return songs
-
-    def all_albums(self, artist):
-        log.debug("Called all_albums for %s." % artist)
-        results = self.sp.artist_albums(self.artist_uri, album_type='album')
-        albums = results['items']
-        while results['next']:
-            results = self.sp.next(results)
-            albums.extend(results['items'])
-        return albums
-
-    def album_tracks(self, album_uri):
-        pass
-
-    def artist_albums(self, artist_uri):
-        pass
+    def artist_albums(self, artist_id):
+        return self.sp.artist_albums(artist_id)
 
     def artist_uri(self, artist_string):
         """

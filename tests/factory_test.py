@@ -1,12 +1,5 @@
 from app import factory
 
-def test_this():
-    assert True
-
-
-def test_that():
-    assert True
-
 
 def test_videofactory_instantiates_playlist():
     """A single playlist returns correctly classified"""
@@ -27,3 +20,4 @@ def test_videofactory_instantiates_bulk_songs():
     for url in urls:
         runner = factory.VideoFactory(url).classify()
         assert isinstance(runner, factory.YoutubeSong)
+

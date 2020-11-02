@@ -229,7 +229,7 @@ def most_common(_list):
 
 def return_playlists():
     client_credentials_manager = SpotifyClientCredentials(client_id=config["spotify"]["client_id"], client_secret=config["spotify"]["secret_id"])
-    sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+    sp = spotipy.SpotifySingleton(client_credentials_manager=client_credentials_manager)
     playlists = sp.user_playlists('robbo1992')
     while playlists:
         for i, playlist in enumerate(playlists['items']):

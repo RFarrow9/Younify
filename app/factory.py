@@ -103,7 +103,7 @@ class YoutubeVideos(ABC):
     url: str
     info_dict: Dict = field(default_factory=dict)
     options: Dict = field(default_factory=dict)
-    sp: Spotify = Spotify()
+    sp: SpotifySingleton = SpotifySingleton()
     type: str = None
 
     def __post_init__(self):
