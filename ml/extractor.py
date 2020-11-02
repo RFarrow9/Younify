@@ -51,6 +51,7 @@ def enrich_links(input, output):
                     output_file.write(f"{vid.url}|{vid.type}|{vid.duration}|{vid.title}|{vid.description}\n")
                     output_file.flush()
 
+
 def derive_features(input, output):
     pd.read_csv(input, sep='|')
 

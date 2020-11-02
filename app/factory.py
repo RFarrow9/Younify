@@ -2,7 +2,7 @@
 from .spotify import *
 
 import subprocess
-import youtube_dl
+import youtube_dlc as youtube_dl
 from typing import Dict, List
 from dataclasses import field
 from abc import ABC
