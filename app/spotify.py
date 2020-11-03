@@ -47,14 +47,3 @@ class SpotifySingleton:
 
     def artist_albums(self, artist_id):
         return self.sp.artist_albums(artist_id)
-
-    def artist_uri(self, artist_string):
-        """
-        1. Check if in cache first
-        2. If in cache but old, or not in cache
-        3. Run the artist string against spotify api
-        4. Parse results, check if valid artist
-
-        TODO: Be aware of API call overloading, we would be better of sending these in batches (use async?)
-        """
-        pass

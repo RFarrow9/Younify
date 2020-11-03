@@ -28,3 +28,9 @@ def test_spotify_gets_albums_using_oauth():
     spot.set_sp()
     albums = spot.artist_albums("spotify:artist:7meq0SFt3BxWzjbt5EVBbT")
     assert albums['total'] == 23
+
+
+def test_spotify_audio_analysis():
+    spot = spotify.SpotifySingleton()
+    spot.set_sp()
+    print(spot.sp.audio_analysis("spotify:track:1tMHDdJEz8MFrkPFgwFACG"))
