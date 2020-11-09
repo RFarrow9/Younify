@@ -2,8 +2,8 @@ import spotipy
 from . import *
 import spotipy.util
 import os
-from queue import Queue
-
+#from queue import Queue
+import multiprocessing
 from singleton_decorator import singleton
 from spotipy import oauth2
 
@@ -31,6 +31,7 @@ For a playlist:
 """""
 
 log = setup_logger(__name__)
+processes = multiprocessing.cpu_count() - 1
 
 
 @singleton
@@ -38,7 +39,7 @@ log = setup_logger(__name__)
 class SpotifySingleton:
     """Stores all spotify interaction methods, and a processing Queue"""
     sp: object = None
-    q: Queue = Queue
+    q: multiprocessing.Queue = multiprocessing.Queue
 
     def set_sp(self):
         """Gets the spotipy handler"""

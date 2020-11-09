@@ -175,6 +175,10 @@ class YoutubeSong(YoutubeVideos):
             # ie no split was found
             pass
 
+    def generate_fingerprint(self):
+        """Try to generate the fingerprint for Audio Recognition APIs"""
+        pass
+        # Try Shazam, AudDB, AudioDB, ACRCloud, aubio, dejavu, pygn
 
     def populate_metadata(self):
         self.found = self.sp.process()
