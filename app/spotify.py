@@ -2,6 +2,7 @@ import spotipy
 from . import *
 import spotipy.util
 import os
+from queue import Queue
 
 from singleton_decorator import singleton
 from spotipy import oauth2
@@ -35,7 +36,9 @@ log = setup_logger(__name__)
 @singleton
 @dataclass
 class SpotifySingleton:
+    """Stores all spotify interaction methods, and a processing Queue"""
     sp: object = None
+    q: Queue = Queue
 
     def set_sp(self):
         """Gets the spotipy handler"""
@@ -47,3 +50,5 @@ class SpotifySingleton:
 
     def artist_albums(self, artist_id):
         return self.sp.artist_albums(artist_id)
+
+    def process(self, ):

@@ -21,3 +21,8 @@ def test_videofactory_instantiates_bulk_songs():
         runner = factory.VideoFactory(url).classify()
         assert isinstance(runner, factory.YoutubeSong)
 
+
+def test_song_identified():
+    runner = factory.VideoFactory("https://www.youtube.com/watch?v=IJ8i49EqgYI").classify()
+
+

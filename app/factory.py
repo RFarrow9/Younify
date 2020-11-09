@@ -159,67 +159,29 @@ class YoutubeSong(YoutubeVideos):
 
     def __post_init__(self):
         log.debug(f"Instantiated song object.")
-        #self.info_dict()
-
-    def main(self):
-        self.populate_metadata()
 
     def log(self):
         log.debug("Type: %s" % type(self).__name__)
         log.debug("URL : %s" % self.url)
 
+    def try_parse_title_naive(self):
+        """Try to parse the title to find artist and song"""
+        # First we try the naive approach (is the format "artist - song")
+        try:
+            split_list = self.title.split("-", 1)
+            pot_artist = split_list[0]
+            pot_song = split_list[1]
+        except:
+            # ie no split was found
+            pass
+
+
     def populate_metadata(self):
         self.found = self.sp.process()
         self.song_id, self.artist_id = self.spotify.return_song_artist()
 
-    def hook(self, d):
-        """Method override is only temporary, this should be removed in future, but keeps it working for now"""
-        if d['status'] == 'finished':
-            self.raw_filename = d['filename']
-            self.convert()
-
-    def convert(self):
-            if self.raw_filename[-4:] == "webm":
-                self.filename = self.raw_filename[0:-5] + ".mp3"
-            else:
-                self.filename = self.raw_filename[0:-4] + ".mp3"
-            result = subprocess.run(
-                ["C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe", "-y", "-i", self.raw_filename, "-acodec", "libmp3lame",
-                 "-ab",
-                 "128k", self.filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            if result.stderr:
-                log.error(result.stderr)
-            # filename = os.path.splitext(filename)[0]
-            if self.artist is not None or self.title is not None:
-                self.edit_tags(self.filename)
-            self.assign_metadata()
-            try:
-                os.remove(self.raw_filename)
-            except Exception as e:
-                raise e
-
     def process(self):
         self.success = self.spotify.process()
-        if not self.success:
-            if self.url is not None:
-                try:
-                    self.download()
-                except:
-                    log.warning("Song %s failed to download." % self.name)
-            elif self.playlist is not None:
-                if not self.playlist.downloaded:
-                    self.playlist.download()
-                else:
-                    raise NotImplemented #Needs to cut the playlist here for this particular song (if possible)
-
-            else:
-                log.critical("This object {} should not exist.".format(id(self)))
-                self.log()
-
-                # Handle failed and from playlist here
-                # Should be pushed back up to playlist object?
-        # automatically pushed to playlist if success already
-        self.write_out()
 
     def match_to_spotify(self):
         self.identify_artist()
