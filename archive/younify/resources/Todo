@@ -1,0 +1,4 @@
+# use pathlib not os.path.join
+is there a better way to use paths?
+program needs to handle no internet connection better than it does
+# rename mods according to pep8
