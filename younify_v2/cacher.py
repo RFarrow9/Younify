@@ -9,6 +9,8 @@ Holds the caching object singleton.
 This object is responsible for storing and retrieving cache objects. We use a serialised (pickled) list of json objects that
 represent the cache.
 
+
+Added comment.s
 This caches results of API calls that have been made, along with the complete list of songs by that artist.
 """""
 
